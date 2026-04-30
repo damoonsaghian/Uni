@@ -1,0 +1,44 @@
+command'based user interfaces (using keyboard, voice, gesture) are faster, more convenient and more powerful,
+	than pointer'based user interfaces (using mouse, touch, pen)
+
+pointer'based interface seems appealing at first sight, because of its discoverability
+but with simple uniform GUI (ie the oposite of what we see in websites),
+	there is no need for a pointer based user interface
+touch interface has an additional problem: interaction at a distance is not possible
+note that, touch interface can be useful in special cases, but it's not good as a general purpose interface
+
+detection of voice commands is a relatively simple process (compared to general speech recognition),
+	because we only need to match against a relatively small set of commands
+for those who neither can use all their fingers, nor can talk, gesture based (2d) input can be implemented
+
+= the ideal keyboard
+
+".data/keyboard.png"
+
+navigation keys (arrows, page up, page down, home, end, tab, esc), and ctrl/shift/alt based keybindings,
+	are available by pressing and holding "mod" key
+pressing one "mod" key while holding the other one, is equivalent to Super key
+
+to insert punctuations, press "pun"
+	after entering a punctuation charactor, it automatically returns to normal mode
+	unless the "pun" key is still pressed, in which case, it will return to normal mode after releasing "pun"
+to insert capital letters, press "cap"
+	after entering a charactor, it automatically returns to normal mode
+	unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
+to insert numbers, press and hold "num"
+
+pressing and releasing "Fn", sends "Super+L" key press (usually bound to session locking)
+holding "Fn" and pressing a number eg 1, sends "F1" key
+
+"https://jasoncarloscox.com/writing/my-strange-keyboards/"
+	"https://jasoncarloscox.com/creations/kyria/"
+	"https://jasoncarloscox.com/creations/lego-keyboard-stand/"
+"https://splitkb.com/"
+"https://shop.keyboard.io/"
+"https://github.com/abstracthat/dactyl-manuform"
+"https://zealot.hu/absolem/"
+"https://github.com/foostan/crkbd"
+"https://github.com/nglgzz/42"
+"https://github.com/adereth/dactyl-keyboard"
+Kinesis Advantage 2 keyboard
+"http://www.allthingsergo.com/the-best-ergonomic-mechanical-keyboards/"
