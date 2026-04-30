@@ -1,0 +1,7 @@
+desc "a unified collaborative development environment, and an ideal frontend for GNUnet,
+	with command'based user interface"
+
+dep qt quickshell mauikit archivemount
+# quickshell is needed for its Process qml type
+
+# ln 0.svg $build_dir/share/icons/hicolor/scalable/apps/uni.svg
