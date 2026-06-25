@@ -3,7 +3,7 @@
 # qt6 quickshell mauikit
 # gnunet ssh aria2 archivemount
 
-# ../.data/icon.svg
+# .data/icon.svg
 
 echo "[Desktop Entry]
 Name=Uni
