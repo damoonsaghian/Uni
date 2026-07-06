@@ -1,7 +1,8 @@
 # a unified collaborative development environment, and an ideal frontend for GNUnet, with command'based user interface
 
-# qt6 quickshell mauikit
-# gnunet ssh aria2 archivemount
+# qt6 quickshell mauikit-filebrowsing mauikit-texteditor mauikit-imagetools mauikit-terminal mauikit-documents
+# gnunet ssh archivemount
+# aria2 or qbittorrent-nox
 
 # .data/icon.svg
 
