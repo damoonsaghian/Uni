@@ -1,41 +1,41 @@
-// https://api.kde.org/mauikit/index.html
+#!/usr/bin/env sh
 
-// https://doc.qt.io/qt-6/qtremoteobjects-index.html
+script_dir="$(dirname "$(readlink -f "$0")")"
 
-// start in lock mode
-// lock after 10m idle, if lock inhibit is not active
-// before lock, show a 10s countdown screen
+[ -f /etc/profile ] && . /etc/profile
+for profile_script in /usr/share/profile/*.sh; do
+	[ -f "$profile_script" ] && . "$profile_script"
+done
 
-// lock mode: read'only view, comminicate with emergency accounts
+export TZ="$HOME/.config/tz"
+export SHELL="doas -u \"$USER\" /usr/bin/bash --noprofile --norc"
+export PS1='─\e[7m \[${PWD}\] \e[0m\[$(printf "%0.s─" $(seq 1 $((COLUMNS - ${#PWD} - 3)) ))\]\n'
+export PS2=""
+export PS0='\[$(printf "%0.s-" $(seq 1 $((COLUMNS)) ))\]\n'
+export PATH="/usr/local/bin:/usr/bin:/$HOME/.local/bin"
+export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
+rm -rf "$XDG_RUNTIME_DIR"
+mkdir -pm 0700 "$XDG_RUNTIME_DIR"
 
-// use lines on borders of scrolled QtQuick widgets to show the amount of overflowed content
+# run dinit user services
 
-// gnunet-arm -s -i fs
+umask 022
 
-/*
-create an app with appId "uni"
-app.onActivate(function(app) {
-	switch (app.getWindows()[0]) {
-		null =>
-			projectViews = new Stack();
-			
-			overview = Overview(projectViews);
-			
-			rootView = new Overlay();
-			rootView.add(projectViews);
-			rootView.addOverlay(overview);
-			// keybinding to show the overview
-			
-			window = new ApplicationWindow({
-				application: app,
-				maximized: true,
-				titlebar: null
-			});
-			window.setChild(rootView)
-			
-			// set keybinding to show the overview
-		
-		win => win.present()
-	}
-})
-*/
+start_cli() {
+	# ask:
+	# , auto repair (if no internet and no LAN, setup network; upm update; also if not on tty1, restart tty1)
+	# , backup
+	# , copy projects
+	# , terminal: ask user for lockscreen password, and exit if wrong
+	# , exit
+	# , poweroff
+	
+	$SHELL
+}
+
+if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
+	qml6 "$script_dir/2.qml" || start_cli
+else
+	start_cli
+fi
