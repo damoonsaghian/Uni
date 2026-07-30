@@ -1,6 +1,7 @@
 # a unified collaborative development environment, and an ideal frontend for GNUnet, with command'based user interface
 
-# qt6 mauikit-filebrowsing mauikit-texteditor mauikit-imagetools mauikit-terminal mauikit-documents
+# qt6 quickshell
+# mauikit-filebrowsing mauikit-texteditor mauikit-imagetools mauikit-archiver mauikit-terminal
 # gnunet ssh archive
 # aria2 or qbittorrent-nox
 
@@ -13,3 +14,5 @@ exec=qs /usr/local/share/uni/1.qml
 StartupNotify=true
 Type=Application
 " > uni.desktop
+
+# usm executable
