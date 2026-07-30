@@ -2,17 +2,15 @@
 
 # unified storage manager
 # mounting and formatting storage devices
-# if run as normal user, use dbus API of udisks, and if not available, notify the user
-# 	https://storaged.org/udisks/docs/ref-dbus.html
-# otherwise implement it using posix commands
 
 usage_error() {
 	echo "usage:"
-	echo "	sd mount <dev-name>"
-	echo "	sd unmount <dev-name>"
-	echo "	sd mkbtrfs <dev-name>"
-	echo "	sd mkfat <dev-name>"
-	echo "	sd mkexfat <dev-name>"
+	echo "	usm mount <dev-name> <target-dir>"
+	echo "	usm unmount <dev-name>"
+	echo "	usm mkbtrfs <dev-name>"
+	echo "	usm mkexfat <dev-name>"
+	echo "	usm mkfat <dev-name>"
+	echo "	usm mkefi <dev-name>"
 	exit 1
 }
 
@@ -38,12 +36,13 @@ device_name="$(basename "$2")"
 		fi
 		
 		if [ -n "$SUDO_UID" ] && [ -n "$SUDO_GID" ]; then
-			mount -o ${discard_opt}nosuid,nodev,uid="$SUDO_UID",gid="$SUDO_GID" "$2" /nu/.local/state/mounts/"$device_name"
+			mount -o ${discard_opt}nosuid,nodev,uid="$SUDO_UID",gid="$SUDO_GID" "$2" \
+				"$HOME"/.local/state/mounts/"$device_name"
 		else
-			mount -o ${discard_opt}nosuid,nodev "$2" /nu/.local/state/mounts/"$device_name"
+			mount -o ${discard_opt}nosuid,nodev "$2" "$HOME"/.local/state/mounts/"$device_name"
 		fi
 	else
-		mount -o nosuid,nodev "$2" /nu/.local/state/mounts/"$device_name"
+		mount -o nosuid,nodev "$2" "$HOME"/.local/state/mounts/"$device_name"
 	fi
 	exit
 }
@@ -92,6 +91,10 @@ mkbtrfs)
 	mount /dev/"$device_name" "$mount_dir"
 	chmod 777 "$mount_dir"
 	;;
-mkfat) mkfs.vfat -I -F 32 /dev/"$device_name" ;;
 mkexfat) mkfs.exfat /dev/"$device_name" ;;
+mkfat) mkfs.vfat -I -F 32 /dev/"$device_name" ;;
+mkefi)
+	printf "g\nn\n1\n\n\nt\nuefi\nw\nq\n" | fdisk -w always /dev/"$device_name"
+	mkfs.vfat -I -F 32 /dev/"$device_name"
+	;;
 esac
