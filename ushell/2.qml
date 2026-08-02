@@ -18,23 +18,31 @@ import QtWayland.Compositor.XdgShell
 WaylandCompositor {
 id: comp
 
-Component {
-	id: panelComponent
-	Panel {}
-}
-
-ListModel {
-	id: appspaces
-}
+property list<Appspace> appspaces
+property StackLayout appspaceStack
 
 Component {
-	id: appspaceStack
-	StackLayout { Repeater {
-		model: appspaces
-		Appspace {
-			name: modelData
+	id: appspaceStackComp
+	
+	StackLayout { 
+		Repeater {
+			model: comp.appspaces
+			Appspace {
+				name: modelData
+			}
 		}
-	}}
+		
+		onCurrentIndexChanged: {
+			// if main window is fullscreen, hide bar
+			if (appspaceStack.children[appspaceStack.currentIndex].children[0].visibility === Window.FullScreen)
+				barArea.visible = false; 
+		}
+	}
+}
+
+Component {
+	id: barComp
+	Bar {}
 }
 
 XdgOutputManagerV1 { Repeater {
@@ -65,7 +73,7 @@ XdgOutputManagerV1 { Repeater {
 				}
 				
 				Rectangle {
-					id: bar
+					id: barArea
 				}
 			}
 		}
@@ -80,23 +88,13 @@ XdgOutputManagerV1 { Repeater {
 		}
 		
 		Component.onCompleted: {
-			if (index == 0) {
+			if (index === 0) {
 				comp.defaultOutput = this;
 				
-				var panelArea;
-				if (screen_is_horizontal) {
-					panelArea = leftPanel;
-					leftPanel.width = 42;
-				} else if (screen_is_vertical) {
-					panelArea = topPanel;
-					topPanel.width = 20;
-				}
-				panelComponent.createObject(panelArea);
-				appspaceStack.createObject(surfaceArea);
+				comp.appspaceStack = appspaceStackComp.createObject(surfaceArea);
+				barComp.createObject(barArea);
+				barArea.width = 20
 			}
-			
-			// calculate the scale factor, based on screen size and resolution
-			// this.scaleFactor = ;
 		}
 	}
 }}
@@ -119,7 +117,11 @@ Component {
 				NumberAnimation { target: scaleTransform; property: "xScale"; to: 0.4; duration: 150 }
 			}
 			NumberAnimation { target: scaleTransform; property: "xScale"; to: 0; duration: 150 }
-			ScriptAction { script: { surfaceItem.destroy(); } }
+			ScriptAction { script: {
+				const container = surfaceItem.parent;
+				surfaceItem.destroy();
+				container.destroy();
+			}}
 		}
 		
 		transform: [
@@ -132,21 +134,25 @@ Component {
 	}
 }
 
+Component {
+	id: appspacePopupComp
+	Popup {}
+}
+
 XdgShell {
 	onToplevelCreated: function(xdgSurface) {
 		// if appid and title matches a line in $HOME/.config/ushell/screens, create the surface in that screen
 		// otherwise:
-		shellSurfaceComponent.createObject(comp.defaultOutput.surfaceArea, {"shellSurface": xdgSurface});
+		var container = comp.appspaceStack.children[comp.appspaceStack.currentIndex];
+		if (container.children.length !== 0)
+			container = appspacePopupComp.createObject(container);
+		shellSurfaceComponent.createObject(container, {"shellSurface": xdgSurface});
 	}
 }
 
-// when an appspace is focused, if main window is fullscreen, hide bar
-// when mouse touches left/top edges, make the bar visible
-// when mouse leaves bar, if fullscreen, hide car
-
 StackLayout {
 	Launcher {
-		appspaces: appspaces
+		appspaces: comp.appspaces
 	}
 	System {}
 }

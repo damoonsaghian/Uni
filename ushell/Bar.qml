@@ -4,6 +4,9 @@
 // , a menu showing appspaces (emphesising the current one)
 // , close buttun for each, plus a close all button
 
+// when mouse touches bottom edge or when swipe from bottom edge, make the bar visible
+// when mouse leaves bar, if fullscreen, hide bar
+
 // at the left show app notifications
 // temporary show the message on the bar
 // after that just show app icon and number (if there are more than one notification)
@@ -130,6 +133,7 @@ when there is upload/download make the icon green
 */
 
 /* internet
+https://doc.qt.io/qt-6/qml-qtnetwork-networkinformation.html
 icon's color indicates average speed (download+upload) in the last 30 seconds:
 , 0 to 10 kB/s: white icon
 , 10 kbs to 100 kB/s: yellow icon

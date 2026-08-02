@@ -22,6 +22,8 @@ GridLayout {
 // extra windows will be modal popups with border shadow, and will be closed when clicked outside
 
 // if a stack veiw with the same name exists, focus it, otherwise create a new one and run the app
+// find the index of "app_name" in appspaces list
+// appspaceStack.children[index]
 
 // keybinding to show the launcher
 // release Super_L or Super_R
