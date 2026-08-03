@@ -59,8 +59,8 @@ pacstrap -K /mnt base $ucode memtest86+-efi linux linux-firmware linux-firmware-
 	fwupd btrfs-progs dosfstools opendoas nano bash-completion man-db \
 	geoclue chrony networkmanager bluez bluez-obex pipewire-audio pipewire-pulse wireplumber \
 	adobe-source-code-pro-fonts noto-fonts-emoji noto-fonts noto-fonts-cjk \
-	qt6-wayland quickshell mauikit-filebrowsing mauikit-texteditor \
-	mauikit-imagetools mauikit-archiver mauikit-terminal qt6-webengine
+	qt6-wayland qt6-virtualkeyboard quickshell \
+	mauikit-{filebrowsing,texteditor,imagetools,archiver,terminal} qt6-webengine
 
 mkdir -p /mnt/boot/loader/entries
 cat <<-EOF > /mnt/boot/loader/loader.conf
