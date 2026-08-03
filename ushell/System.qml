@@ -334,4 +334,7 @@ if [ -f /tmp/fwupdmgr-status ] || {
 	read -r ans
 	[ "$ans" = y ] && fwupdmgr update
 fi
+
+screenshot and screencast
+when finished, cut the file to clipboard
 */

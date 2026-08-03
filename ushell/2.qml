@@ -1,7 +1,9 @@
 import QtQml.Models
 import QtQuick
+import QtQuick.VirtualKeyboard
 import QtWayland.Compositor
 import QtWayland.Compositor.XdgShell
+import Quickshell.Io
 
 // https://quickshell.org/docs/v0.3.0/guide/qml-language
 // https://quickshell.org/about/
@@ -22,9 +24,9 @@ property list<Appspace> appspaces
 property StackLayout appspaceStack
 
 Component {
-	id: appspaceStackComp
+	id: appspaceStackComponent
 	
-	StackLayout { 
+	StackLayout {
 		Repeater {
 			model: comp.appspaces
 			Appspace {
@@ -41,7 +43,7 @@ Component {
 }
 
 Component {
-	id: barComp
+	id: barComponent
 	Bar {}
 }
 
@@ -72,6 +74,10 @@ XdgOutputManagerV1 { Repeater {
 					}
 				}
 				
+				// virtual keyboard
+				InputPanel {
+				}
+				
 				Rectangle {
 					id: barArea
 				}
@@ -90,10 +96,11 @@ XdgOutputManagerV1 { Repeater {
 		Component.onCompleted: {
 			if (index === 0) {
 				comp.defaultOutput = this;
+				comp.appspaceStack = appspaceStackComponent.createObject(surfaceArea);
+				comp.appspaceStack.anchors.fill = surfaceArea;
 				
-				comp.appspaceStack = appspaceStackComp.createObject(surfaceArea);
-				barComp.createObject(barArea);
-				barArea.width = 20
+				barComponent.createObject(barArea);
+				barArea.width = 20;
 			}
 		}
 	}
@@ -135,7 +142,7 @@ Component {
 }
 
 Component {
-	id: appspacePopupComp
+	id: appspacePopupComponent
 	Popup {}
 }
 
@@ -145,7 +152,7 @@ XdgShell {
 		// otherwise:
 		var container = comp.appspaceStack.children[comp.appspaceStack.currentIndex];
 		if (container.children.length !== 0)
-			container = appspacePopupComp.createObject(container);
+			container = appspacePopupComponent.createObject(container);
 		shellSurfaceComponent.createObject(container, {"shellSurface": xdgSurface});
 	}
 }
@@ -157,7 +164,12 @@ StackLayout {
 	System {}
 }
 
-// on component completed run uni
+// hide cursor after 8 seconds, and when typing begins
+
+// voice control
+// like keyboard input, if the word is not a registered command, pass it to focused window
+
+Component.onCompleted: Quickshell.execDetached({command: ["doas", "-u", Quickshell.env("USER"), "uni"]})
 }
 
 /*
@@ -228,14 +240,3 @@ in modern systems, other hardwares (cpu, network ...) are automatically put into
 	unless an application specifically request for low latency using Linux PM QoS
 	https://docs.kernel.org/power/pm_qos_interface.html
 */
-
-// screenshot and screencast
-
-// hide cursor after 8 seconds, and when typing begins
-
-// on'screen keyboard
-// https://github.com/qt/qtvirtualkeyboard
-// keymap
-// https://doc.qt.io/qt-6/qtvirtualkeyboard-deployment-guide.html#integration-method
-
-// voice control

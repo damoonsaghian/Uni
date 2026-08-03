@@ -10,7 +10,7 @@ GridLayout {
 }
 
 // run apps with:
-// sudo -u "$USER" ...
+// doas -u "$USER" ...
 
 // three buttons at top
 // left: press ' for super prompt
