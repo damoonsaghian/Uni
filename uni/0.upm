@@ -1,0 +1,17 @@
+# a unified collaborative development environment, and an ideal frontend for GNUnet, with command'based user interface
+
+# gtk4 gtksourceview poppler-glib-libs vte-gtk4 webkitgtk4 python-gobject
+# gnunet openssh archive
+# libtorrent-rasterbar-python
+
+# .data/icon.svg
+
+# uni.desktop
+# [Desktop Entry]
+# Name=Uni
+# Icon=uni
+# exec=uni
+# StartupNotify=true
+# Type=Application
+
+# unet and usm executables
