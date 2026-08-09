@@ -127,8 +127,12 @@ body {
 </div><div><a href="https://docs.gnunet.org/latest/">https://docs.gnunet.org/latest/</a>
 </div><div>"the GNUnet system" by Christian Grothoff (<a href="https://grothoff.org/christian/habil.pdf">https://grothoff.org/christian/habil.pdf</a>)
 </div>
-<h2>3, Ushell</h2><div>Ushell is a Wayland shell, based on QtWayland
+<h2>3, UPM</h2><div>UPM is a wrapper around Chimera Linux build system and package manager, that adds these features:
+</div><div>, UPM updates packages atomically and automatically
+</div><div>, distributed package repositories, using Gnunet
+</div><div>, an installer script to easily install a Chimera based Linux system, using Uni and SwayShell as user interface
 </div><div>
+</div><div>SwayShell provides a graphical shell on top of Sway Wayland compositor
 </div><div>there is an application launcher which can be toggled by pressing "super" (mod+mod) or "alt+tab"
 </div><div>press the letters corresponding to an application's name (or just use the arrow keys) to select it, then press "space"
 </div><div>applications will be opened in their own workspace
@@ -137,7 +141,7 @@ body {
 </div><div>
 </div><div>pressing "apostrophe" or "semicolon" in application launcher, activates super prompt
 </div><div>by typing special keywords in the super prompt, you have a fast access to various small but useful things like:
-</div><div>	mathematical calculations, unit conversions, date at different timezones, dictionary, encyclopedia, etc
+</div><div>	mathematical calculations, unit conversions, timer, date at different timezones, weather, dictionary, encyclopedia, etc
 </div><div>
 </div><div>in application launcher the item selected by default is the system menu
 </div><div>, session (lock, suspend, exit, reboot, poweroff)
@@ -157,8 +161,13 @@ body {
 </div><div>this backup can easily be restored on a new system
 </div><div>these systems will then form an F2F network using GNUnet, through which they will be synced to each other
 </div><div>
-</div><div>the ultimate goal is to use Ushell and Uni as the user interface of UPM Linux
-</div><div>but before UPM Linux is ready, you can try them on Arch Linux; just boot into an Arch Linux live image, and run this:
-</div><div>; bash archinstall.sh
+</div><div>first we must create a bootable installer on a removable storage device
+</div><div>to do that, we must be in a Linux system with these programs installed:
+</div><div>	curl (or wget) mkfs.vfat (dosfstools)
+</div><div>to bootstrap from source, these extra programs are required too:
+</div><div>	clang git ssh-keygen
+</div><div>now create the bootable installer by running this command:
+</div><div>; sh upm/mkinst.sh
+</div><div>then boot into the installer, and follow the instructions
 </div>
 </body></html>
