@@ -9,7 +9,11 @@ done
 
 export TZ="$HOME/.config/tz"
 export SHELL="doas -u \"$USER\" /usr/bin/bash --noprofile --norc"
-export PS1='─\e[7m \[${PWD}\] \e[0m\[$(printf "%0.s─" $(seq 1 $((COLUMNS - ${#PWD} - 3)) ))\]\n'
+export PS1='\[$(
+IFS="[;" read -p $"\e[6n" -d R -rs _ _ line _
+[ "$line" = 1 ] || echo
+printf "%0.s─" $(seq 1 $(( COLUMNS/2 - ${#PWD}/2 - 2 )) )
+)\]\e[7m \[${PWD}\] \e[0m\[$(printf "%0.s─" $(seq 1 $((COLUMNS - COLUMNS/2 + ${#PWD}/2 + 2 - ${#PWD} - 2)) ))\]\n'
 export PS2=""
 export PS0='\[$(printf "%0.s-" $(seq 1 $((COLUMNS)) ))\]\n'
 export PATH="/usr/local/bin:/usr/bin:/$HOME/.local/bin"
