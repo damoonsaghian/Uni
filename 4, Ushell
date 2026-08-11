@@ -1,0 +1,35 @@
+Ushell provides a graphical shell consisting of an application launcher and a status bar
+application launcher can be toggled by pressing "super" (mod+mod) or "alt+tab"
+applications can be selected by typing their name, or using the arrow keys
+	then just press "space" to open them
+applications will be opened in their own workspace
+	any extra windows opened by the application, will be shown in a modal floating window
+to close a window, press "super+backspace" or "alt+escape"
+
+pressing "apostrophe" or "semicolon" in application launcher, activates super prompt
+by typing special keywords in the super prompt, you have a fast access to various small but useful things like:
+	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+
+in application launcher the item selected by default is the system menu
+, session (lock, suspend, exit, reboot, poweroff)
+, connections
+, timezone
+, passwords
+, packages (install, remove, update, create an installation media)
+, backup (create, restore)
+
+to have a really fail'safe system, redundant units are necessary
+you can create a backup on a removable storage device
+backups will be done using "BTRFS send", so they will be incremental and fast
+the backup device is encrypted, and contains a backup of your home directory
+	dencryption can be done using a password, as well as a key stored on the computer
+each time the device is connected, the backup procedure will be run automatically
+even in case of bit rot for data in home directory, this procedure repairs it automatically
+this backup can easily be restored on a new system
+these systems will then form an F2F network using GNUnet, through which they will be synced to each other
+
+the ultimate goal is to use Ushell and Uni as the user interface of UPM Linux
+but before it's ready, we can create a Chimera Linux based system, with Ushell and Uni as the user interface
+first create a bootable installer using this command:
+; sh ./chimera.sh
+then boot the installation media, and follow the instructions
