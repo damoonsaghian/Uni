@@ -6,12 +6,14 @@
 
 # .data/icon.svg
 
-# uni.desktop
-# [Desktop Entry]
-# Name=Uni
-# Icon=uni
-# exec=uni
-# StartupNotify=true
-# Type=Application
+echo '[Desktop Entry]
+Name=Uni
+Comment=Collaborative Development
+Icon=uni
+exec=uni
+StartupNotify=true
+Type=Application
+' > /usr/share/applications/uni.desktop
+
 
 # unet and usm executables
