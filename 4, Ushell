@@ -30,6 +30,5 @@ these systems will then form an F2F network using GNUnet, through which they wil
 
 the ultimate goal is to use Ushell and Uni as the user interface of UPM Linux
 but before it's ready, we can create a Chimera Linux based system, with Ushell and Uni as the user interface
-first create a bootable installer using this command:
-; sh ./chimera.sh
-then boot the installation media, and follow the instructions
+to do that, boot into a Chimera Linux live image, and run:
+; doas sh ./chimera.sh
