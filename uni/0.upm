@@ -15,5 +15,4 @@ StartupNotify=true
 Type=Application
 ' > /usr/share/applications/uni.desktop
 
-
 # unet and usm executables

@@ -50,6 +50,6 @@
 # https://stackoverflow.com/questions/1064499/how-to-list-all-git-tags
 # https://release-monitoring.org/
 
-# downloders
+# downloaders
 # https://libtorrent.org/
 # https://gitlab.gnome.org/World/Fragments
