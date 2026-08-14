@@ -124,4 +124,4 @@
 # https://qalculate.github.io/
 # libqalculate-progs
 
-# libgweather
+# https://python-weather.readthedocs.io/en/latest/
