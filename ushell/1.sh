@@ -7,6 +7,8 @@ for profile_script in /usr/share/profile/*.sh; do
 	[ -f "$profile_script" ] && . "$profile_script"
 done
 
+umask 022
+
 export TZ="$HOME/.config/tz"
 export SHELL="doas -u \"$USER\" /usr/bin/bash --noprofile --norc"
 export PS1='\[$(
@@ -22,9 +24,7 @@ export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
 rm -rf "$XDG_RUNTIME_DIR"
 mkdir -pm 0700 "$XDG_RUNTIME_DIR"
 
-# run dinit user services
-
-umask 022
+dinit --services-dir /var/lib/dinit/user --services-dir /usr/share/dinit/user
 
 start_cli() {
 	# ask:
@@ -39,7 +39,7 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	qml6 "$script_dir/2.qml" || start_cli
+	sway -c "$script_dir/sway.conf" || start_cli
 else
 	start_cli
 fi

@@ -11,6 +11,7 @@
 # if "inhibit suspend" is active, or there is high network activity, and a shutdown is requested,
 # 	lock the session, notice the user, and ask to confirm
 # wait for the inhibition and network activity to end, then do shutdown/restart/suspend
+# https://systemd.io/INHIBITOR_LOCKS/
 
 # https://networkmanager.dev/docs/
 # https://networkmanager.dev/docs/api/latest/nmcli.html
