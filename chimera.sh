@@ -23,140 +23,100 @@ target_partition2="$(echo "$target_partitions" | cut -d " " -f2)"
 mkfs.vfat -F 32 /dev/"$target_partition1"
 mkfs.btrfs -f /dev/"$target_partition2"
 
-mount /dev/"$target_partition2" /mnt
-mkdir /mnt/boot
-mount /dev/"$target_partition1" /mnt/boot
-mkdir /mnt/etc
-genfstab -U /mnt > /mnt/etc/fstab
+new_root=/media/root
+mkdir "$new_root"
+mount /dev/"$target_partition2" "$new_root"
+mkdir "$new_root"/boot
+mount /dev/"$target_partition1" "$new_root"/boot
+mkdir "$new_root"/etc
+genfstab -U "$new_root" > "$new_root"/etc/fstab
 
 case "$(uname -m)" in
 x86*)
 	cpu_vendor_id="$(cat /proc/cpuinfo | grep vendor_id | head -n1 | sed -n "s/vendor_id[[:space:]]*:[[:space:]]*//p")"
-	[ "$cpu_vendor_id" = AuthenticAMD ] && ucode=ucode-amd
-	[ "$cpu_vendor_id" = GenuineIntel ] && ucode=ucode-intel
+	[ "$cpu_vendor_id" = AuthenticAMD ] && ucode_pkg=ucode-amd
+	[ "$cpu_vendor_id" = GenuineIntel ] && ucode_pkg=ucode-intel
 ;;
 esac
 
-# linux-stable initramfs-tools tpm2-tools cryptsetup
-# base-full-firmware (firmware-linux for all) fwupd base-full-core
-# nyagetty util-linux-dmesg bash-completion
-# util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs
-# elogind sway
-# chrony less nano opendoas syslog-ng util-linux-zramctl
-# pipewire bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta
-# fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk
-# gtk4 libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4
-# vte-gtk4 gtk4-layer-shell python-gobject
-# libtorrent-rasterbar-python
-# power-profiles-daemon-meta
+chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-kernel base-full-firmware \
+	base-full-core chrony nyagetty util-linux-dmesg util-linux-zramctl \
+	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
+	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
+	base-full-session pipewire bash-completion less nano opendoas fwupd chimera-repo-user \
+	sway gtk4-layer-shell fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
+	libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4 vte-gtk4 \
+	python-gobject libtorrent-rasterbar-python
 
-mkdir -p /mnt/boot/loader/entries
-cat <<-EOF > /mnt/boot/loader/loader.conf
-default  arch.conf
-timeout  0
-auto-entries no
-editor   no
-EOF
-root_uuid="$(blkid /dev/"$target_partition2" | sed -nr 's/^.*[[:space:]]+UUID="([^"]*)".*$/\1/p')"
-cat <<-EOF > /mnt/boot/loader/entries/arch.conf
-title   Arch Linux
-linux   /vmlinuz-linux
-initrd  /$ucode.img
-initrd  /initramfs-linux.img
-options root=UUID=$root_uuid rw
-EOF
-cat <<-EOF > /mnt/boot/loader/entries/arch-fallback.conf
-title   Arch Linux (fallback initramfs)
-linux   /vmlinuz-linux
-initrd  /$ucode.img
-initrd  /initramfs-linux-fallback.img
-options root=UUID=$root_uuid rw
-EOF
+chimera-chroot "$new_root" update-initramfs -c -k all
+chimera-chroot "$new_root" bootctl install
+chimera-chroot "$new_root" gen-systemd-boot
 
-arch-chroot /mnt bootctl install
-mkdir -p /mnt/etc/pacman.d/hooks
-cat <<-EOF > /mnt/etc/pacman.d/hooks/95-systemd-boot.hook
-[Trigger]
-Type = Package
-Operation = Upgrade
-Target = systemd
-[Action]
-Description = Gracefully upgrading systemd-boot...
-When = PostTransaction
-Exec = /usr/bin/systemctl restart systemd-boot-update.service
-EOF
-
-# enablee networkmanager and bluez dinit service
-
-# upm wrapper around apk
-cat <<-'EOF' > /mnt/usr/local/bin/upm
-#!/usr/bin/env sh
-# wrapper around pacman
-case $1 in
-install) pacman -S $2 ;;
-remove) pacman -Rs $2 ;;
-update)
-	pacman -Syu
-	orphan_pkgs="$(pacman -Qdttq)"
-	pacman -Rns $orphan_pkgs
-	pacman -Sc
-	;;
-find) pacman -Ss $2 ;;
-esac
-EOF
-chmod +x /mnt/usr/local/bin/upm
-echo 'permit nopass nu cmd /usr/local/bin/upm' > /mnt/etc/doas.d/upm.conf
-echo '* * * * * ID=autoupdate FREQ=1d/5m autoupdate' > "$new_root"/etc/cron.d/autoupdate
-
-echo; echo "set root password"
-while ! arch-chroot /mnt passwd; do
-	echo "please retry"
-done
-
-# create normal user
-# libseat only works for wlroots based wayland compositors
-# pipewire does not use libseat; so the user must be in video and audio groups
-# it's ok, since the system is single user, and only input devices must be protected (to protect root password)
-# https://wiki.alpinelinux.org/wiki/Setting_up_a_new_user#Groups_for_desktop_usage
-chimera-chroot /mnt useradd --base-dir / --create-home --shell /usr/local/bin/ushell nu
-echo; echo "set lock'screen password"
-while ! chroot /mnt passwd nu; do
-	echo "please retry"
-done
-echo 'permit nopass nu cmd /usr/bin/passwd nu' > /mnt/etc/doas.d/passwd.conf
-
-cat <<-'EOF' > /mnt/usr/local/bin/autologin
-# set resource limits for realtime applications like the rt module in pipewire
-ulimit -r 95 -e -19 -l 4194304
-
+# zram swap
+cat <<-'EOF' > "$new_root"/usr/local/share/zram-swap.sh
 modprobe zram
 zramctl /dev/zram0 --algorithm zstd --size "$(($(grep -Po "MemTotal:\s*\K\d+" /proc/meminfo)/2))KiB"
 mkswap -U clear /dev/zram0
 swapon --discard --priority 100 /dev/zram0
-
-exec login -f nu
+fi
 EOF
-chmod +x /mnt/usr/local/bin/autologin
+chmod +x "$new_root"/usr/local/bin/zram-swap
+echo 'type = scripted
+command = /usr/bin/sh /usr/local/share/zram-swap.sh
+depends-on = early-prepare.target
+depends-on = early-devd
+before = early-fs-pre.target
+' > "$new_root"/usr/local/dinit.d/zram-swap
+chimera-chroot "$new_root" dinitctl enable zram-swap
 
-# create autologin dinit services for tty1 and tty2
-# /usr/bin/agetty --skip-login --nonewline --noissue --noreset --noclear -l /usr/local/bin/autologin - ${TERM}
+chimera-chroot "$new_root" dinitctl enable networkmanager
+chimera-chroot "$new_root" dinitctl enable bluetoothd
+
+# upm wrapper around apk
+cat <<-'EOF' > "$new_root"/usr/local/bin/upm
+#!/usr/bin/env sh
+# wrapper around pacman
+case $1 in
+install) apk add $2 ;;
+remove) apk del $2 ;;
+update)	apk update;	apk upgrade	;;
+find) apk search $2 ;;
+esac
+EOF
+chmod +x "$new_root"/usr/local/bin/upm
+echo 'permit nopass nu cmd /usr/local/bin/upm' > "$new_root"/etc/doas.d/upm.conf
+
+echo; echo "set root password"
+while ! chimera-chroot "$new_root" passwd; do
+	echo "please retry"
+done
+
+# create normal user
+chimera-chroot "$new_root" useradd --base-dir / --create-home --shell /usr/local/bin/ushell nu
+echo; echo "set lock'screen password"
+while ! chroot "$new_root" passwd nu; do
+	echo "please retry"
+done
+echo 'permit nu cmd /usr/bin/passwd nu' > "$new_root"/etc/doas.d/passwd.conf
+
+# set autologin for tty1 and tty2
+echo 'GETTY_ARGS="$GETTY_ARGS --autologin nu"' > "$new_root"/etc/default/agetty-tty1
+cp "$new_root"/etc/default/agetty-tty1 "$new_root"/etc/default/agetty-tty2
 
 script_dir="$(dirname "$(readlink -f "$0")")"
 
-# "$script_dir"/sway.conf
-cp "$script_dir"/ushell.py /mnt/usr/local/bin/ushell
-chmod +x /mnt/usr/local/bin/ushell
-
-cp -r "$script_dir"/../ushell "$new_root"/usr/local/share/ushell
+cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/ushell/1.sh
-ln -s "$new_root"/usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
+ln -s /usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
+chmod 755 "$new_root"/usr/local/share/ushell/tz-guess.sh
+ln -s /usr/local/share/ushell/tz-guess.sh "$new_root"/etc/NetworkManager/dispatcher.d/09-tz-guess
 
-cp "$script_dir"/../ushell/tz-guess.sh /mnt/etc/NetworkManager/dispatcher.d/09-tz-guess
-chmod 755 /mnt/etc/NetworkManager/dispatcher.d/09-tz-guess
-
-cp -r "$script_dir"/../uni "$new_root"/usr/local/share/
-ln -s /usr/local/share/uni/1.py /mnt/usr/local/bin/uni
-chmod +x /usr/local/share/uni/1.py
+cp -r "$script_dir"/uni "$new_root"/usr/local/share/
+chmod +x "$new_root"/usr/local/share/uni/1.py
+ln -s /usr/local/share/uni/1.py "$new_root"/usr/local/bin/uni
+chmod +x "$new_root"/usr/local/share/uni/usm.sh
+ln -s /usr/local/share/uni/usm.sh "$new_root"/usr/local/bin/usm
+echo 'permit nopass nu cmd /usr/local/bin/usm' > "$new_root"/etc/doas.d/usm.conf
 
 mkdir -p "$new_root"/usr/local/share/applications
 echo '[Desktop Entry]
@@ -168,11 +128,7 @@ StartupNotify=true
 Type=Application
 ' > "$new_root"/usr/local/share/applications/uni.desktop
 mkdir -p "$new_root"/usr/local/share/icons/hicolor/scalable/apps
-ln -s /usr/local/share/uni/data/uni.svg "$new_root"/usr/local/share/icons/hicolor/scalable/apps/
-
-chmod +x "$new_root"/usr/local/share/uni/usm.sh
-ln -s /usr/local/share/uni/usm.sh "$new_root"/usr/local/bin/usm
-echo 'permit nopass nu cmd /usr/local/bin/sd' > "$new_root"/etc/doas.d/sd.conf
+cp "$script_dir"/.data/icon.svg "$new_root"/usr/local/share/icons/hicolor/scalable/apps/uni.svg
 
 echo; echo "installation completed successfully"
 printf "reboot the system? (Y/n) "
