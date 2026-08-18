@@ -60,7 +60,6 @@ mkswap -U clear /dev/zram0
 swapon --discard --priority 100 /dev/zram0
 fi
 EOF
-chmod +x "$new_root"/usr/local/bin/zram-swap
 echo 'type = scripted
 command = /usr/bin/sh /usr/local/share/zram-swap.sh
 depends-on = early-prepare.target
