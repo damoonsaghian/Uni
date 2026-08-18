@@ -65,7 +65,7 @@ command = /usr/bin/sh /usr/local/share/zram-swap.sh
 depends-on = early-prepare.target
 depends-on = early-devd
 before = early-fs-pre.target
-' > "$new_root"/usr/local/dinit.d/zram-swap
+' > "$new_root"/usr/local/lib/dinit.d/zram-swap
 chimera-chroot "$new_root" dinitctl enable zram-swap
 
 chimera-chroot "$new_root" dinitctl enable networkmanager
