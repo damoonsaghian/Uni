@@ -28,7 +28,7 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	exec sway -c "$script_dir/sway.conf" || start_cli
+	USHELL_DIR="$script_dir" exec sway -c "$script_dir/sway.conf" || start_cli
 else
 	start_cli
 fi

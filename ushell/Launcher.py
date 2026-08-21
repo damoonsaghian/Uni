@@ -1,6 +1,3 @@
-# run apps with:
-# doas -u "$USER" ...
-
 # three buttons at top
 # left: press ' for super prompt
 # right (selected by default): system menu
@@ -10,23 +7,22 @@
 # apps will open in separate desktops
 # extra windows will be modal popups with border shadow, and will be closed when clicked outside
 
-# if a stack veiw with the same name exists, focus it, otherwise create a new one and run the app
-# find the index of "app_name" in appspaces list
-# appspaceStack.children[index]
+# swaymsg "workspace '$spp_name'"
+# swaymsg "[workspace=__focused__ tiling] focus" || {
+# 	swaymsg "[workspace=__focused__] kill"
+# 	$app_command
+# }
 
 # keybinding to show the launcher
 # release Super_L or Super_R
 # Alt+tab
 # swipe up from bottom touchscreen edge (center and left)
-# first focus Application.screens[0]
 
 # the first item is "system" that executes "system ext-menu", read its stdout,
 # shows it in a list for the user to choose, feeds the answer to stdin of the executed command
 # this ends when the command terminates (ie when EOF is send to stdout of the command)
 
-# second item is termulator
-
-# space as the first char -> bring up termulator
+# space as the first char -> bring up terminal
 
 # super+backspace or alt+escape -> close focused app's appspace
 
