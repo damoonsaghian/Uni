@@ -17,7 +17,7 @@ dinit --services-dir /var/lib/dinit/user --services-dir /usr/share/dinit/user
 
 start_cli() {
 	# ask:
-	# , auto repair (if no internet and no LAN, setup network; upm update; also if not on tty1, restart tty1)
+	# , auto repair (if no internet and no LAN, setup network; upm update; restart tty1)
 	# , backup
 	# , copy projects
 	# , terminal: ask user for lockscreen password, and exit if wrong
@@ -28,7 +28,7 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	USHELL_DIR="$script_dir" exec sway -c "$script_dir/sway.conf" || start_cli
+	USHELL_DIR="$script_dir" sway -c "$script_dir/sway.conf" || start_cli
 else
 	start_cli
 fi

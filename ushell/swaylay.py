@@ -5,7 +5,18 @@
 # when a request is received from dbus, create an empty window, with app_id swaydim
 # it will be closed the moment it's focused
 
-# elogind inhibitor interface
+# when a request is received from dbus, create a blury fullscreen layer showing a 10 seconds countdown
+# upon any input activity, close the layer
+# after 10 seconds:
+# , swaymsg 'mode lock; workspace lock'
+# , show password layer, with a transparent window, the size of the screen
+# password layer:
+# , after 60 seconds of inactivity: swaymsg "output * power off"
+# , and after that, when there is an input activity: swaymsg "output * power on"
+# , password layer can be closed by pressing escape, or clicking outside of entry box
+# , when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
+
+# https://www.freedesktop.org/wiki/Software/systemd/inhibit/
 
 # run uni.desktop
 
