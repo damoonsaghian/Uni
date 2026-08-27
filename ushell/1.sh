@@ -28,7 +28,7 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	USHELL_DIR="$script_dir" sway -c "$script_dir/sway.conf" || start_cli
+	python "$script_dir/2.py" || start_cli
 else
 	start_cli
 fi

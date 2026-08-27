@@ -1,6 +1,11 @@
+# if in lock workspace, show password prompt instead
+
+# Launcher is a floating layer containing a list of apps
 # three buttons at top
-# left: press ' for super prompt
+# left: press ' or ; for super prompt
 # right (selected by default): system menu
+
+# right click (hold) on app entries -> show close button on open app icons, plus a close all button
 
 # entries will be selected by pressing either "space" or "enter"
 
@@ -13,28 +18,16 @@
 # 	$app_command
 # }
 
-# keybinding to show the launcher
-# release Super_L or Super_R
-# Alt+tab
-# swipe up from bottom touchscreen edge (center and left)
+# terminal
 
-# the first item is "system" that executes "system ext-menu", read its stdout,
-# shows it in a list for the user to choose, feeds the answer to stdin of the executed command
-# this ends when the command terminates (ie when EOF is send to stdout of the command)
-
-# space as the first char -> bring up terminal
-
-# super+backspace or alt+escape -> close focused app's appspace
+# backspace or delete -> close selected app's appspace
 
 # an item for screenshot and screencast
 # put in clipboard
 # grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
 
+# press escape or click/tap outside of launcher: close launcher
 # don't close launcher, if workspace is empty
-
-# escape: close launcher
-
-# Launcher is a floating layer containing a list of apps
 
 #search entry on:
 # searchchanged
@@ -116,8 +109,3 @@
 # 	index = selected_child.get_index()
 # 	self.selected_item = self.apps_list.get_item(index)
 # 	self.on_activate()
-
-# https://qalculate.github.io/
-# libqalculate-progs
-
-# https://python-weather.readthedocs.io/en/latest/

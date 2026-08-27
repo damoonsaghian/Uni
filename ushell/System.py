@@ -4,14 +4,23 @@
 # packages: install, remove, update, make a new system)
 # backup
 
-# before shutdown/suspend: run "fstrim <mount-point>" for devices supporting unqueued trim
+# before shutdown/suspend run "fstrim <mount-point>" for devices supporting unqueued trim
 # [ "$(cat /sys/block/"$device"/queue/discard_granularity)" -gt 0 ] &&
 # [ "$(cat /sys/block/"$device"/queue/discard_max_bytes)" -lt 2147483648 ] &&
+# https://systemd.io/INHIBITOR_LOCKS/
 
 # if "inhibit suspend" is active, or there is high network activity, and a shutdown is requested,
 # 	lock the session, notice the user, and ask to confirm
 # wait for the inhibition and network activity to end, then do shutdown/restart/suspend
 # https://systemd.io/INHIBITOR_LOCKS/
+
+# screens
+# if there are multiple screens, shows a list of the extra screens
+# after selecting one, there would be the list of screens windows, plus the currently focused floating window
+# by pressing space the state of window entry will be toggled
+# window states (appid and title) are stored in ~/.config/ushell/screens
+# window entries can be moved between screens
+# to delete an entry, press delete
 
 # https://networkmanager.dev/docs/
 # https://networkmanager.dev/docs/api/latest/nmcli.html
@@ -76,13 +85,10 @@ manage_session() {
 	selected_entry="$(menu "lock\nsuspend\nexit\nreboot\npoweroff")"
 	case "$selected_entry" in
 	lock) ;;
-	exit) ;;
-	reboot) doas dinit-reboot ;;
-	poweroff) doas dinit-poweroff ;;
-	suspend)
-		# if swap file's size is not enough, ask for increase
-		# first lock then
-		doas zzz ;;
+	exit) swaymsg exit;;
+	reboot) loginctl reboot ;;
+	poweroff) loginctl poweroff ;;
+	suspend) loginctl suspend ;;
 	esac
 }
 

@@ -1,35 +1,21 @@
-# click on system status -> open system menu
-# click anywhere else on the panel -> launcher
-# right click any where on the panel:
-# , a menu showing appspaces (emphesising the current one)
-# , close buttun for each, plus a close all button
+# https://github.com/wmww/gtk4-layer-shell
 
-# when mouse touches bottom edge or when swipe from bottom edge, make the bar visible
-# when mouse leaves bar, if fullscreen, hide bar
+# click (swipe up from bottom edge) anywhere on the panel -> launcher
+# right click (tap and hold) any where on the panel -> close and cancel buttons
+
+# when fullscreen:
+# if mouse touches bottom edge, or when swipe from bottom edge, bring up the bar
+# after mouse leaves the bar, hide it
 
 # at the left show app notifications
 # temporary show the message on the bar
-# after that just show app icon and number (if there are more than one notification)
-
-# monitor "/tmp/upm-status"
-# if it's content is "error", show package manager error indicator
-# if it's content is "reboot", show package manager "reboot" indicator
-
-# https://github.com/wmww/gtk4-layer-shell
+# after that just show app icon and the number of notifications (if there are more than one)
 
 # https://gitlab.gnome.org/GNOME/gnome-usage
 
 # https://github.com/ErikReider/SwayNotificationCenter
 
-# esge swipe gestures
-# https://git.sr.ht/~mil/lisgd
-
 # https://wiki.archlinux.org/title/Laptop
-
-# system upgrade indicator: show icon when in'progress, add ! to the icon when failed
-# https://github.com/enkore/i3pystatus/wiki/Restart-reminder
-# show the restart reminder also when systemd is upgraded
-# when sway is upgraded show relogin reminder
 
 # battery: if exist, show icon
 # https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/system.js
