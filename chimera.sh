@@ -40,11 +40,11 @@ x86*)
 esac
 
 chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-kernel base-full-firmware \
-	base-full-core acpid chrony nyagetty util-linux-dmesg util-linux-zramctl \
+	base-full-core chrony nyagetty util-linux-dmesg util-linux-zramctl \
 	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
 	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd chimera-repo-user \
-	sway libseat-seatd gtk4-layer-shell fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
+	python-pip gtk4-layer-shell fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
 	libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4 vte-gtk4 \
 	python-gobject libtorrent-rasterbar-python
 
@@ -70,7 +70,6 @@ chimera-chroot "$new_root" dinitctl enable zram-swap
 
 chimera-chroot "$new_root" dinitctl enable networkmanager
 chimera-chroot "$new_root" dinitctl enable bluetoothd
-chimera-chroot "$new_root" dinitctl enable seatd
 
 echo -n '[main]
 auth-polkit=false
@@ -96,7 +95,7 @@ while ! chimera-chroot "$new_root" passwd; do
 done
 
 # create normal user
-chimera-chroot "$new_root" useradd --groups audio,video,seatd --base-dir / --create-home --shell /usr/local/bin/ushell nu
+chimera-chroot "$new_root" useradd --base-dir / --create-home --shell /usr/local/bin/ushell nu
 echo; echo "set lock'screen password"
 while ! chroot "$new_root" passwd nu; do
 	echo "please retry"
@@ -146,7 +145,7 @@ mkdir -p "$new_root"/usr/local/share/applications
 echo '[Desktop Entry]
 Name=Uni
 Icon=uni
-exec=python3 /usr/local/share/uni/1.py
+exec=python /usr/local/share/uni/1.py
 StartupNotify=true
 Type=Application
 ' > "$new_root"/usr/local/share/applications/uni.desktop
