@@ -1,5 +1,7 @@
 # if in lock workspace, show password prompt instead
 
+# SWAYSOCK="" for launching any program
+
 # Launcher is a floating layer containing a list of apps
 # three buttons at top
 # left: press ' or ; for super prompt

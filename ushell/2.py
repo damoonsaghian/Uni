@@ -1,3 +1,7 @@
+# https://mutter.gnome.org/meta/
+# bar and launcher are wayland clients with META_LAYER_DOCK:
+# https://mutter.gnome.org/meta/enum.StackLayer.html
+
 # after 600 seconds show a 10 sec countdown layer which will be closed on any input activity
 # when counter reaches 0, go to lock workspace and show the password layer
 # the password layer has a 60 sec idle timer that will turn the screen off
