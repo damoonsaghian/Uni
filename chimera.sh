@@ -44,7 +44,7 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
 	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd chimera-repo-user \
-	python-pip gtk4-layer-shell fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
+	mutter fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
 	libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4 vte-gtk4 \
 	python-gobject libtorrent-rasterbar-python
 
