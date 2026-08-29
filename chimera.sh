@@ -43,8 +43,8 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	base-full-core chrony nyagetty util-linux-dmesg util-linux-zramctl \
 	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
 	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
-	base-full-session pipewire bash-completion less nano opendoas fwupd chimera-repo-user \
-	mutter fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk \
+	base-full-session pipewire bash-completion less nano opendoas fwupd \
+	mutter fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
 	libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4 vte-gtk4 \
 	python-gobject libtorrent-rasterbar-python
 
@@ -74,6 +74,8 @@ chimera-chroot "$new_root" dinitctl enable bluetoothd
 echo -n '[main]
 auth-polkit=false
 ' > "$new_root"/etc/NetworkManager/conf.d/any-user.conf
+
+ln -s /usr/bin/doas "$new_root"/usr/local/bin/sudo
 
 # upm wrapper around apk
 cat <<-'EOF' > "$new_root"/usr/local/bin/upm
@@ -135,8 +137,6 @@ chmod 755 "$new_root"/usr/local/share/ushell/tz-guess.sh
 ln -s /usr/local/share/ushell/tz-guess.sh "$new_root"/etc/NetworkManager/dispatcher.d/09-tz-guess
 
 cp -r "$script_dir"/uni "$new_root"/usr/local/share/
-chmod +x "$new_root"/usr/local/share/uni/1.py
-ln -s /usr/local/share/uni/1.py "$new_root"/usr/local/bin/uni
 chmod +x "$new_root"/usr/local/share/uni/usm.sh
 ln -s /usr/local/share/uni/usm.sh "$new_root"/usr/local/bin/usm
 echo 'permit nopass nu cmd /usr/local/bin/usm' > "$new_root"/etc/doas.d/usm.conf
