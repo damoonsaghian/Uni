@@ -24,7 +24,10 @@ start_cli() {
 	# , exit
 	# , poweroff
 	
-	exec bash-sec -l
+	while ! su "$USER" -c true || exec bash-sec -l; do
+		echo "please retry"
+	done
+	
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
