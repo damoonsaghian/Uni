@@ -45,8 +45,8 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
 	mutter fcitx5 fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	libadwaita gtksourceview gst-plugins-good gst-plugins-rs gst-libav poppler-glib-libs webkitgtk4 vte-gtk4 \
-	python-gobject libtorrent-rasterbar-python
+	libadwaita gtksourceview libspelling gst-plugins-good gst-plugins-rs gst-libav libspiel \
+	poppler-glib-libs webkitgtk4 vte-gtk4 python-gobject libtorrent-rasterbar-python
 
 chimera-chroot "$new_root" update-initramfs -c -k all
 chimera-chroot "$new_root" bootctl install
