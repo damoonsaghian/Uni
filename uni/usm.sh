@@ -3,6 +3,9 @@
 # unified storage manager
 # mounting and formatting storage devices
 
+# inhibit suspend/shutdown during operations
+# https://systemd.io/INHIBITOR_LOCKS/
+
 usage_error() {
 	echo "usage:"
 	echo "	usm mount <dev-name> <target-dir>"
