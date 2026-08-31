@@ -6,11 +6,11 @@ applications will be opened in their own workspace
 	any extra windows opened by the application, will be shown in a modal floating window
 to close a window, press "super+backspace" or "alt+escape"
 
-pressing "apostrophe" or "semicolon" in application launcher, activates super prompt
+in application launcher the first item (selected by default) is "super prompt"
 by typing special keywords in the super prompt, you have a fast access to various small but useful things like:
 	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
 
-in application launcher the item selected by default is the system menu
+right after opening the application launcher, press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
 , screens
 , connections

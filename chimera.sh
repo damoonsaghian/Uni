@@ -44,9 +44,10 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
 	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
-	mutter fcitx5 fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	libadwaita gtksourceview libspelling gst-plugins-good gst-plugins-rs gst-libav libspiel \
-	poppler-glib-libs webkitgtk4 vte-gtk4 python-gobject libtorrent-rasterbar-python
+	fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
+	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 python-gobject \
+	libadwaita gtksourceview libspelling libspiel gst-plugins-good gst-plugins-rs gst-libav \
+	poppler-glib-libs webkitgtk4 libtorrent-rasterbar-python
 
 chimera-chroot "$new_root" update-initramfs -c -k all
 chimera-chroot "$new_root" bootctl install
@@ -113,6 +114,7 @@ echo '#!/usr/bin/env sh
 if [ "$1" = "-l" ]; then
 	/usr/bin/bash --rcfile /etc/profile
 else
+	# bwrap
 	/usr/bin/bash --rcfile /usr/share/bash/bashrc
 fi
 ' > "$new_root"/usr/local/bin/bash-sec
