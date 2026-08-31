@@ -1,15 +1,19 @@
 # if in lock workspace, show password prompt instead
 
-# SWAYSOCK="" for launching any program
+# run apps in bwrapp, to protect sockets of sway and wayland
+# https://niri-wm.github.io/niri/Security-Model.html
+# wayland security context
 
 # Launcher is a floating layer containing a list of apps
 # three buttons at top
-# left: press ' or ; for super prompt
-# right (selected by default): system menu
+# left: super prompt (selected by default)
+# center: terminal views (press ';,.)
+# right: system menu (press enter)
 
 # right click (hold) on app entries -> show close button on open app icons, plus a close all button
+# backspace or delete -> close selected app's appspace
 
-# entries will be selected by pressing either "space" or "enter"
+# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
 
 # apps will open in separate desktops
 # extra windows will be modal popups with border shadow, and will be closed when clicked outside
@@ -20,16 +24,15 @@
 # 	$app_command
 # }
 
-# terminal
-
-# backspace or delete -> close selected app's appspace
-
 # an item for screenshot and screencast
 # put in clipboard
 # grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
 
 # press escape or click/tap outside of launcher: close launcher
 # don't close launcher, if workspace is empty
+
+# https://github.com/otsaloma/catapult
+# https://github.com/abenz1267/walker
 
 #search entry on:
 # searchchanged

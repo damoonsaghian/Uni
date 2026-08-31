@@ -1,5 +1,3 @@
-# https://github.com/wmww/gtk4-layer-shell
-
 # click (swipe up from bottom edge) anywhere on the panel -> launcher
 # right click (tap and hold) any where on the panel -> close and cancel buttons
 
@@ -10,14 +8,14 @@
 # at the left show app notifications
 # temporary show the message on the bar
 # after that just show app icon and the number of notifications (if there are more than one)
+# https://specifications.freedesktop.org/notification/latest/protocol.html
+# https://github.com/halhen/statnot
+# https://github.com/mk-fg/notification-thing
 
 # https://gitlab.gnome.org/GNOME/gnome-usage
 
-# https://github.com/ErikReider/SwayNotificationCenter
-
+# # battery: if exist, show icon
 # https://wiki.archlinux.org/title/Laptop
-
-# battery: if exist, show icon
 # https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/system.js
 # https://github.com/ultrabug/py3status/blob/master/py3status/modules/battery_level.py
 # https://www.kernel.org/doc/html/latest/power/power_supply_class.html

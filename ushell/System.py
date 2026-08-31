@@ -341,5 +341,5 @@ if [ -f /tmp/fwupdmgr-status ] || {
 	[ "$ans" = y ] && fwupdmgr update
 fi
 
-screenshot and screencast
-when finished, cut the file to clipboard
+# screenshot and screencast
+# when finished, cut the file to clipboard

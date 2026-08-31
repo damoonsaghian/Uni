@@ -1,11 +1,13 @@
 # create a blury fullscreen layer showing a 10 seconds countdown
-# upon any input activity, close the layer
+# upon any input activity, or when unfocused, close the layer
 # after 10 seconds:
-# , swaymsg 'mode lock; workspace lock'
+# , swaymsg 'workspace lock'
 # , show password layer, with a transparent window, the size of the screen
 # password layer can be closed by pressing escape, or clicking outside of the entry box
 # when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
 # if correct password is entered (check using su): close password layer, swaymsg workspace lock
+# the password layer has a 60 sec idle timer that will turn the screen off: swaymsg "output * power off"
+# 	apon any input activity, or if unfocused, or resume from suspend: swaymsg "output * power on"
 
 # lock
 # switch to workspace lock, and if workspace is empty, run: uni lock
