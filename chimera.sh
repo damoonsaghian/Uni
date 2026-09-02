@@ -109,16 +109,7 @@ echo 'permit nu cmd /usr/bin/passwd nu' > "$new_root"/etc/doas.d/passwd.conf
 echo 'GETTY_ARGS="$GETTY_ARGS --autologin nu"' > "$new_root"/etc/default/agetty-tty1
 cp "$new_root"/etc/default/agetty-tty1 "$new_root"/etc/default/agetty-tty2
 
-echo '#!/usr/bin/env sh
-# bash secured by not running bashrc and profile in home directory
-if [ "$1" = "-l" ]; then
-	/usr/bin/bash --rcfile /etc/profile
-else
-	# bwrap
-	/usr/bin/bash --rcfile /usr/share/bash/bashrc
-fi
-' > "$new_root"/usr/local/bin/bash-sec
-chmod +x "$new_root"/usr/local/bin/bash-sec
+ln -s /usr/share/base-files/profile "$new_root"/usr/share/bash/profile
 
 cat <<-'EOF' > "$new_root"/etc/bash/bashrc.d/prompt.sh
 PS1='\[$(
