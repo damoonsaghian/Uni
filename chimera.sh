@@ -42,10 +42,10 @@ esac
 chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-kernel base-full-firmware \
 	base-full-core chrony nyagetty util-linux-dmesg util-linux-zramctl \
 	util-linux-fdisk util-linux-fstrim util-linux-mkfs btrfs-progs dosfstools exfatprogs \
-	bluez networkmanager modemmanager iputils dnsmasq geoclue iio-sensor-proxy-meta \
+	bluez networkmanager modemmanager iputils dnsmasq geoclue geocode-glib libgweather iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
 	fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 python-gobject \
+	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
 	libadwaita gtksourceview libspelling libspiel gst-plugins-good gst-plugins-rs gst-libav \
 	poppler-glib-libs webkitgtk4 libtorrent-rasterbar-python
 
@@ -109,7 +109,15 @@ echo 'permit nu cmd /usr/bin/passwd nu' > "$new_root"/etc/doas.d/passwd.conf
 echo 'GETTY_ARGS="$GETTY_ARGS --autologin nu"' > "$new_root"/etc/default/agetty-tty1
 cp "$new_root"/etc/default/agetty-tty1 "$new_root"/etc/default/agetty-tty2
 
-ln -s /usr/share/base-files/profile "$new_root"/usr/share/bash/profile
+echo '#!/usr/bin/env sh
+# bash secured by not running ~/.profile and ~/.bashrc
+if [ "$1" = "-l" ]; then
+	/usr/bin/bash --rcfile /usr/share/bash/profile
+else
+	/usr/bin/bash --rcfile /usr/share/bash/bashrc
+fi
+' > "$new_root"/usr/local/bin/bash-sec
+chmod +x "$new_root"/usr/local/bin/bash-sec
 
 cat <<-'EOF' > "$new_root"/etc/bash/bashrc.d/prompt.sh
 PS1='\[$(
@@ -126,8 +134,6 @@ script_dir="$(dirname "$(readlink -f "$0")")"
 cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/ushell/1.sh
 ln -s /usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
-chmod 755 "$new_root"/usr/local/share/ushell/tz-guess.sh
-ln -s /usr/local/share/ushell/tz-guess.sh "$new_root"/etc/NetworkManager/dispatcher.d/09-tz-guess
 
 cp -r "$script_dir"/uni "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/uni/usm.sh
