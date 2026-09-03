@@ -5,8 +5,8 @@ script_dir="$(dirname "$(readlink -f "$0")")"
 umask 022
 
 export TZ="$HOME/.config/tz"
-export PATH="/usr/local/bin:/usr/bin"
-export SHELL="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
+export PATH="/usr/local/bin:/usr/bin:/$HOME/.local/bin"
+export SHELL="bwrap --unshare-user bash-sec"
 
 export XDG_RUNTIME_DIR="/run/user/$(id -u)"
 export DBUS_SESSION_BUS_ADDRESS="unix:path=$XDG_RUNTIME_DIR/bus"
@@ -26,7 +26,7 @@ start_cli() {
 		printf 'choose one by typing its name: '
 		read ans
 		case "$ans" in
-		term) su -c true "$USER" || exec /usr/bin/bash --rcfile /usr/share/bash/profile ;;
+		term) su -c true "$USER" || exec bash-sec -l ;;
 		exit) exit ;;
 		poweroff) poweroff ;;
 		esac
@@ -34,7 +34,7 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	PATH="$PATH:/$HOME/.local/bin" USHELL_DIR="$script_dir" sway -c "$script_dir"/sway.conf || start_cli
+	USHELL_DIR="$script_dir" sway -c "$script_dir"/sway.conf || start_cli
 else
 	start_cli
 fi

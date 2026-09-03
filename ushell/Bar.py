@@ -184,6 +184,17 @@ with open('/proc/meminfo') as mem_info_file:
 # monitor "$TZ" file and modemmanager timezone
 # when one is changed check if they don't match, show the set timezone beside time
 # https://www.freedesktop.org/software/ModemManager/doc/latest/ModemManager/gdbus-org.freedesktop.ModemManager1.Modem.Time.html#gdbus-property-org-freedesktop-ModemManager1-Modem-Time.NetworkTimezone
+#
+# get current location from GeoClue
+# 	https://www.freedesktop.org/software/geoclue/docs/gdbus-org.freedesktop.GeoClue2.Location.html
+# get timezone from location
+# 	https://lazka.github.io/pgi-docs/GeocodeGlib-2.0/index.html
+# if [ -e "$HOME/.config/tz" ]; then
+# 	doas -u nu ln -s "$tzdata_path/$continent/$city" /nu/.cache/system/tz-guess
+# else
+# 	doas -u nu ln -s "$tzdata_path/$continent/$city" /nu/.config/tz
+# fi
+# waits for the location updated signal from GeoClue, then repeat
 
 # https://invent.kde.org/utilities/kpublicalerts
 
