@@ -21,6 +21,8 @@
 # projects on VFAT/exFAT formated devices, or remote devices, will be opened as read'only
 # when you try to edit them, you will be asked to copy them into a local device
 
+# sticky scroll in treeview
+
 # DirList
 # new(rootDirs: [String])
 # moveUp

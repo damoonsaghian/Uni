@@ -13,6 +13,12 @@
 # each line will be given a negative indent equal to (-0.5 - number'of'tabs'at'start) * size'of'tab'in'pixels
 # https://api.pygobject.gnome.org/Gtk-4.0/class-TextTag.html#gi.repository.Gtk.TextTag.props.indent
 
+# at the end of wrapped lines, draw an indicator
+# https://docs.gtk.org/gtk4/struct.TextIter.html
+# https://docs.gtk.org/gtk4/method.TextIter.forward_visible_line.html
+# https://docs.gtk.org/gtk4/method.TextIter.starts_line.html
+# https://docs.gtk.org/gtk4/vfunc.TextView.snapshot_layer.html
+
 # clipboard handling for text, image, and "text/uri-list"
 # for the latter, hard'link the files into the ".data" directory, ask for a name, and insert the path
 
