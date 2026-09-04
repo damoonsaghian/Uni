@@ -109,16 +109,6 @@ echo 'permit nu cmd /usr/bin/passwd nu' > "$new_root"/etc/doas.d/passwd.conf
 echo 'GETTY_ARGS="$GETTY_ARGS --autologin nu"' > "$new_root"/etc/default/agetty-tty1
 cp "$new_root"/etc/default/agetty-tty1 "$new_root"/etc/default/agetty-tty2
 
-echo '#!/usr/bin/env sh
-# bash secured by not running ~/.profile and ~/.bashrc
-if [ "$1" = "-l" ]; then
-	/usr/bin/bash --rcfile /usr/share/bash/profile
-else
-	/usr/bin/bash --rcfile /usr/share/bash/bashrc
-fi
-' > "$new_root"/usr/local/bin/bash-sec
-chmod +x "$new_root"/usr/local/bin/bash-sec
-
 cat <<-'EOF' > "$new_root"/etc/bash/bashrc.d/prompt.sh
 PS1='\[$(
 IFS="[;" read -p $"\e[6n" -d R -rs _ _ line _
@@ -134,6 +124,8 @@ script_dir="$(dirname "$(readlink -f "$0")")"
 cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/ushell/1.sh
 ln -s /usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
+chmod +x "$new_root"/usr/local/share/ushell/swayrun.sh
+ln -s /usr/local/share/ushell/swayrun.sh "$new_root"/usr/local/bin/swayrun
 
 cp -r "$script_dir"/uni "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/uni/usm.sh
