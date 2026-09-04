@@ -34,9 +34,3 @@
 # ctrl+space -> root terminal
 # ask for root password, check with "su -c true", unlock the view
 # 	if there is no terminal view, use the password to run "doas bash"
-# running programs as root in Ushell does not suffer from these flaws:
-# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
-# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
-# because Ushell runs all programs in a bubblewrap sandbox
-# the sockets of sway and wayland remain protected
-# so a malicious program can't steal root password (eg by faking password entry)

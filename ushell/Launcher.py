@@ -1,8 +1,6 @@
 # if in lock workspace, show password prompt instead
 
-# run apps in bwrapp, to protect sockets of sway and wayland
-# https://niri-wm.github.io/niri/Security-Model.html
-# wayland security context
+# ["swayrun", app_exec]
 
 # Launcher is a floating layer containing a list of apps
 # three buttons at top
