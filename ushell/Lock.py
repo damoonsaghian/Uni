@@ -6,8 +6,10 @@
 # password layer can be closed by pressing escape, or clicking outside of the entry box
 # when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
 # if correct password is entered (check using su): close password layer, swaymsg workspace lock
-# the password layer has a 60 sec idle timer that will turn the screen off: swaymsg "output * power off"
-# 	apon any input activity, or if unfocused, or resume from suspend: swaymsg "output * power on"
+# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off and touch:
+# 	swaymsg "output * power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch; mode screen_off"
+# upon any input activity, or if unfocused, or resume from suspend:
+# 	swaymsg "output * power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
 
 # lock
 # switch to workspace lock, and if workspace is empty, run: uni lock
@@ -42,3 +44,8 @@
 # 	https://docs.kernel.org/power/pm_qos_interface.html
 #
 # lock before suspend: https://systemd.io/INHIBITOR_LOCKS/
+
+# on touch screen:
+# , if an unlock pattern is set, show pattern unlocking
+# , otherwise ask for password, and if no keyboard is connected, show virtual keyboard,
+# 	and after the password is entered correctly, ask user to set a pattern

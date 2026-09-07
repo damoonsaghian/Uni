@@ -18,6 +18,8 @@
 # if there are multiple screens, shows a list of the extra screens
 # after selecting one, there would be the list of screens windows, plus the currently focused floating window
 # by pressing space the state of window entry will be toggled
+# when window is added to an empty screen, turn it on
+# when window is removed, if workspace is empty, turn the screen off
 # window states (appid and title) are stored in ~/.config/ushell/screens
 # window entries can be moved between screens
 # to delete an entry, press delete

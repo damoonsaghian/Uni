@@ -9,13 +9,15 @@
 
 # when screens are added/removed:
 # , take the list of workspaces (using swaymsg)
-# , move the first none numeric workspace to the first output
+# , move the first none numeric workspace to the first output (and turn it on)
 # , move workspace 2 ... to output 2 ...
 # this way, the first monitor will always remains the main monitor, even after reconnecting
 # https://docs.gtk.org/gdk4/method.Display.get_monitors.html
 # https://docs.gtk.org/gdk4/class.Monitor.html
 # https://docs.gtk.org/gdk4/method.Monitor.get_connector.html
 # https://github.com/tamirzb/qkdisplays
+
+# turn off empty outputs (except the primary one)
 
 # https://www.freedesktop.org/wiki/Software/systemd/inhibit/
 
