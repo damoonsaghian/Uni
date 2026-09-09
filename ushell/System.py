@@ -73,6 +73,9 @@
 #
 # backup through gnunet F2F
 # there is a timer that automatically syncs project groups, through this F2F network
+# if there are more than two devices, the whole data is distributed such that if one device fails,
+# 	the others contain the whole data
+# if a device is removed, and the remaining ones can't hold at least two copies, show a warning
 
 if [ -z "$1" ];then
 	menu() {
