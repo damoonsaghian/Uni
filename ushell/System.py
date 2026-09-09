@@ -41,6 +41,12 @@
 # 	https://wiki.archlinux.org/title/NetworkManager#Sharing_internet_connection_over_Wi-Fi
 # nmcli connection add wifi-p2p
 
+# power saving:
+# rfkill wwan when wifi is connected; reenable it when wifi is disconnected
+# rfkill wifi and wwan, when lan is connected; reenable them when lan is disconnected
+# i think adjusting cpufreq gpu pcie nvme/sata/usb power for laptops, is the job of the hardware itself, not the OS
+# 	the config for that, can be provided by the bios
+
 # home dir backup is done on a LUKS encrypted BTRFS formated device
 # use the luks header of root device
 # luksHeaderBackup <device> --header-backup-file <file>
