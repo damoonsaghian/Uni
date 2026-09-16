@@ -12,5 +12,7 @@ program="$@"
 [ -z "$program" ] && program="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
 
 bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
+	--bind /dev/null "$HOME/.config/ushell/screens" \
+	--bind /dev/null "$HOME/.config/ushell/autostart" \
 	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
 	-- $program

@@ -20,7 +20,8 @@
 # by pressing space the state of window entry will be toggled
 # when window is added to an empty screen, turn it on
 # when window is removed, if workspace is empty, turn the screen off
-# window states (appid and title) are stored in ~/.config/ushell/screens
+# window states are stored in ~/.config/ushell/screens: [app_id=$app_id title=$title] move workspace $index
+# and the corresponding commands in ~/.config/ushell/autostart
 # window entries can be moved between screens
 # to delete an entry, press delete
 
@@ -46,6 +47,7 @@
 # rfkill wifi and wwan, when lan is connected; reenable them when lan is disconnected
 # i think adjusting cpufreq gpu pcie nvme/sata/usb power for laptops, is the job of the hardware itself, not the OS
 # 	the config for that, can be provided by the bios
+# 	https://wiki.archlinux.org/title/Power_management
 
 # home dir backup is done on a LUKS encrypted BTRFS formated device
 # use the luks header of root device

@@ -24,6 +24,8 @@
 # 	# /sys/class/power_supply/BAT0/status
 # 	# https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power
 # fi
+# https://pkgs.chimera-linux.org/package/current/main/x86_64/upower
+# https://upower.freedesktop.org/docs/
 
 # graph
 # https://doc.qt.io/qt-6/qtgraphs-index.html

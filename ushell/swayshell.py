@@ -1,11 +1,14 @@
 # https://github.com/wmww/gtk4-layer-shell
 
-# when a request is received from dbus, show the launcher
-
-# when a request is received from dbus, create an empty window, with app_id swaydim
-# it will be closed the moment it's focused
-
-# when a request is received from dbus, lock
+# register dbus connection at ushell.SwayShell with object /ushell/SwayShell implementing interface ushell.SwayShell
+#
+# when a "Launcher" message is received from dbus, show the launcher
+#
+# when a "Dim" message is received from dbus, create an empty window, with app_id swaydim
+# when it's focused, first executes "swaymsg [workspace=__focused__ floating] kill", the closes itself
+#
+# when a "Lock" message is received from dbus, lock
+# when a "LockBattery" message is received from dbus, lock if on battery
 
 # when screens are added/removed:
 # , take the list of workspaces (using swaymsg)
@@ -40,3 +43,5 @@
 # https://project-spiel.org/
 
 # run uni.desktop
+
+# [ -e ~/.config/ushell/autostart ] && sh ~/.config/ushell/autostart
