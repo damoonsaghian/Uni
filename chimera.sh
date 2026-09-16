@@ -135,10 +135,11 @@ echo 'permit nopass nu cmd /usr/local/bin/usm' > "$new_root"/etc/doas.d/usm.conf
 mkdir -p "$new_root"/usr/local/share/applications
 echo '[Desktop Entry]
 Name=Uni
+Exec=python /usr/local/share/uni/1.py
 Icon=uni
-exec=python /usr/local/share/uni/1.py
 StartupNotify=true
 Type=Application
+Categories=Development;
 ' > "$new_root"/usr/local/share/applications/uni.desktop
 mkdir -p "$new_root"/usr/local/share/icons/hicolor/scalable/apps
 cp "$script_dir"/.data/icon.svg "$new_root"/usr/local/share/icons/hicolor/scalable/apps/uni.svg
