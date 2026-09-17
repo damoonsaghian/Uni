@@ -15,6 +15,8 @@
 # if first arg is "locked": read'only view, communicate with emergency accounts
 
 # use lines on borders of scrolled widgets to show the amount of overflowed content
+# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/css-variables.html
+# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/style-classes.html
 
 # translator
 # https://github.com/dialect-app/dialect/
