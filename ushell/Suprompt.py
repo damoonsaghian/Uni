@@ -1,3 +1,5 @@
+# https://github.com/heidefinnischen/cuneo
+
 # https://qalculate.github.io/
 # libqalculate-progs
 

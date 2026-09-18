@@ -14,12 +14,12 @@ from Bar import Bar
 from Launcher import Launcher
 
 def on_activate(app):
-	Bar()
-	Launcher()
+	Bar(app)
+	Launcher(app)
 
 app = Gtk.Application(application_id='ushell.SwayShell')
 app.connect('activate', on_activate)
-app.run(None)
+app.run()
 
 # register dbus connection at ushell.SwayShell with object /ushell/SwayShell implementing interface ushell.SwayShell
 #

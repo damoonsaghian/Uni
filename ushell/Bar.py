@@ -2,7 +2,7 @@ from gi.repository import GLib, Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
 class Bar:
-	def __init__(self):
+	def __init__(self, app):
 		window = Gtk.Window(application=app)
 		window.set_default_size(-1, 20)
 		
