@@ -1,6 +1,8 @@
 # https://github.com/blissd/fotema
 
 # https://gitlab.gnome.org/GNOME/gnome-music
+# https://github.com/Jeffser/Nocturne
+# https://github.com/SoongNoonien/plattenalbum
 # https://gitlab.gnome.org/GNOME/decibels
 
 # thumnails
