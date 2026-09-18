@@ -20,3 +20,5 @@
 
 # translator
 # https://github.com/dialect-app/dialect/
+
+# https://github.com/valpackett/awesome-gtk
