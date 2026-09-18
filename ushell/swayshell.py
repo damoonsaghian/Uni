@@ -1,4 +1,25 @@
-# https://github.com/wmww/gtk4-layer-shell
+# for GTK4 Layer Shell to get linked before libwayland-client, we must explicitly load it before importing with gi
+from ctypes import CDLL
+CDLL('libgtk4-layer-shell.so')
+
+import gi
+gi.require_version('DBus', '1.0')
+gi.require_version('Gtk', '4.0')
+gi.require_version('Gtk4LayerShell', '1.0')
+
+from gi.repository import Dbus, GLib, Gio, Gtk
+from gi.repository import Gtk4LayerShell as LayerShell
+
+from Bar import Bar
+from Launcher import Launcher
+
+def on_activate(app):
+	Bar()
+	Launcher()
+
+app = Gtk.Application(application_id='ushell.SwayShell')
+app.connect('activate', on_activate)
+app.run(None)
 
 # register dbus connection at ushell.SwayShell with object /ushell/SwayShell implementing interface ushell.SwayShell
 #
@@ -11,8 +32,9 @@
 # when a "LockBattery" message is received from dbus, lock if on battery
 
 # when screens are added/removed:
+# , move bar to first output: LayerShell.set_monitor(bar_gtkwindow, gdkmonitor)
 # , take the list of workspaces (using swaymsg)
-# , move the first none numeric workspace to the first output (and turn it on)
+# , move the first non'numeric workspace to the first output (and turn it on)
 # , move workspace 2 ... to output 2 ...
 # this way, the first monitor will always remains the main monitor, even after reconnecting
 # https://docs.gtk.org/gdk4/method.Display.get_monitors.html
@@ -44,4 +66,4 @@
 
 # run uni.desktop
 
-# [ -e ~/.config/ushell/autostart ] && sh ~/.config/ushell/autostart
+# [ -e "$HOME"/.config/ushell/autostart ] && sh "$HOME"/.config/ushell/autostart

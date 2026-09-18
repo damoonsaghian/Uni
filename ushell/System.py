@@ -22,6 +22,9 @@
 # when window is removed, if workspace is empty, turn the screen off
 # window states are stored in ~/.config/ushell/screens: [app_id=$app_id title=$title] move workspace $index
 # and the corresponding commands in ~/.config/ushell/autostart
+# 	find the pid of current window using "swaymsg -t get_tree"
+# 	https://man.archlinux.org/man/sway-ipc.7.en
+# 	find the correspoding command usig: ps -p $pid --no-headers -o args
 # window entries can be moved between screens
 # to delete an entry, press delete
 

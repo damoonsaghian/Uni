@@ -1,3 +1,22 @@
+from gi.repository import GLib, Gtk
+from gi.repository import Gtk4LayerShell as LayerShell
+
+class Launcher:
+	def __init__(self):
+		window = Gtk.Window(application=app)
+		window.set_default_size(294, 360)
+		
+		LayerShell.init_for_window(window)
+		LayerShell.set_layer(window, LayerShell.Layer.TOP)
+		LayerShell.set_anchor(window, LayerShell.Edge.BOTTOM, True)
+		LayerShell.set_margin(window, LayerShell.Edge.BOTTOM, 20)
+		LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.EXCLUSIVE)
+		
+		button = Gtk.Button(label='launcher')
+		button.connect('clicked', lambda x: window.close())
+		window.set_child(button)
+		window.present()
+
 # if in lock workspace, show password prompt instead
 
 # ["swayrun", app_exec]
@@ -28,6 +47,8 @@
 
 # press escape or click/tap outside of launcher: close launcher
 # don't close launcher, if workspace is empty
+
+# close window when unfocused
 
 # https://github.com/otsaloma/catapult
 # https://github.com/abenz1267/walker

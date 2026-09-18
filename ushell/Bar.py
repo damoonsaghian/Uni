@@ -1,3 +1,24 @@
+from gi.repository import GLib, Gtk
+from gi.repository import Gtk4LayerShell as LayerShell
+
+class Bar:
+	def __init__(self):
+		window = Gtk.Window(application=app)
+		window.set_default_size(-1, 20)
+		
+		LayerShell.init_for_window(window)
+		LayerShell.set_layer(window, LayerShell.Layer.TOP)
+		LayerShell.set_anchor(window, LayerShell.Edge.BOTTOM, True)
+		LayerShell.set_anchor(window, LayerShell.Edge.LEFT, True)
+		LayerShell.set_anchor(window, LayerShell.Edge.RIGHT, True)
+		LayerShell.auto_exclusive_zone_enable(window)
+		LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.NONE)
+		
+		button = Gtk.Button(label='bar')
+		button.connect('clicked', lambda x: window.close())
+		window.set_child(button)
+		window.present()
+
 # click (swipe up from bottom edge) anywhere on the panel -> launcher
 # right click (tap and hold) any where on the panel -> close and cancel buttons
 
