@@ -113,7 +113,7 @@ cat <<-'EOF' > "$new_root"/etc/bash/bashrc.d/prompt.sh
 PS1='\[$(
 IFS="[;" read -p $"\e[6n" -d R -rs _ _ line _
 [ "$line" = 1 ] || echo
-)\]\e[90m[\[${PWD}\]]\[$(printf "%0.s-" $(seq 1 $((COLUMNS - ${#PWD} - 2)) ))\]\e[0m\n'
+)\]\e[90m[\[${PWD}\]]\[$(printf "%0.s─" $(seq 1 $((COLUMNS - ${#PWD} - 2)) ))\]\e[0m\n'
 PS2=""
 PS0='\e[90m\[$(printf "%0.s-" $(seq 1 $((COLUMNS)) ))\]\e[0m\n'
 EOF
