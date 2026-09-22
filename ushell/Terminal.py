@@ -1,6 +1,11 @@
+import pathlib
+
 # terminal views are placed in a vertical stack, with the unfocused views, shrinked to a single line
 # to navigate between terminal views, use "ctrl+pageup" and "ctrl+pagedown" keys
 # to open a new terminal emulator view, press "ctrl+n"
+
+script_dir = pathlib.Path(__file__).resolve().parent
+# f'SHELL=sh "{str(script_dir)}"/swayrun.sh bash'
 
 # scroll up: Page_Up
 # scroll down: Page_Down

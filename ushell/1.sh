@@ -44,7 +44,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	# https://git.sr.ht/~gk/python-wayland
 	# 	https://python-wayland.org/wayland/wp_security_context_manager_v1/
 	
-	SHELL=swayrun USHELL_DIR="$script_dir" sway -c "$script_dir"/sway.conf || start_cli
+	USHELL_DIR="$script_dir" sway -c "$script_dir"/sway.conf || start_cli
 else
 	start_cli
 fi
