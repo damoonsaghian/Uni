@@ -123,8 +123,6 @@ script_dir="$(dirname "$(readlink -f "$0")")"
 cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/ushell/1.sh
 ln -s /usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
-chmod +x "$new_root"/usr/local/share/ushell/swayrun.sh
-ln -s /usr/local/share/ushell/swayrun.sh "$new_root"/usr/local/bin/swayrun
 
 cp -r "$script_dir"/uni "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/uni/usm.sh
