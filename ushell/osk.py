@@ -1,7 +1,7 @@
 from gi.repository import GLib, Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
-def setup_osk(self, app: Gtk.Application):
+def setup_osk(self, app :Gtk.Application):
 	window = Gtk.Window(application=app)
 	window.set_default_size(width=294, height=360)
 	

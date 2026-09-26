@@ -1,7 +1,7 @@
-from gi.repository import GLib, Gtk
+from gi.repository import Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
-def setup_launcher(self, app: Gtk.Application):
+def setup_launcher(app :Gtk.Application):
 	window = Gtk.Window(application=app)
 	window.set_default_size(width=294, height=360)
 	
@@ -11,19 +11,18 @@ def setup_launcher(self, app: Gtk.Application):
 	LayerShell.set_margin(window, LayerShell.Edge.BOTTOM, 20)
 	LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.EXCLUSIVE)
 	
-	button = Gtk.Button(label='launcher')
-	button.connect('clicked', lambda x: window.close())
-	window.set_child(button)
-	
-	dbus_con = app.get_dbus_connection()
-	# when a "Launcher" message is received from dbus, show the launcher
-	# window.present()
-	# if in lock workspace, show password prompt instead
+	# when a "Launcher" message is received from dbus, 
+	def launcher_or_unlocker():
+		# if in lock workspace, show password prompt
+		# otherwise, show the launcher: window.present()
+	app.get_dbus_connection().signal_subscribe(
+		None, "ushell.SwayShell", "Launcher", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, launcher_or_unlocker)
 	
 	# FlowBox containing apps
 	# https://github.com/otsaloma/catapult
 	# https://github.com/abenz1267/walker
 	scrolled_window = Gtk.ScrolledWindow()
+	scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 	window.set_child(scrolled_window)
 	flowbox = Gtk.FlowBox()
 	flowbox.set_margin_top(12)
@@ -35,6 +34,9 @@ def setup_launcher(self, app: Gtk.Application):
 	flowbox.set_selection_mode(Gtk.SelectionMode.NONE)
 	scrolled_window.set_child(flowbox)
 	# flowbox.insert(widget)
+	
+	# app entries
+	# flowbox.append(app_entry)
 	
 	# three buttons at top
 	# left: super prompt (selected by default)
@@ -49,6 +51,8 @@ def setup_launcher(self, app: Gtk.Application):
 	# don't close launcher, if workspace is empty
 	
 	# close window when unfocused
+
+	# when "Launcher" message is recsived from dbus, present window
 
 class AppEntry(Gtk.Widget):
 	pass
@@ -67,47 +71,29 @@ class AppEntry(Gtk.Widget):
 	
 	# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
 
-#search entry on:
-# searchchanged
-	if len(search_entry) == 0:
-		self.selected_item = self.apps_list.get_item(0)
-		flowbox_child = self.apps_flowbox.get_child_at_index(0)
-		if flowbox_child:
-			self.apps_flowbox.select_child(flowbox_child)
-		return
+class AppsList:
+	# self.selected_item = self.apps_list.get_item(0)
+	# flowbox_child = self.apps_flowbox.get_child_at_index(0)
+	# if flowbox_child:
+	# 	self.apps_flowbox.select_child(flowbox_child)
 	
-	search_pattern = search_entry.text.replace(" ", ".*")
-	i = 0
+	# re.compile(search_pattern).match(item.get_name()):
+	# self.selected_item = item
+	# flowbox_child = self.apps_flowbox.get_child_at_index(i)
+	# if flowbox_child: self.apps_flowbox.select_child(flowbox_child)
 	
-	while true:
-		item :Gio.AppInfo|None = self.apps_list.get_item(i)
-		if not item:
-			break
-		if re.compile(search_pattern).match(item.get_name()):
-			self.selected_item = item
-			flowbox_child = self.apps_flowbox.get_child_at_index(i)
-			if flowbox_child:
-				self.apps_flowbox.select_child(flowbox_child)
-			break
-		i+=1
-# activate
-	app_item = self.selected_item
-	
-	app_name = app_item.get_name()
-	subprocess.run([
-		'swaymsg',
-		f'[app_id=codev] move workspace {app_name}; workspace {app_name}' 
-	])
-	
-	if not subprocess.run(['swaymsg', '[floating] focus']):
-		subprocess.run(['swaymsg', 'exec ' + app_item.get_executable()])
-	
-	subprocess.run(['swaymsg', '[app_id=swapps] move scratchpad'])
-	
-	# if entry starts with a punctuation character, run it as a command
-# notify:has-focus: delete text
+	# app_item = self.selected_item
+	# app_name = app_item.get_name()
+	# subprocess.run([
+	# 	'swaymsg',
+	# 	f'[app_id=codev] move workspace {app_name}; workspace {app_name}' 
+	# ])
+	# if not subprocess.run(['swaymsg', '[floating] focus']):
+	# 	subprocess.run(['swaymsg', 'exec ' + app_item.get_executable()])
 
-# app list is a flowbox whose model is a list store that will be updated when .desktop files of apps changes
+	# notify:has-focus: select system
+
+	# app list is a flowbox whose model is a list store that will be updated when .desktop files of apps changes
 	def compare_apps(self, app1 :Gio.AppInfo, app2 :Gio.AppInfo):
 		app1_name = app1.get_name()
 		app2_name = app2.get_name()
@@ -141,9 +127,9 @@ class AppEntry(Gtk.Widget):
 		widget.append(icon_image)
 		widget.append(label)
 		return widget
-# the first element is selected by default
-# when an item in the flowbox is clicked, run the app
-# 	selected_child :Gtk.FlowBoxChild = apps_flowbox.get_selected_children()[0]
-# 	index = selected_child.get_index()
-# 	self.selected_item = self.apps_list.get_item(index)
-# 	self.on_activate()
+	# the first element is selected by default
+	# when an item in the flowbox is clicked, run the app
+	# 	selected_child :Gtk.FlowBoxChild = apps_flowbox.get_selected_children()[0]
+	# 	index = selected_child.get_index()
+	# 	self.selected_item = self.apps_list.get_item(index)
+	# 	self.on_activate()

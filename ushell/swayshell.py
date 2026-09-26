@@ -7,13 +7,13 @@ gi.require_version('DBus', '1.0')
 gi.require_version('Gtk', '4.0')
 gi.require_version('Gtk4LayerShell', '1.0')
 
-from gi.repository import Gdk, Gtk
+from gi.repository import Gio, Gdk, Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
 from bar import setup_bar
 from launcher import setup_launcher
+from locker import setup_locker
 from osk import setup_osk
-from lock import setup_lock
 
 def setup_screens():
 	pass
@@ -47,15 +47,17 @@ def setup_voice_control():
 	# vocal feedback for commands
 	# https://project-spiel.org/
 
-def on_activate(app):
+def on_startup(app):
 	setup_bar(app)
 	setup_launcher(app)
-	setup_lock()
-	setup_osk()
+	setup_locker(app)
+	setup_osk(app)
 	
-	dbus_con = app.get_dbus_connection()
-	# when a "Dim" message is received from dbus, create an empty window, with app_id swaydim
-	# when it's focused, first executes "swaymsg [workspace=__focused__ floating] kill", the closes itself
+	def dim():
+		# create an empty window with title "dim"
+		# when it's focused, first executes "swaymsg [workspace=__focused__ floating] kill", then closes itself
+	app.get_dbus_connection().signal_subscribe(
+		None, "ushell.SwayShell", "Dim", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, dim)
 	
 	setup_screens()
 	setup_voice_control()
@@ -63,6 +65,8 @@ def on_activate(app):
 	# run uni.desktop
 	
 	# [ -e "$HOME"/.config/ushell/autostart ] && sh "$HOME"/.config/ushell/autostart
+
+Gtk.Settings.get_default().props.gtk_overlay_scrolling = False
 
 app = Gtk.Application(application_id='ushell.SwayShell')
 app.connect('activate', on_activate)
