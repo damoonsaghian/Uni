@@ -3,7 +3,7 @@ from gi.repository import Gtk4LayerShell as LayerShell
 
 def setup_bar(self, app: Gtk.Application):
 	window = Gtk.Window()
-	window.set_default_size(width=-1, height=20)
+	window.set_default_size(width=-1, height=18)
 	
 	LayerShell.init_for_window(window)
 	LayerShell.set_layer(window, LayerShell.Layer.TOP)

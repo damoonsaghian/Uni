@@ -6,17 +6,23 @@ def setup_launcher(app :Gtk.Application):
 	window.set_default_size(width=294, height=360)
 	
 	LayerShell.init_for_window(window)
-	LayerShell.set_layer(window, LayerShell.Layer.TOP)
+	LayerShell.set_layer(window, LayerShell.Layer.BACKGROUND)
 	LayerShell.set_anchor(window, LayerShell.Edge.BOTTOM, True)
 	LayerShell.set_margin(window, LayerShell.Edge.BOTTOM, 20)
 	LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.EXCLUSIVE)
+	window.present()
 	
 	# when a "Launcher" message is received from dbus, 
 	def launcher_or_unlocker():
 		# if in lock workspace, show password prompt
-		# otherwise, show the launcher: window.present()
+		# otherwise, show the launcher: LayerShell.set_layer(window, LayerShell.Layer.TOP)
 	app.get_dbus_connection().signal_subscribe(
 		None, "ushell.SwayShell", "Launcher", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, launcher_or_unlocker)
+	
+	# swaymsg:
+	# bindsym --release Super_L exec "dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Launcher"
+	# bindsym --release Super_R exec "dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Launcher"
+	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Launcher"
 	
 	# FlowBox containing apps
 	# https://github.com/otsaloma/catapult

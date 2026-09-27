@@ -27,6 +27,9 @@
 # 	find the correspoding command usig: ps -p $pid --no-headers -o args
 # window entries can be moved between screens
 # to delete an entry, press delete
+#
+# select a screen (by pressing enter), then select another screen, to switch them
+# store the new order of screen arrangment
 
 # https://networkmanager.dev/docs/
 # https://networkmanager.dev/docs/api/latest/nmcli.html

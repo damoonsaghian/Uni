@@ -2,6 +2,10 @@ from gi.repository import GLib, Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
 def setup_locker(app :Gtk.Application):
+	# swayidle -w \
+	# timeout 60 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.LockIfBattery' \
+	# timeout 600 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Lock'
+	
 	app.get_dbus_connection().signal_subscribe(
 		None, "ushell.SwayShell", "Lock", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, lock)
 	app.get_dbus_connection().signal_subscribe(
@@ -20,9 +24,16 @@ def lock():
 	# when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
 	# if correct password is entered (check using su): close password layer, swaymsg workspace lock
 	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
-	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch; mode screen_off"
+	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch; \
+	# 	mode screen_off"
 	# upon any input activity, or if unfocused, or resume from suspend:
 	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
+	
+	# swaymsg:
+	# mode screen_off {
+	# 	bindgesture --exact swipe:3:down output - power on; \
+	# 		seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch
+	# }
 	
 	# lock
 	# switch to workspace lock, and if workspace is empty, run: uni lock
