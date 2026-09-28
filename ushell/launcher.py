@@ -1,3 +1,5 @@
+import subprocess
+
 from gi.repository import Gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
@@ -62,9 +64,6 @@ def setup_launcher(app :Gtk.Application):
 
 class AppEntry(Gtk.Widget):
 	pass
-	
-	script_dir = pathlib.Path(__file__).resolve().parent
-	# ["sh", str(script_dir/"swayrun.sh"), app_exec]
 	# apps will open in separate desktops
 	# swaymsg "workspace '$spp_name'"
 	# swaymsg "[workspace=__focused__ tiling] focus" || {
@@ -76,6 +75,8 @@ class AppEntry(Gtk.Widget):
 	# backspace or delete -> close selected app's appspace
 	
 	# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
+	
+	# subprocess.run(["swayrun", app_exec])
 
 class AppsList:
 	# self.selected_item = self.apps_list.get_item(0)

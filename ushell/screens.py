@@ -1,3 +1,8 @@
+import subprocess
+
+from gi.repository import Gio, Gdk, Gtk
+from gi.repository import Gtk4LayerShell as LayerShell
+
 def setup_screens(bar_window, launcher_window):
 	# when screens are added/removed:
 	# , move app's windows (bar and launcher) to first output: LayerShell.set_monitor(gtkwindow, gdkmonitor)
