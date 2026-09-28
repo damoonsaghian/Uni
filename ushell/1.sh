@@ -45,7 +45,18 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	# 	https://python-wayland.org/wayland/wp_security_context_manager_v1/
 	
 	sway_config="$(mktemp)"
-	echo "exec 'python3 \"$script_dir\"/swayshell.py'" > "$sway_config"
+	echo -n "output * bg #222222 solid_color
+	for_window [all] border csd
+	input type:touchpad {
+		tap enabled
+		scroll_method two_finger
+		natural_scroll enabled
+	}
+	seat * hide_cursor 8000
+	bindsym Mod4+BackSpace kill
+	bindsym Mod1+Escape kill
+	exec 'python3 \"$script_dir\"/swayshell.py'
+	" > "$sway_config"
 	sway -c "$sway_config" || start_cli
 else
 	start_cli
