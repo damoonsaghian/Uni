@@ -2,21 +2,19 @@
 
 # ApplicationWindow
 
-# maximize window, and make it persistent through gsettings
+# maximize window
+
+Gtk.Settings.get_default().props.gtk_overlay_scrolling = False
 
 # qpplication.name = "Uni"
 # qpplication.organization = "Uni"
-# qpplication.domain" = "uni.org"
+# qpplication.domain" = "uni.Uni"
 
 # projectViews = StackLayout()
 # overview = Overview(id = overview, projectViews = projectViews)
 # keybinding to show the overview
 
 # if first arg is "locked": read'only view, communicate with emergency accounts
-
-# use lines on borders of scrolled widgets to show the amount of overflowed content
-# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/css-variables.html
-# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/style-classes.html
 
 # translator
 # https://github.com/dialect-app/dialect/
