@@ -1,19 +1,21 @@
-from gi.repository import GLib, Gtk
-from gi.repository import Gtk4LayerShell as LayerShell
+import subprocess
 
-def setup_bar(self, app: Gtk.Application):
-	window = Gtk.Window()
+from gi.repository import Gtk as gtk
+from gi.repository import Gtk4LayerShell as gls
+
+def setup_bar(app :gtk.Application):
+	window = gtk.Window()
 	window.set_default_size(width=-1, height=18)
 	
-	LayerShell.init_for_window(window)
-	LayerShell.set_layer(window, LayerShell.Layer.TOP)
-	LayerShell.set_anchor(window, LayerShell.Edge.BOTTOM, True)
-	LayerShell.set_anchor(window, LayerShell.Edge.LEFT, True)
-	LayerShell.set_anchor(window, LayerShell.Edge.RIGHT, True)
-	LayerShell.auto_exclusive_zone_enable(window)
-	LayerShell.set_keyboard_mode(window, LayerShell.KeyboardMode.NONE)
+	gls.init_for_window(window)
+	gls.set_layer(window, gls.Layer.TOP)
+	gls.set_anchor(window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(window, gls.Edge.LEFT, True)
+	gls.set_anchor(window, gls.Edge.RIGHT, True)
+	gls.auto_exclusive_zone_enable(window)
+	gls.set_keyboard_mode(window, gls.KeyboardMode.NONE)
 	
-	button = Gtk.Button(label='bar')
+	button = gtk.Button(label='bar')
 	button.connect('clicked', lambda x: window.close())
 	window.set_child(button)
 	window.present()

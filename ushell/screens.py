@@ -1,16 +1,17 @@
 import subprocess
 
-from gi.repository import Gio, Gdk, Gtk
-from gi.repository import Gtk4LayerShell as LayerShell
+from gi.repository import Gtk as gdk
+from gi.repository import Gtk as gtk
+from gi.repository import Gtk4LayerShell as gls
 
-def setup_screens(bar_window, launcher_window):
+def setup_screens(app :gtk.Application):
 	# when screens are added/removed:
-	# , move app's windows (bar and launcher) to first output: LayerShell.set_monitor(gtkwindow, gdkmonitor)
+	# , move app's windows (bar and launcher) to first output: gls.set_monitor(gtkwindow, gdkmonitor)
 	# , take the list of workspaces (using swaymsg)
 	# , move the first non'numeric workspace to the first output (and turn it on)
 	# , move workspace 2 ... to output 2 ...
 	# this way, the first monitor will always remains the main monitor, even after reconnecting
-	# display = Gdk.Display.get_default()
+	# display = gdk.Display.get_default()
 	# https://docs.gtk.org/gdk4/method.Display.get_monitors.html
 	# https://docs.gtk.org/gdk4/class.Monitor.html
 	# https://docs.gtk.org/gdk4/method.Monitor.get_connector.html
@@ -19,6 +20,8 @@ def setup_screens(bar_window, launcher_window):
 	# run comands in ~/.config/ushell/screens using swaymsg
 	# focus the first monitor
 	# turn off empty outputs (except the primary one)
+	
+	# [ -e "$HOME"/.config/ushell/autostart ] && sh "$HOME"/.config/ushell/autostart
 	
 	# if screen is landscape: width=80 height=80 pos="center"
 	# if screen is portraut: width=100 height=80 pos="0 ppt 20 ppt"

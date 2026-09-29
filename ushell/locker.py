@@ -1,7 +1,7 @@
-from gi.repository import GLib, Gtk
+from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as LayerShell
 
-def setup_locker(app :Gtk.Application):
+def setup_locker(app :gtk.Application):
 	# swayidle -w \
 	# timeout 60 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.LockIfBattery' \
 	# timeout 600 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Lock'

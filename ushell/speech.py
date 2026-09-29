@@ -1,3 +1,5 @@
+from gi.repository import gtk
+
 # https://project-spiel.org/
 
 # speech to key press
@@ -14,5 +16,5 @@
 # https://easyspeak.dev/latest/
 # https://github.com/g0dd4rd/anthony/
 
-def setup_speech(app):
+def setup_speech(app :gtk.Application):
 	pass

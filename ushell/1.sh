@@ -55,7 +55,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	seat * hide_cursor 8000
 	bindsym Mod4+BackSpace kill
 	bindsym Mod1+Escape kill
-	exec 'SHELL=swayrun python3 \"$script_dir\"/swayshell.py'
+	exec 'python3 \"$script_dir\"/swayshell.py; swaymsg exit'
 	" > "$sway_config"
 	sway -c "$sway_config" || start_cli
 else
