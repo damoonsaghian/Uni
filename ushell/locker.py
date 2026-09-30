@@ -3,13 +3,13 @@ from gi.repository import Gtk4LayerShell as LayerShell
 
 def setup_locker(app :gtk.Application):
 	# swayidle -w \
-	# timeout 60 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.LockIfBattery' \
-	# timeout 600 'dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Lock'
+	# timeout 60 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.LockIfBattery' \
+	# timeout 600 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
 	
 	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.SwayShell", "Lock", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, lock)
+		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock)
 	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.SwayShell", "LockIfBattery", "/ushell/SwayShell", None, Gio.DBusSignalFlags.NONE, lock_if_battery)
+		None, "ushell.Ushell", "LockIfBattery", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock_if_battery)
 
 def lock_if_battery():
 	#

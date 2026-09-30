@@ -14,16 +14,16 @@ def setup_dimmer(app :gtk.Application):
 			swaymsg "[workspace=__focused__ floating] kill"
 			swaymsg focus prev && swaymsg "focus next; floating enable"
 		elif swaymsg "[con_id=__focused__ floating] focus" &&
-			! swaymsg "[workspace=__focused__ app_id="ushell.SwayShell" title=dimmer] floating enable"
+			! swaymsg "[workspace=__focused__ app_id="ushell.Ushell" title=dimmer] floating enable"
 		then
-			dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.SwayShell.Dim
+			dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.Ushell.Dim
 		fi
 	done
 	""", shell=True)
 	
-	subprocess.run(['swaymsg', 'no_focus [app_id="ushell.SwayShell" title=dimmer]'])
+	subprocess.run(['swaymsg', 'no_focus [app_id="ushell.Ushell" title=dimmer]'])
 	subprocess.run(['swaymsg',
-		'for_window [app_id="ushell.SwayShell" title=dimmer] opacity 0.5, floating enable, ' +
+		'for_window [app_id="ushell.Ushell" title=dimmer] opacity 0.5, floating enable, ' +
 		'resize set 100 ppt 100 ppt, move position center'
 	])
 	
@@ -31,4 +31,4 @@ def setup_dimmer(app :gtk.Application):
 		# create an empty window with title "dimmer"
 		# when it's focused, first executes "swaymsg [workspace=__focused__ floating] kill", then closes itself
 	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.SwayShell", "Dim", "/ushell/SwayShell", None, gio.DBusSignalFlags.NONE, dim)
+		None, "ushell.Ushell", "Dim", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, dim)
