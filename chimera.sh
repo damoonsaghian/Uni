@@ -45,7 +45,7 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	bluez networkmanager modemmanager iputils dnsmasq geoclue geocode-glib libgweather iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
 	fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	sway swayidle fcitx5 gtk4-layer-shell bubblewrap python-gobject \
+	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
 	libadwaita gtksourceview libspelling libspiel gst-plugins-good gst-plugins-rs gst-libav \
 	poppler-glib-libs webkitgtk4 libtorrent-rasterbar-python
 
@@ -115,10 +115,10 @@ IFS="[;" read -p $"\e[6n" -d R -rs _ _ line _
 [ "$line" = 1 ] || echo
 printf "\e[90m─ ${PWD} "
 printf "%0.s─" $(seq 1 $((COLUMNS - ${#PWD} - 3)) )
-printf "\e[0m"
-)\]\n'
-PS2=""
-PS0="\e[90m─\e[0m\n"
+echo
+printf "─\e[0m "
+)\]'
+PS2="\e[90m─\e[0m "
 EOF
 
 script_dir="$(dirname "$(readlink -f "$0")")"

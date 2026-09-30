@@ -1,22 +1,22 @@
-Ushell provides a graphical shell consisting of an application launcher and a status bar
-application launcher can be toggled by pressing "super" (mod+mod) or "alt+tab"
+Ushell provides a graphical shell consisting of a main panel and a status bar
+the main panel can be toggled by pressing "super" (mod+mod) or "alt+tab", showing all available applications
 applications can be selected by typing their name, or using the arrow keys
-	then just press "space" to open them
-applications will be opened in their own workspace
-	any extra windows opened by the application, will be shown in a modal floating window
+press "space" to open a selected applications in its own workspace
+any extra windows opened by the application, will be shown in a modal floating window
 to close a window, press "super+backspace" or "alt+escape"
 
-in application launcher the first item (selected by default) is "super prompt"
-by typing special keywords in the super prompt, you have a fast access to various small but useful things like:
+right after opening the main panel, press "space" to open command prompt
+by typing special keywords in command prompt, you have instant access to various small but useful things like:
 	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
 
-right after opening the application launcher, press "enter" to open system menu:
+right after opening the main panel, press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
-, screens
+, displays
 , connections
 , timezone
 , passwords
 , packages (install, remove, update, create an installation media)
+, terminal
 , backup (create, restore)
 
 to have a really fail'safe system, redundant units are necessary
