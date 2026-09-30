@@ -6,161 +6,161 @@
 <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.css'>
 <style>
 body {
-	padding: 4px;
+	padding: 5px;
 	margin: 0;
 	font-family: Hack;
 	font-size: 11ppt;
 	color: #222222;
-	white-space: pre;
 	tab-size: 4;
+	white-space: pre;
 }
 </style>
 </head><body><a href='https://github.com/damoonsaghian/Uni'><h1>Uni</h1></a>
-<h2>1, command'based user interface</h2><div>command'based user interfaces (using keyboard, voice, gesture) are faster, more convenient and more powerful,
-</div><div>	than pointer'based user interfaces (using mouse, touch, pen)
-</div><div>
-</div><div>pointer'based interface seems appealing at first sight, because of its discoverability
-</div><div>but with simple uniform GUI (ie the oposite of what we see in websites),
-</div><div>	there is no need for a pointer based user interface
-</div><div>touch interface has an additional problem: interaction at a distance is not possible
-</div><div>note that, touch interface can be useful in special cases, but it's not good as a general purpose interface
-</div><div>
-</div><div>detection of voice commands is a relatively simple process (compared to general speech recognition),
-</div><div>	because we only need to match against a relatively small set of commands
-</div><div>for those who neither can use all their fingers, nor can talk, gesture based (2d) input can be implemented
-</div><div>
-</div><div><b>the ideal keyboard</b>
-</div><div>
-</div><div><img src="keyboard.png" alt="keyboard.png"/>
-</div><div>
-</div><div>navigation keys (arrows, page up, page down, home, end, tab, esc), and ctrl/shift/alt based keybindings,
-</div><div>	are available by pressing and holding "mod" key
-</div><div>pressing one "mod" key while holding the other one, is equivalent to Super key
-</div><div>
-</div><div>to insert punctuations, press "pun"
-</div><div>	after entering a punctuation charactor, it automatically returns to normal mode
-</div><div>	unless the "pun" key is still pressed, in which case, it will return to normal mode after releasing "pun"
-</div><div>to insert capital letters, press "cap"
-</div><div>	after entering a charactor, it automatically returns to normal mode
-</div><div>	unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
-</div><div>to insert numbers, press and hold "num"
-</div><div>
-</div><div>pressing and releasing "Fn", sends "Super+L" key press (usually bound to session locking)
-</div><div>holding "Fn" and pressing a number eg 1, sends "F1" key
-</div><div>
-</div><div><a href="https://jasoncarloscox.com/writing/my-strange-keyboards/">https://jasoncarloscox.com/writing/my-strange-keyboards/</a>
-</div><div>	<a href="https://jasoncarloscox.com/creations/kyria/">https://jasoncarloscox.com/creations/kyria/</a>
-</div><div>	<a href="https://jasoncarloscox.com/creations/lego-keyboard-stand/">https://jasoncarloscox.com/creations/lego-keyboard-stand/</a>
-</div><div><a href="https://splitkb.com/">https://splitkb.com/</a>
-</div><div><a href="https://shop.keyboard.io/">https://shop.keyboard.io/</a>
-</div><div><a href="https://github.com/abstracthat/dactyl-manuform">https://github.com/abstracthat/dactyl-manuform</a>
-</div><div><a href="https://zealot.hu/absolem/">https://zealot.hu/absolem/</a>
-</div><div><a href="https://github.com/foostan/crkbd">https://github.com/foostan/crkbd</a>
-</div><div><a href="https://github.com/nglgzz/42">https://github.com/nglgzz/42</a>
-</div><div><a href="https://github.com/adereth/dactyl-keyboard">https://github.com/adereth/dactyl-keyboard</a>
-</div><div>Kinesis Advantage 2 keyboard
-</div>
-<h2>2, Uni</h2><div>Uni is a unified collaborative development environment, and an ideal frontend for GNUnet,
-</div><div>	with command'based user interface
-</div><div>
-</div><div>list of all projects will appear in a floating layer, at the center of the screen, called overview layer
-</div><div>overview layer:
-</div><div>, left panel:
-</div><div>	, roots: home directory, plus attached devices
-</div><div>	, project groups: content of roots
-</div><div>, main view:
-</div><div>	projects: content of project groups
-</div><div>
-</div><div><img src="uni.png" alt="uni.png"/>
-</div><div>
-</div><div>in a project view, the list of files of a project will be displayed in the left side'bar
-</div><div>opened files will be slightly highlighted
-</div><div>files and directories with names starting with a dot, will be hidden
-</div><div>".cache" directory inside a project is for files we don't want to share or backup
-</div><div>
-</div><div>each opened file will have a side'bar at right showing its sections
-</div><div>there we can create new view corresponding to a section
-</div><div>sections with views will be slightly highlighted
-</div><div>
-</div><div>text files will be opened in a text editor
-</div><div>directories containing media files, will be opened in a gallery view
-</div><div>files and directories inside a gallery, will be opened in a floating layer
-</div><div>
-</div><div>non'local projects, web pages, PDF documents, etc, accessed from links inside the main project,
-</div><div>	will be opened in a floating layer
-</div><div>web pages: move caret between visual elements (ignoring structural elements)
-</div><div>
-</div><div>actions:
-</div><div>, next/previous word, line, paragraph, section
-</div><div>	ask before crossing files
-</div><div>, next/previous section view, opened file
-</div><div>, go to the list of files to open a file view
-</div><div>, go to the list of sections to open a section view
-</div><div>, start and end selection, then copy or cut
-</div><div>, paste
-</div><div>, undo
-</div><div>
-</div><div>, navigation: move, search
-</div><div>, selection
-</div><div>, completion
-</div><div>
-</div><div>right click or ctrl+enter: show a list of available commands and their key bindings
-</div><div>
-</div><div><b>collaborative development</b>
-</div><div>
-</div><div>flaws of version control systems:
-</div><div>, they double the storage (working directory, local repository)
-</div><div>, their design makes it difficult to modify the history
-</div><div>	so in practice, the whole history must be kept indefinitely, even if not needed
-</div><div>
-</div><div>when we download a project, a pristine copy is kept untouched in ".cache/ude/pristine",
-</div><div>	and ref links will be created in the working directory, and then we can work on our own branch
-</div><div>after a while when we want to pull and merge changes made in the main branch,
-</div><div>	first a three'way diff will be shown, based on the main branch, pristine, and the working directory,
-</div><div>	then the user will be asked to accept all or some parts of the diff
-</div><div>to send a pull request to the main branch, first publish the pristine and the working directory (except .cache),
-</div><div>	then send the two addresses to the main developer
-</div><div>	the main developer will make a diff based on these two, plus her own working directory
-</div><div>
-</div><div>we can use GNUnet to share files in a P2P (a opposed to client'server) network
-</div><div><a href="https://www.gnunet.org/en/">https://www.gnunet.org/en/</a>
-</div><div><a href="https://docs.gnunet.org/latest/">https://docs.gnunet.org/latest/</a>
-</div><div>"the GNUnet system" by Christian Grothoff (<a href="https://grothoff.org/christian/habil.pdf">https://grothoff.org/christian/habil.pdf</a>)
-</div>
-<h2>3, Ushell</h2><div>Ushell provides a graphical shell consisting of an application launcher and a status bar
-</div><div>application launcher can be toggled by pressing "super" (mod+mod) or "alt+tab"
-</div><div>applications can be selected by typing their name, or using the arrow keys
-</div><div>	then just press "space" to open them
-</div><div>applications will be opened in their own workspace
-</div><div>	any extra windows opened by the application, will be shown in a modal floating window
-</div><div>to close a window, press "super+backspace" or "alt+escape"
-</div><div>
-</div><div>in application launcher the first item (selected by default) is "super prompt"
-</div><div>by typing special keywords in the super prompt, you have a fast access to various small but useful things like:
-</div><div>	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
-</div><div>
-</div><div>right after opening the application launcher, press "enter" to open system menu:
-</div><div>, session (lock, suspend, exit, reboot, poweroff)
-</div><div>, screens
-</div><div>, connections
-</div><div>, timezone
-</div><div>, passwords
-</div><div>, packages (install, remove, update, create an installation media)
-</div><div>, backup (create, restore)
-</div><div>
-</div><div>to have a really fail'safe system, redundant units are necessary
-</div><div>you can create a backup on a removable storage device
-</div><div>backups will be done using "BTRFS send", so they will be incremental and fast
-</div><div>the backup device is encrypted, and contains a backup of your home directory
-</div><div>	dencryption can be done using a password, as well as a key stored on the computer
-</div><div>each time the device is connected, the backup procedure will be run automatically
-</div><div>even in case of bit rot for data in home directory, this procedure repairs it automatically
-</div><div>this backup can easily be restored on a new system
-</div><div>these systems will then form an F2F network using GNUnet, through which they will be synced to each other
-</div><div>
-</div><div>the ultimate goal is to use Ushell and Uni as the user interface of UPM Linux
-</div><div>but before it's ready, we can create a Chimera Linux based system, with Ushell and Uni as the user interface
-</div><div>to do that, boot into a Chimera Linux live image, and run:
-</div><div>; doas sh ./chimera.sh
-</div>
+<h2>1, command'based user interface</h2><div><span>command'based user interfaces (using keyboard, voice, gesture) are faster, more convenient and more powerful,
+</span></div><div><span></span>	<span>than pointer'based user interfaces (using mouse, touch, pen)
+</span></div><div><span>
+</span></div><div><span>pointer'based interface seems appealing at first sight, because of its discoverability
+</span></div><div><span>but with simple uniform GUI (ie the oposite of what we see in websites),
+</span></div><div><span></span>	<span>there is no need for a pointer based user interface
+</span></div><div><span>touch interface has an additional problem: interaction at a distance is not possible
+</span></div><div><span>note that, touch interface can be useful in special cases, but it's not good as a general purpose interface
+</span></div><div><span>
+</span></div><div><span>detection of voice commands is a relatively simple process (compared to general speech recognition),
+</span></div><div><span></span>	<span>because we only need to match against a relatively small set of commands
+</span></div><div><span>for those who neither can use all their fingers, nor can talk, gesture based (2d) input can be implemented
+</span></div><div><span>
+</span></div><div><span><b>the ideal keyboard</b>
+</span></div><div><span>
+</span></div><div><span><img src="keyboard.png" alt="keyboard.png"/>
+</span></div><div><span>
+</span></div><div><span>navigation keys (arrows, page up, page down, home, end, tab, esc), and ctrl/shift/alt based keybindings,
+</span></div><div><span></span>	<span>are available by pressing and holding "mod" key
+</span></div><div><span>pressing one "mod" key while holding the other one, is equivalent to Super key
+</span></div><div><span>
+</span></div><div><span>to insert punctuations, press "pun"
+</span></div><div><span></span>	<span>after entering a punctuation charactor, it automatically returns to normal mode
+</span></div><div><span></span>	<span>unless the "pun" key is still pressed, in which case, it will return to normal mode after releasing "pun"
+</span></div><div><span>to insert capital letters, press "cap"
+</span></div><div><span></span>	<span>after entering a charactor, it automatically returns to normal mode
+</span></div><div><span></span>	<span>unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
+</span></div><div><span>to insert numbers, press and hold "num"
+</span></div><div><span>
+</span></div><div><span>pressing and releasing "Fn", sends "Super+L" key press (usually bound to session locking)
+</span></div><div><span>holding "Fn" and pressing a number eg 1, sends "F1" key
+</span></div><div><span>
+</span></div><div><span><a href="https://jasoncarloscox.com/writing/my-strange-keyboards/">https://jasoncarloscox.com/writing/my-strange-keyboards/</a>
+</span></div><div><span></span>	<span><a href="https://jasoncarloscox.com/creations/kyria/">https://jasoncarloscox.com/creations/kyria/</a>
+</span></div><div><span></span>	<span><a href="https://jasoncarloscox.com/creations/lego-keyboard-stand/">https://jasoncarloscox.com/creations/lego-keyboard-stand/</a>
+</span></div><div><span><a href="https://splitkb.com/">https://splitkb.com/</a>
+</span></div><div><span><a href="https://shop.keyboard.io/">https://shop.keyboard.io/</a>
+</span></div><div><span><a href="https://github.com/abstracthat/dactyl-manuform">https://github.com/abstracthat/dactyl-manuform</a>
+</span></div><div><span><a href="https://zealot.hu/absolem/">https://zealot.hu/absolem/</a>
+</span></div><div><span><a href="https://github.com/foostan/crkbd">https://github.com/foostan/crkbd</a>
+</span></div><div><span><a href="https://github.com/nglgzz/42">https://github.com/nglgzz/42</a>
+</span></div><div><span><a href="https://github.com/adereth/dactyl-keyboard">https://github.com/adereth/dactyl-keyboard</a>
+</span></div><div><span>Kinesis Advantage 2 keyboard
+</span></div>
+<h2>2, Uni</h2><div><span>Uni is a unified collaborative development environment, and an ideal frontend for GNUnet,
+</span></div><div><span></span>	<span>with command'based user interface
+</span></div><div><span>
+</span></div><div><span>list of all projects will appear in a floating layer, at the center of the screen, called overview layer
+</span></div><div><span>overview layer:
+</span></div><div><span>, left panel:
+</span></div><div><span></span>	<span>, roots: home directory, plus attached devices
+</span></div><div><span></span>	<span>, project groups: content of roots
+</span></div><div><span>, main view:
+</span></div><div><span></span>	<span>projects: content of project groups
+</span></div><div><span>
+</span></div><div><span><img src="uni.png" alt="uni.png"/>
+</span></div><div><span>
+</span></div><div><span>in a project view, the list of files of a project will be displayed in the left side'bar
+</span></div><div><span>opened files will be slightly highlighted
+</span></div><div><span>files and directories with names starting with a dot, will be hidden
+</span></div><div><span>".cache" directory inside a project is for files we don't want to share or backup
+</span></div><div><span>
+</span></div><div><span>each opened file will have a side'bar at right showing its sections
+</span></div><div><span>there we can create new view corresponding to a section
+</span></div><div><span>sections with views will be slightly highlighted
+</span></div><div><span>
+</span></div><div><span>text files will be opened in a text editor
+</span></div><div><span>directories containing media files, will be opened in a gallery view
+</span></div><div><span>files and directories inside a gallery, will be opened in a floating layer
+</span></div><div><span>
+</span></div><div><span>non'local projects, web pages, PDF documents, etc, accessed from links inside the main project,
+</span></div><div><span></span>	<span>will be opened in a floating layer
+</span></div><div><span>web pages: move caret between visual elements (ignoring structural elements)
+</span></div><div><span>
+</span></div><div><span>actions:
+</span></div><div><span>, next/previous word, line, paragraph, section
+</span></div><div><span></span>	<span>ask before crossing files
+</span></div><div><span>, next/previous section view, opened file
+</span></div><div><span>, go to the list of files to open a file view
+</span></div><div><span>, go to the list of sections to open a section view
+</span></div><div><span>, start and end selection, then copy or cut
+</span></div><div><span>, paste
+</span></div><div><span>, undo
+</span></div><div><span>
+</span></div><div><span>, navigation: move, search
+</span></div><div><span>, selection
+</span></div><div><span>, completion
+</span></div><div><span>
+</span></div><div><span>right click or ctrl+enter: show a list of available commands and their key bindings
+</span></div><div><span>
+</span></div><div><span><b>collaborative development</b>
+</span></div><div><span>
+</span></div><div><span>flaws of version control systems:
+</span></div><div><span>, they double the storage (working directory, local repository)
+</span></div><div><span>, their design makes it difficult to modify the history
+</span></div><div><span></span>	<span>so in practice, the whole history must be kept indefinitely, even if not needed
+</span></div><div><span>
+</span></div><div><span>when we download a project, a pristine copy is kept untouched in ".cache/ude/pristine",
+</span></div><div><span></span>	<span>and ref links will be created in the working directory, and then we can work on our own branch
+</span></div><div><span>after a while when we want to pull and merge changes made in the main branch,
+</span></div><div><span></span>	<span>first a three'way diff will be shown, based on the main branch, pristine, and the working directory,
+</span></div><div><span></span>	<span>then the user will be asked to accept all or some parts of the diff
+</span></div><div><span>to send a pull request to the main branch, first publish the pristine and the working directory (except .cache),
+</span></div><div><span></span>	<span>then send the two addresses to the main developer
+</span></div><div><span></span>	<span>the main developer will make a diff based on these two, plus her own working directory
+</span></div><div><span>
+</span></div><div><span>we can use GNUnet to share files in a P2P (a opposed to client'server) network
+</span></div><div><span><a href="https://www.gnunet.org/en/">https://www.gnunet.org/en/</a>
+</span></div><div><span><a href="https://docs.gnunet.org/latest/">https://docs.gnunet.org/latest/</a>
+</span></div><div><span>"the GNUnet system" by Christian Grothoff (<a href="https://grothoff.org/christian/habil.pdf">https://grothoff.org/christian/habil.pdf</a>)
+</span></div>
+<h2>3, Ushell</h2><div><span>Ushell provides a graphical shell consisting of a main panel and a status bar
+</span></div><div><span>the main panel can be toggled by pressing "super" (mod+mod) or "alt+tab", showing all available applications
+</span></div><div><span>applications can be selected by typing their name, or using the arrow keys
+</span></div><div><span>press "space" to open a selected applications in its own workspace
+</span></div><div><span>any extra windows opened by the application, will be shown in a modal floating window
+</span></div><div><span>to close a window, press "super+backspace" or "alt+escape"
+</span></div><div><span>
+</span></div><div><span>right after opening the main panel, press "space" to open command prompt
+</span></div><div><span>by typing special keywords in command prompt, you have instant access to various small but useful things like:
+</span></div><div><span></span>	<span>calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+</span></div><div><span>
+</span></div><div><span>right after opening the main panel, press "enter" to open system menu:
+</span></div><div><span>, session (lock, suspend, exit, reboot, poweroff)
+</span></div><div><span>, displays
+</span></div><div><span>, connections
+</span></div><div><span>, timezone
+</span></div><div><span>, passwords
+</span></div><div><span>, packages (install, remove, update, create an installation media)
+</span></div><div><span>, terminal
+</span></div><div><span>, backup (create, restore)
+</span></div><div><span>
+</span></div><div><span>to have a really fail'safe system, redundant units are necessary
+</span></div><div><span>you can create a backup on a removable storage device
+</span></div><div><span>backups will be done using "BTRFS send", so they will be incremental and fast
+</span></div><div><span>the backup device is encrypted, and contains a backup of your home directory
+</span></div><div><span></span>	<span>dencryption can be done using a password, as well as a key stored on the computer
+</span></div><div><span>each time the device is connected, the backup procedure will be run automatically
+</span></div><div><span>even in case of bit rot for data in home directory, this procedure repairs it automatically
+</span></div><div><span>this backup can easily be restored on a new system
+</span></div><div><span>these systems will then form an F2F network using GNUnet, through which they will be synced to each other
+</span></div><div><span>
+</span></div><div><span>the ultimate goal is to use Ushell and Uni as the user interface of UPM Linux
+</span></div><div><span>but before it's ready, we can create a Chimera Linux based system, with Ushell and Uni as the user interface
+</span></div><div><span>to do that, boot into a Chimera Linux live image, and run:
+</span></div><div><span>; doas sh ./chimera.sh
+</span></div>
 </body></html>
