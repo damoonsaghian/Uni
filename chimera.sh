@@ -113,13 +113,12 @@ cat <<-'EOF' > "$new_root"/etc/bash/bashrc.d/prompt.sh
 PS1='\[$(
 IFS="[;" read -p $"\e[6n" -d R -rs _ _ line _
 [ "$line" = 1 ] || echo
-printf "\e[90m╭ ${PWD} "
+printf "\e[90m─ ${PWD} "
 printf "%0.s─" $(seq 1 $((COLUMNS - ${#PWD} - 3)) )
-echo
-printf "│\e[0m "
-)\]'
-PS2="\e[90m│\e[0m "
-PS0="\e[90m╰\e[0m\n"
+printf "\e[0m"
+)\]\n'
+PS2=""
+PS0="\e[90m=>\e[0m\n"
 EOF
 
 script_dir="$(dirname "$(readlink -f "$0")")"
