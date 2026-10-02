@@ -1,4 +1,3 @@
-import subprocess
 import pathlib
 
 from gi.repository import Gio as gio
@@ -90,8 +89,10 @@ def setup_panel(app :gtk.Application):
 	
 	# when window is focused, return back to apps list
 	
-	subprocess.run(['swaymsg', 'workspace uni.Uni'])
-	subprocess.run(['sh', f'{script_dir}/swaywrap.sh', 'gapplication', 'launch', 'uni.Uni'])
+	gio.Subprocess(['swaymsg', 'assign [app_id="uni.Uni"] workspace uni.Uni'], gio.SubprocessFlags.NONE)
+	app_exec = 
+	gio.Subprocess(['sh', '-c', f'{script_dir}/swaywrap.sh', app_exec], gio.SubprocessFlags.NONE)
+	# monitor dbus connection at uni.Uni, and when it's closed relaunch Uni
 
 class AppEntry(gtk.Widget):
 	pass
@@ -110,7 +111,7 @@ class AppEntry(gtk.Widget):
 	
 	# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
 	
-	# subprocess.run(['sh', f'{script_dir}/swaywrap.sh', app_exec])
+	# gio.Subprocess(['sh', '-c', f'{script_dir}/swaywrap.sh', app_exec], gio.SubprocessFlags.NONE)
 
 class AppsList:
 	# self.selected_item = self.apps_list.get_item(0)
@@ -125,12 +126,12 @@ class AppsList:
 	
 	# app_item = self.selected_item
 	# app_name = app_item.get_name()
-	# subprocess.run([
+	# gio.Subprocess([
 	# 	'swaymsg',
 	# 	f'[app_id=codev] move workspace {app_name}; workspace {app_name}' 
-	# ])
-	# if not subprocess.run(['swaymsg', '[floating] focus']):
-	# 	subprocess.run(['swaymsg', 'exec ' + app_item.get_executable()])
+	# ], gio.SubprocessFlags.NONE)
+	# if not gio.Subprocess(['swaymsg', '[floating] focus'], gio.SubprocessFlags.NONE):
+	# 	gio.Subprocess(['swaymsg', 'exec ' + app_item.get_executable()], gio.SubprocessFlags.NONE)
 
 	# notify:has-focus: select system
 

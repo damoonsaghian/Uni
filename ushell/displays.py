@@ -1,6 +1,5 @@
-import subprocess
-
-from gi.repository import Gtk as gdk
+from gi.repository import Gio as gio
+from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
@@ -27,5 +26,5 @@ def setup_displays(app :gtk.Application):
 	# if display is portrait: width=100 height=80 pos="0 ppt 20 ppt"
 	# ["swaymsg", f"for_window [floating workspace={num}] resize set {width} ppt {haight} ppt; move position {pos}"]
 	
-	subprocess.run(["swaymsg", "bindswitch lid:on output - disable"])
-	subprocess.run(["swaymsg", "bindswitch lid:off output * enable"])
+	gio.Subprocess(["swaymsg", "bindswitch lid:on output - disable"], gio.SubprocessFlags.NONE)
+	gio.Subprocess(["swaymsg", "bindswitch lid:off output * enable"], gio.SubprocessFlags.NONE)
