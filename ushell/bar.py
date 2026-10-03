@@ -5,8 +5,27 @@ from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
 def setup_bar(app :gtk.Application):
+	notifications_box = gtk.Box(spacing=5)
+	setup_notifications(notification_box)
+	system_status_box = gtk.Box(spacing=5)
+	setup_system_status(system_status_box)
+	
 	window = gtk.Window()
 	window.set_default_size(width=-1, height=18)
+	window.set_child(gtk.CenterBox(
+		start_widget=notification_box,
+		end_widget=system_status_box,
+		margin_start=2,
+		margin_end=2
+	))
+	
+	# click (swipe up from bottom edge) anywhere on the bar -> launcher
+	# right click (tap and hold) any where on the bar -> show window close button on a popup window (at click position)
+	
+	# if mouse touches bottom edge, or when swipe from bottom edge, bring up the bar
+	# gls.set_layer(window, gls.Layer.OVERLAY)
+	# after mouse leaves the bar, hide it
+	# gls.set_layer(window, gls.Layer.TOP)
 	
 	gls.init_for_window(window)
 	gls.set_layer(window, gls.Layer.TOP)
@@ -16,24 +35,6 @@ def setup_bar(app :gtk.Application):
 	gls.auto_exclusive_zone_enable(window)
 	gls.set_keyboard_mode(window, gls.KeyboardMode.NONE)
 	
-	# click (swipe up from bottom edge) anywhere on the panel -> launcher
-	# right click (tap and hold) any where on the panel -> close and cancel buttons
-	
-	# if mouse touches bottom edge, or when swipe from bottom edge, bring up the bar
-	# gls.set_layer(window, gls.Layer.OVERLAY)
-	# after mouse leaves the bar, hide it
-	# gls.set_layer(window, gls.Layer.TOP)
-	
-	notifications_box = gtk.Box(spacing=5)
-	setup_notifications(notification_box)
-	system_status_box = gtk.Box(spacing=5)
-	setup_system_status(system_status_box)
-	window.set_child(gtk.CenterBox(
-		start_widget=notification_box,
-		end_widget=system_status_box,
-		margin_start=2,
-		margin_end=2
-	))
 	window.present()
 
 def setup_notifications(box :gtk.Box):
@@ -44,7 +45,7 @@ def setup_notifications(box :gtk.Box):
 	# https://github.com/halhen/statnot
 	# https://github.com/mk-fg/notification-thing
 	
-	# alerts (clock, public emergency):
+	# alerts (important notifications like clock alerts, or public emergency warnings):
 	# , the message remains
 	# , it blinks
 	# , display is powered on
@@ -55,65 +56,44 @@ def setup_system_status(box :gtk.Box):
 	# https://gitlab.gnome.org/GNOME/gnome-usage
 	# https://pkgs.alpinelinux.org/package/edge/main/x86_64/smartmontools
 	
-	# # battery: if exist, show icon
-	# https://wiki.archlinux.org/title/Laptop
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/system.js
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/battery_level.py
-	# https://www.kernel.org/doc/html/latest/power/power_supply_class.html
-	# if [ -e /sys/class/power_supply/BAT0 ]; then
-	# 	# /sys/class/power_supply/BAT0/capacity
-	# 	# /sys/class/power_supply/BAT0/status
-	# 	# https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power
-	# fi
-	# https://pkgs.chimera-linux.org/package/current/main/x86_64/upower
-	# https://upower.freedesktop.org/docs/
+	# screen recorder indicator
+	# watch for $HOME/.cache/swaycap/screen.mp4
+	# if it's open, show red circle
+	# if exists but not open, show red square
+	# if does not exist, shoe nothing
 	
-	# graph
-	# 30 pixels wide
-	# every 2 seconds
+	# cam
+	# visible only when it's active
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/camera.js
 	
-	# cpu
-	# , 0 to 2: white
-	# , 2 to 50: yellow
-	# , 50 to 90: orange
-	# , 90 to 100: red
-	# average over the last 30 seconds, determines the transparency
-	# https://github.com/AstraExt/astra-monitor/tree/main/src/processor
-	# https://gitlab.gnome.org/GNOME/gnome-usage/-/blob/main/src/cpu-monitor.vala
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/sysdata.py
-	# https://github.com/fcaballerop/simple-monitor-gnome-shell-extension/blob/main/extension.js
-	# https://github.com/eeeeeio/gnome-shell-extension-nano-system-monitor/blob/master/src/extension.js
+	# audio (pipewire output)
+	# if audio out device is not dummy, show icon
+	# 0: muted icon
+	# 1 to 80: low icon
+	# 80 to 99: medium icon
+	# 100: high icon
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
 	
-	# memory
-	# , 0 to 10: white
-	# , 10 to 50: yellow
-	# , 50 to 90: orange
-	# , 90 to 100: red
-	# average over the last 30 seconds, determines the transparency
-	# when it reaches above 90%, it blinks
-	# https://github.com/AstraExt/astra-monitor/tree/main/src/memory
-	# https://gitlab.gnome.org/GNOME/gnome-usage/-/blob/main/src/memory-monitor.vala
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/sysdata.py
-	# https://github.com/fcaballerop/simple-monitor-gnome-shell-extension/blob/main/extension.js
-	# https://github.com/eeeeeio/gnome-shell-extension-nano-system-monitor/blob/master/src/extension.js
-	#
-	# import re
-	# with open('/proc/meminfo') as mem_info_file:
-	# 	mem_info = mem_info_file.read()
-	# 	mem_total = re.compile(r"MemTotal:\s+(\d+) kB").match(mem_info)
-	# 	mem_total = int(mem_total)
-	# 	mem_available = re.compile(r"MemAvailable:\s+(\d+) kB").match(mem_info)
-	# 	mem_available = int(mem_available)
-	# 	mem_usage = (mem_total - mem_available) / mem_total
+	# mic (pipewire input)
+	# https://github.com/xenomachina/i3pamicstatus
 	
-	# disk
-	# writing: red icon
-	# reading: yellow icon
-	# reading and writing: orange icon
-	# if there is no read/write now, but there was one in the last 15 seconds, dim the corresponding color
-	# https://github.com/AstraExt/astra-monitor/tree/main/src/storage
-	# https://unix.stackexchange.com/questions/55212/how-can-i-monitor-disk-io
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/diskdata.py
+	# bluetooth
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/bluetooth.js
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/bluetooth.py
+	
+	# wifi
+	# if exists, show icon
+	# 0 to 20: none icon
+	# 20 to 50: weak icon
+	# 50 to 80: ok icon
+	# 80 to 90: good icon
+	# 90 to 100: excellent icon
+	# https://wireless.wiki.kernel.org/en/users/documentation/iw
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wifi.py
+	
+	# cell
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wwan.py
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wwan_status.py
 	
 	# gnunet
 	# icon's color indicates average speed (download+upload) in the last 30 seconds:
@@ -166,47 +146,53 @@ def setup_system_status(box :gtk.Box):
 	# 	internet="$internet_total<span $internet_icon_foreground_color>  </span>$internet_speed"
 	# }
 	
-	# wifi
-	# if exists, show icon
-	# 0 to 20: none icon
-	# 20 to 50: weak icon
-	# 50 to 80: ok icon
-	# 80 to 90: good icon
-	# 90 to 100: excellent icon
-	# wifi signal strength:
-	# iwctl station wlan0 show -> RSSI, AverageRSSI
-	# https://www.reddit.com/r/archlinux/comments/gbx3sf/iwd_users_how_do_i_get_connected_channel_strength/
-	# https://wireless.wiki.kernel.org/en/users/documentation/iw
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wifi.py
+	# cpu cores
+	# show as gray vertical bars updated every second
+	# https://github.com/AstraExt/astra-monitor/tree/main/src/processor
+	# https://gitlab.gnome.org/GNOME/gnome-usage/-/blob/main/src/cpu-monitor.vala
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/sysdata.py
+	# https://github.com/fcaballerop/simple-monitor-gnome-shell-extension/blob/main/extension.js
+	# https://github.com/eeeeeio/gnome-shell-extension-nano-system-monitor/blob/master/src/extension.js
 	
-	# cell
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wwan.py
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/wwan_status.py
-		
-	# bluetooth
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/bluetooth.js
-	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/bluetooth.py
+	# memory
+	# white vertical bar
+	# when it reaches above 90%, it blinks
+	# https://github.com/AstraExt/astra-monitor/tree/main/src/memory
+	# https://gitlab.gnome.org/GNOME/gnome-usage/-/blob/main/src/memory-monitor.vala
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/sysdata.py
+	# https://github.com/fcaballerop/simple-monitor-gnome-shell-extension/blob/main/extension.js
+	# https://github.com/eeeeeio/gnome-shell-extension-nano-system-monitor/blob/master/src/extension.js
+	#
+	# import re
+	# with open('/proc/meminfo') as mem_info_file:
+	# 	mem_info = mem_info_file.read()
+	# 	mem_total = re.compile(r"MemTotal:\s+(\d+) kB").match(mem_info)
+	# 	mem_total = int(mem_total)
+	# 	mem_available = re.compile(r"MemAvailable:\s+(\d+) kB").match(mem_info)
+	# 	mem_available = int(mem_available)
+	# 	mem_usage = (mem_total - mem_available) / mem_total
 	
-	# audio (pipewire output)
-	# if audio out device is not dummy, show icon
-	# 0: muted icon
-	# 1 to 80: low icon
-	# 80 to 99: medium icon
-	# 100: high icon
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
+	# storage devices activity
+	# writing: red icon
+	# reading: yellow icon
+	# reading and writing: orange icon
+	# if there is no read/write now, but there was one in the last 15 seconds, dim the corresponding color
+	# https://github.com/AstraExt/astra-monitor/tree/main/src/storage
+	# https://unix.stackexchange.com/questions/55212/how-can-i-monitor-disk-io
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/diskdata.py
 	
-	# mic (pipewire input)
-	# https://github.com/xenomachina/i3pamicstatus
-	
-	# cam
-	# visible only when it's active
-	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/camera.js
-	
-	# screen recorder indicator
-	# watch for $HOME/.cache/swaycap/screen.mp4
-	# if it's open, show red circle
-	# if exists but not open, show red square
-	# if does not exist, shoe nothing
+	# # battery: if exist, show icon
+	# https://wiki.archlinux.org/title/Laptop
+	# https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/system.js
+	# https://github.com/ultrabug/py3status/blob/master/py3status/modules/battery_level.py
+	# https://pkgs.chimera-linux.org/package/current/main/x86_64/upower
+	# 	https://upower.freedesktop.org/docs/
+	# https://www.kernel.org/doc/html/latest/power/power_supply_class.html
+	# if [ -e /sys/class/power_supply/BAT0 ]; then
+	# 	# /sys/class/power_supply/BAT0/capacity
+	# 	# /sys/class/power_supply/BAT0/status
+	# 	# https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-class-power
+	# fi
 	
 	# date'time indicator
 	dt = datetime.now()
