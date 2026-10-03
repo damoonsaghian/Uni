@@ -45,7 +45,7 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	bluez networkmanager modemmanager iputils dnsmasq geoclue geocode-glib libgweather iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
 	fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
+	sway swayidle lisgd fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
 	libadwaita gtksourceview libspelling libspiel gst-plugins-good gst-plugins-rs gst-libav \
 	poppler-glib-libs webkitgtk4 libtorrent-rasterbar-python
 
