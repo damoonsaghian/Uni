@@ -24,7 +24,11 @@ def setup_displays(app :gtk.Application):
 	
 	# if display is landscape: width=80 height=80 pos="center"
 	# if display is portrait: width=100 height=80 pos="0 ppt 20 ppt"
-	# ["swaymsg", f"for_window [floating workspace={num}] resize set {width} ppt {haight} ppt; move position {pos}"]
-	
-	gio.Subprocess(["swaymsg", "bindswitch lid:on output - disable"], gio.SubprocessFlags.NONE)
-	gio.Subprocess(["swaymsg", "bindswitch lid:off output * enable"], gio.SubprocessFlags.NONE)
+	ws=".*"
+	width="80"
+	haight="80"
+	pos="center"
+	gio.Subprocess(
+		["swaymsg", f"for_window [floating workspace={ws}] resize set {width} ppt {height} ppt; move position {pos}"],
+		gio.SubprocessFlags.NONE
+	)

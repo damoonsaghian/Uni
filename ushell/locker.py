@@ -24,16 +24,12 @@ def lock():
 	# when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
 	# if correct password is entered (check using su): close password layer, swaymsg workspace lock
 	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
-	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch; \
-	# 	mode screen_off"
+	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
 	# upon any input activity, or if unfocused, or resume from suspend:
 	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
 	
-	# swaymsg:
-	# mode screen_off {
-	# 	bindgesture --exact swipe:3:down output - power on; \
-	# 		seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch
-	# }
+	# double tap -> turn on the screen
+	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
 	
 	# lock
 	# switch to workspace lock, and if workspace is empty, run: uni lock

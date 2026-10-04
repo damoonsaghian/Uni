@@ -39,17 +39,20 @@ def setup_panel(app :gtk.Application):
 	gls.set_keyboard_mode(window, gls.KeyboardMode.EXCLUSIVE)
 	window.present()
 	
-	# when a "Launcher" message is received from dbus, 
-	def launcher_or_unlocker():
+	# after opening the panel, create an empty a window with title "dimmer"
+	# the moment this window is focused or recieves a click event, it closes itself and the panel
+	
+	# when a "Panel" message is received from dbus, 
+	def panel_or_unlocker():
 		# if in lock workspace, show password prompt
-		# otherwise, show the launcher: gls.set_layer(window, gls.Layer.TOP)
+		# otherwise, show the panel: gls.set_layer(window, gls.Layer.TOP)
 	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Launcher", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, launcher_or_unlocker)
+		None, "ushell.Ushell", "Panel", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, panel_or_unlocker)
 	
 	# swaymsg:
-	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Launcher"
-	# bindsym --release Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Launcher"
-	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Launcher"
+	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
+	# bindsym --release Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
+	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
 	
 	# FlowBox containing apps
 	# https://github.com/otsaloma/catapult
@@ -80,12 +83,10 @@ def setup_panel(app :gtk.Application):
 	# put in clipboard
 	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
 	
-	# press escape or click/tap outside of launcher: close launcher
-	# don't close launcher, if workspace is empty
+	# press escape or click/tap outside of panel: close panel
+	# don't close panel, if workspace is empty
 	
 	# close window when unfocused
-
-	# when "Launcher" message is recsived from dbus, present window
 	
 	# when window is focused, return back to apps list
 	

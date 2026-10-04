@@ -19,8 +19,18 @@ def setup_bar(app :gtk.Application):
 		margin_end=2
 	))
 	
-	# click (swipe up from bottom edge) anywhere on the bar -> launcher
+	# click or swipe up from bottom edge, anywhere on the bar, to toggle the main panel
+	def on_click_or_swipe():
+		gio.Subprocess(["dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"], gio.SubprocessFlags.NONE)
+	click_evctl = gtk.GestureClick()
+	click_evctl.connect('begin', on_click_or_swipe)
+	window.add_controller(click_evctl)
+	swipe_evctl = gtk.GestureSwipe()
+	swipe_evctl.connect('begin', on_click_or_swipe)
+	window.add_controller(swipe_evctl)
+	
 	# right click (tap and hold) any where on the bar -> show window close button on a popup window (at click position)
+	def popup_close_button():
 	
 	# if mouse touches bottom edge, or when swipe from bottom edge, bring up the bar
 	# gls.set_layer(window, gls.Layer.OVERLAY)
