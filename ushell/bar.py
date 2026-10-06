@@ -19,26 +19,37 @@ def setup_bar(app :gtk.Application):
 		margin_end=2
 	))
 	
-	# click or swipe up from bottom edge, anywhere on the bar, to toggle the main panel
-	def on_click_or_swipe():
+	# click on the bar to toggle the main panel
+	def on_click():
 		gio.Subprocess(["dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"], gio.SubprocessFlags.NONE)
-	click_evctl = gtk.GestureClick()
-	click_evctl.connect('begin', on_click_or_swipe)
+	click_evctl = gtk.GestureClick(button=1, exclusive=True)
+	click_evctl.connect('begin', on_click)
 	window.add_controller(click_evctl)
-	swipe_evctl = gtk.GestureSwipe()
-	swipe_evctl.connect('begin', on_click_or_swipe)
-	window.add_controller(swipe_evctl)
 	
-	# right click (tap and hold) any where on the bar -> show window close button on a popup window (at click position)
-	def popup_close_button():
+	# swipe up from the bottom edge of the screen to toggle main panel (even when fullscreen)
+	gio.Subprocess(
+		['doas', 'lisgd', '-g', '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel'],
+		gio.SubprocessFlags.NONE
+	)
 	
-	# if mouse touches bottom edge, or when swipe from bottom edge, bring up the bar
+	# a one pixel line at the bottom edge (in overlay layer)
+	# when pointer enters it, set the layer of bar to overlay, so it will show above fullscreen window
 	# gls.set_layer(window, gls.Layer.OVERLAY)
-	# after mouse leaves the bar, hide it
-	# gls.set_layer(window, gls.Layer.TOP)
+	# when mouse leaves bar set the layer back to bottom
+	# gls.set_layer(window, gls.Layer.BOTTOM)
+	click_evctl2 = gtk.GestureClick(button=1, exclusive=True)
+	click_evctl2.connect('begin', on_click)
+	single_line_window.add_controller(click_evctl)
+	
+	# right click or tap and hold any where on the bar -> show window close button on a popup window (at click position)
+	def popup_close_button():
+		pass
+	longpress_evctl = gtk.GestureLongPress()
+	longpress_evctl.connect('begin', popup_close_button)
+	window.add_controller(longpress_evctl)
 	
 	gls.init_for_window(window)
-	gls.set_layer(window, gls.Layer.TOP)
+	gls.set_layer(window, gls.Layer.BOTTOM)
 	gls.set_anchor(window, gls.Edge.BOTTOM, True)
 	gls.set_anchor(window, gls.Edge.LEFT, True)
 	gls.set_anchor(window, gls.Edge.RIGHT, True)

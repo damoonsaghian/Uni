@@ -24,6 +24,7 @@ script_dir = pathlib.Path(__file__).resolve().parent
 #
 # bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
 # 	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
+# 	--bind /dev/null /usr/bin/lisgd \
 # 	--bind /dev/null "$HOME/.config/ushell/screens" \
 # 	--bind /dev/null "$HOME/.config/ushell/autostart" \
 # 	-- $program
@@ -33,7 +34,7 @@ def setup_panel(app :gtk.Application):
 	window.set_default_size(width=294, height=360)
 	
 	gls.init_for_window(window)
-	gls.set_layer(window, gls.Layer.BACKGROUND)
+	gls.set_layer(window, gls.Layer.BOTTOM)
 	gls.set_anchor(window, gls.Edge.BOTTOM, True)
 	gls.set_margin(window, gls.Edge.BOTTOM, 20)
 	gls.set_keyboard_mode(window, gls.KeyboardMode.EXCLUSIVE)
@@ -42,10 +43,20 @@ def setup_panel(app :gtk.Application):
 	# after opening the panel, create an empty a window with title "dimmer"
 	# the moment this window is focused or recieves a click event, it closes itself and the panel
 	
+	# when panel is closed:
+	# windows_list :list[gtk.Window] = app.get_windows()
+	# for window in windows_list:
+	# 	if gls.is_layer_window(window):
+	# 		gls.set_layer(window, gls.Layer.BOTTOM)
+	
 	# when a "Panel" message is received from dbus, 
 	def panel_or_unlocker():
 		# if in lock workspace, show password prompt
-		# otherwise, show the panel: gls.set_layer(window, gls.Layer.TOP)
+		# otherwise, show the panel (and also bring up the layer of bar, in case there is a fullscreen window):
+		# 	windows_list :list[gtk.Window] = app.get_windows()
+		# 	for window in windows_list:
+		# 		if gls.is_layer_window(window):
+		# 			gls.set_layer(window, gls.Layer.OVERLAY)
 	app.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "Panel", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, panel_or_unlocker)
 	
@@ -84,7 +95,6 @@ def setup_panel(app :gtk.Application):
 	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
 	
 	# press escape or click/tap outside of panel: close panel
-	# don't close panel, if workspace is empty
 	
 	# close window when unfocused
 	
