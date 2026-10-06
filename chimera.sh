@@ -45,7 +45,7 @@ chimera-bootstrap "$new_root" systemd-boot $ucode_pkg linux-stable base-full-ker
 	bluez networkmanager modemmanager iputils dnsmasq geoclue geocode-glib libgweather iio-sensor-proxy-meta \
 	base-full-session pipewire bash-completion less nano opendoas fwupd \
 	fonts-noto fonts-noto-emoji-ttf fonts-noto-sans-cjk fonts-source-code-pro-otf \
-	sway swayidle fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
+	sway swayidle lisgd fcitx5 gtk4-layer-shell vte-gtk4 bubblewrap python-gobject \
 	libadwaita gtksourceview libspelling libspiel gst-plugins-good gst-plugins-rs gst-libav \
 	poppler-glib-libs webkitgtk4 libtorrent-rasterbar-python
 
@@ -103,7 +103,7 @@ echo; echo "set lock'screen password"
 while ! chroot "$new_root" passwd nu; do
 	echo "please retry"
 done
-echo 'permit nu cmd /usr/bin/passwd nu' > "$new_root"/etc/doas.d/passwd.conf
+echo 'permit nu cmd /usr/bin/passwd args nu' > "$new_root"/etc/doas.d/passwd.conf
 
 # set autologin for tty1 and tty2
 echo 'GETTY_ARGS="$GETTY_ARGS --autologin nu"' > "$new_root"/etc/default/agetty-tty1
@@ -120,6 +120,8 @@ printf "\e[0m"
 PS2=""
 PS0="\e[90m=>\e[0m\n"
 EOF
+
+echo 'permit nopass nu cmd /usr/bin/lisgd' > "$new_root"/etc/doas.d/lisgd.conf
 
 script_dir="$(dirname "$(readlink -f "$0")")"
 
