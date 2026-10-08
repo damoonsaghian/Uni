@@ -1,7 +1,8 @@
 Ushell provides a graphical shell consisting of a main panel and a status bar
 the main panel can be toggled by pressing "super" (mod+mod) or "alt+tab", showing all available applications
 applications can be selected by typing their name, or using the arrow keys
-press "space" to open a selected applications in its own workspace
+	space entered while typing application's name, will be considered the wild card character "*"
+press "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
 to close a window, press "super+backspace" or "alt+escape"
 
