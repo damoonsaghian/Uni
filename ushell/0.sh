@@ -46,12 +46,12 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	
 	sway_config="$(mktemp)"
 	echo -n "output * bg #222222 solid_color
-	for_window [all] border csd
 	input type:touchpad {
 		tap enabled
 		scroll_method two_finger
 		natural_scroll enabled
 	}
+	focus_follows_mouse no
 	seat * hide_cursor 8000
 	bindsym Mod4+BackSpace kill
 	bindsym Mod1+Escape kill

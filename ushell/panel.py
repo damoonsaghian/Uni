@@ -29,8 +29,15 @@ script_dir = pathlib.Path(__file__).resolve().parent
 # 	--bind /dev/null "$HOME/.config/ushell/autostart" \
 # 	-- $program
 
-def setup_panel(app :gtk.Application):
-	window = gtk.Window(application=app)
+# locked panel: show password entry
+
+def hide_panel(ushell :gtk.Application):
+	for window in ushell.get_windows():
+		if gls.is_layer_window(window):
+			gls.set_layer(window, gsl.Layer.BOTTOM)
+
+def setup_panel(ushell :gtk.Application):
+	window = gtk.Window(application=ushell)
 	window.set_default_size(width=294, height=360)
 	
 	gls.init_for_window(window)
@@ -38,27 +45,27 @@ def setup_panel(app :gtk.Application):
 	gls.set_anchor(window, gls.Edge.BOTTOM, True)
 	gls.set_margin(window, gls.Edge.BOTTOM, 20)
 	gls.set_keyboard_mode(window, gls.KeyboardMode.EXCLUSIVE)
+	gls.set_respect_close(window, True)
 	window.present()
 	
-	# after opening the panel, create an empty a window with title "dimmer"
-	# the moment this window is focused or recieves a click event, it closes itself and the panel
-	
-	# when panel is closed:
-	# windows_list :list[gtk.Window] = app.get_windows()
-	# for window in windows_list:
-	# 	if gls.is_layer_window(window):
-	# 		gls.set_layer(window, gls.Layer.BOTTOM)
+	# after opening the panel
+	# gio.Subprocess(['dbus-send' ,'--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.OverlayBar'])
 	
 	# when a "Panel" message is received from dbus, 
-	def panel_or_unlocker():
-		# if in lock workspace, show password prompt
-		# otherwise, show the panel (and also bring up the layer of bar, in case there is a fullscreen window):
-		# 	windows_list :list[gtk.Window] = app.get_windows()
-		# 	for window in windows_list:
-		# 		if gls.is_layer_window(window):
-		# 			gls.set_layer(window, gls.Layer.OVERLAY)
-	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Panel", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, panel_or_unlocker)
+	def toggle_panel():
+		# reveal panel if hidden or not in apps view
+		# otherwise hide panel
+		
+		# make all ushell's layer windows OVERLAY
+		# for window in ushell.get_windows():
+		# 	if gls.is_layer_window(window):
+		# 		gls.set_layer(window, gls.Layer.OVERLAY)
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "Panel", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, toggle_panel)
+	
+	# when panel's window is focused:
+	# if in locks workspace show password entry
+	# otherwise go to apps
 	
 	# swaymsg:
 	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
@@ -96,9 +103,11 @@ def setup_panel(app :gtk.Application):
 	
 	# press escape or click/tap outside of panel: close panel
 	
-	# close window when unfocused
+	# when window is unfocused: gls.set_layer(window, gls.Layer.BOTTOM)
 	
 	# when window is focused, return back to apps list
+	
+	# implement an interface to select and close applications (keyboard and long'press gesture)
 	
 	gio.Subprocess(['swaymsg', 'assign [app_id="uni.Uni"] workspace uni.Uni'], gio.SubprocessFlags.NONE)
 	app_exec = 

@@ -6,6 +6,7 @@ import gi
 gi.require_version('Gdk', '4.0')
 gi.require_version('Gtk', '4.0')
 
+from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 
 from bar import setup_bar
@@ -16,17 +17,17 @@ from osk import setup_osk
 from panel import setup_panel
 from voicekey import setup_voicekey
 
-def on_startup(app :gtk.Application):
-	setup_bar(app)
-	setup_displays(app)
-	setup_floater(app)
-	setup_locker(app)
-	setup_osk(app)
-	setup_pannel(app)
-	setup_voicekey(app)
+def on_startup(ushell :gtk.Application):
+	setup_bar(ushell)
+	setup_displays(ushell)
+	setup_floater(ushell)
+	setup_locker(ushell)
+	setup_osk(ushell)
+	setup_pannel(ushell)
+	setup_voicekey(ushell)
 
 gtk.Settings.get_default().props.gtk_overlay_scrolling = False
 
-app = gtk.Application(application_id='ushell.Ushell')
-app.connect('startup', on_startup)
-app.run()
+ushell = gtk.Application(application_id='ushell.Ushell')
+ushell.connect('startup', on_startup)
+ushell.run()

@@ -11,9 +11,9 @@ floater_script = """
 		swaymsg "[workspace=__focused__ floating] kill"
 		swaymsg focus prev && swaymsg "focus next; floating enable"
 	elif swaymsg "[con_id=__focused__ floating] focus" &&
-		! swaymsg "[workspace=__focused__ app_id="ushell.Ushell" title=dimmer] floating enable"
+		! swaymsg "[workspace=__focused__ app_id='ushell\.Ushell' title=dimmer] floating enable"
 	then
-		dbus-send --dest=ushell.SwayShell /ushell/SwayShell ushell.Ushell.Dim
+		dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Dim
 	fi
 done
 """
