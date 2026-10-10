@@ -53,7 +53,8 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	}
 	focus_follows_mouse no
 	seat * hide_cursor 8000
-	bindsym Mod4+BackSpace kill
+	bindsym Mod1+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Press'
+	bindsym --release Mod1+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Release'
 	bindsym Mod1+Escape kill
 	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
 	" > "$sway_config"

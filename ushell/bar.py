@@ -18,20 +18,13 @@ def setup_bar(ushell :gtk.Application):
 	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
 	gls.set_respect_close(bar_window, True)
 	
-	# swaymsg:
-	# bindsym Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
-	# bindsym Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
-	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
-	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
-	# bindsym --release Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
-	# bindsym --release Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
 	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "KeyPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: # put bar into OVERLAY layer
+		None, "ushell.Ushell", "AltTabPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: gls.set_layer(bar_window. gls.Layer.OVERLAY)
 	)
 	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "KeyPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: reveal_all_layershell_windows(ushell)
+		None, "ushell.Ushell", "AltTabRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_release(ushell)
 	)
 	
 	# click on bar to toggle the main panel
@@ -53,12 +46,15 @@ def setup_bar(ushell :gtk.Application):
 	bar_window.add_controller(right_click_eventctl)
 	
 	# when there is a fullscreen window, there is no bar to click on
-	# so we need to reveal the bar whenever pointer touches the bottom edge
+	# so the bar must be revealed whenever the pointer touches the bottom edge
 	setup_bottom_edge(ushell, bar_window)
 	
-	setup_touchscreen_gesture(bar_window)
-	
-	setup_close_app_dialog(bar_window)
+	# touchscreen gestures
+	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
+		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Press' "
+		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Release' "
+		"-g '2,DU,B,*,P,swaymsg kill'"
+	], gio.SubprocessFlags.NONE)
 	
 	notifications_box = gtk.Box(spacing=5)
 	setup_notifications(notification_box)
@@ -73,7 +69,7 @@ def setup_bar(ushell :gtk.Application):
 	
 	bar_window.present()
 
-def reveal_all_layershell_windows(ushell :gtk.Application):
+def on_release(ushell :gtk.Application):
 	# if timer is less than 2 sec
 	# 	if overlay_dim is present, close it
 	# 	otherwise set the layer of all ushell windows to OVERLAY
@@ -127,48 +123,6 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	bar_window.add_controller(pointer_eventctl)
 	
 	edge_window.present()
-
-def setup_touchscreen_gesture(bar_window :gtk.Window):
-	# swipe up from the bottom edge to toggle panel
-	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && "
-		"doas lisgd -g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel'"
-	], gio.SubprocessFlags.NONE)
-	
-	
-	
-	def reveal_bar():
-		gls.set_layer(bar_window, gls.Layer.OVERLAY)
-		
-		def show_overlay_dim():
-			overlay_dim.present()
-		app.get_dbus_connection().signal_subscribe(
-			None, "ushell.Ushell", "OverlayDim", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, show_overlay_dim)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "OverlayBar", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, reveal_bar)
-
-def setup_close_app_dialog(bar_window :gtk.Window):
-	dialog_window = gtk.Window()
-	
-	gls.init_for_window(dialog_window)
-	gls.set_layer(dialog_window, gls.Layer.OVERLAY)
-	gls.set_anchor(dialog_window, gls.Edge.BOTTOM, True)
-	gls.set_keyboard_mode(dialog_window, gls.KeyboardMode.NONE)
-	gls.set_respect_close(dialog_window, True)
-	
-	close_dialog.add_child(dialog_box)
-	close_button = gtk.Button(
-		action = lambda: gio.Subprocess(['swaymsg', '[workspace=__focused__] kill'], gio.SubprocessFlags.NONE)
-	)
-	cancel_button = gtk.Button()
-	dialog_box.add_child(cancel_button)
-	dialog_box.add_child(close_button)
-	
-	# right click or long'press to show app'closer dialog window
-	
-	# long press
-	longpress_eventctl = gtk.GestureLongPress()
-	longpress_eventctl.connect('begin', popup_close_dialog)
-	bar_window.add_controller(longpress_eventctl)
 
 def setup_notifications(box :gtk.Box):
 	pass
