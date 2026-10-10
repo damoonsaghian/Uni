@@ -1,16 +1,16 @@
 Ushell provides a graphical shell consisting of a main panel and a status bar
-the main panel can be toggled by pressing "super" (mod+mod) or "alt+tab", showing all available applications
+the main panel can be toggled by pressing Alt+Tab (RightMod+LeftMod), showing all available applications
 applications can be selected by typing their name, or using the arrow keys
 	space entered while typing application's name, will be considered the wild card character "*"
 press "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
-to close a window, press "super+backspace" or "alt+escape"
+to close a window, press "alt+escape" (LeftMod+RightMod)
 
 right after opening the main panel, press "space" to open command prompt
 by typing special keywords in command prompt, you have instant access to various small but useful things like:
 	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
 
-right after opening the main panel, press "enter" to open system menu:
+right after opening the main panel, press "enter" to open the system menu:
 , session (lock, suspend, exit, reboot, poweroff)
 , displays
 , connections
