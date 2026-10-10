@@ -1,92 +1,92 @@
 import datetime
+import cairo
 
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
 def setup_bar(ushell :gtk.Application):
+	bar_window = gtk.Window(application=ushell)
+	bar_window.set_default_size(width=-1, height=18)
+	
+	gls.init_for_window(bar_window)
+	gls.set_layer(bar_window, gls.Layer.BOTTOM)
+	gls.set_anchor(bar_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(bar_window, gls.Edge.LEFT, True)
+	gls.set_anchor(bar_window, gls.Edge.RIGHT, True)
+	gls.auto_exclusive_zone_enable(bar_window)
+	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
+	gls.set_respect_close(bar_window, True)
+	
+	# swaymsg:
+	# bindsym Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
+	# bindsym Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
+	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyPress"
+	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
+	# bindsym --release Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
+	# bindsym --release Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.KeyRelease"
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "KeyPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: # put bar into OVERLAY layer
+	)
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "KeyPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: reveal_all_layershell_windows(ushell)
+	)
+	
+	# click on bar to toggle the main panel
+	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
+	click_evctl.connect(
+		'begin',
+		lambda: gio.Subprocess(
+			['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'],
+			gio.SubprocessFlags.NONE
+		)
+	)
+	bar_window.add_controller(click_evctl)
+	
+	# right click on bar to close focused window
+	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
+	right_click_eventctl.connect('begin',
+		lambda: gio.Subprocess(['swaymsg', 'kill'], gio.SubprocessFlags.NONE)
+	)
+	bar_window.add_controller(right_click_eventctl)
+	
+	# when there is a fullscreen window, there is no bar to click on
+	# so we need to reveal the bar whenever pointer touches the bottom edge
+	setup_bottom_edge(ushell, bar_window)
+	
+	setup_touchscreen_gesture(bar_window)
+	
+	setup_close_app_dialog(bar_window)
+	
 	notifications_box = gtk.Box(spacing=5)
 	setup_notifications(notification_box)
 	system_status_box = gtk.Box(spacing=5)
 	setup_system_status(system_status_box)
-	
-	window = gtk.Window(application=ushell)
-	window.set_default_size(width=-1, height=18)
-	window.set_child(gtk.CenterBox(
+	bar_window.set_child(gtk.CenterBox(
 		start_widget=notification_box,
 		end_widget=system_status_box,
 		margin_start=2,
 		margin_end=2
 	))
 	
-	setup_click_evctl(window)
-	
-	# when there is a fullscreen window, there is no bar to click on
-	# so a hot edge will be created that will reveal the bar when pointer touches the bottom edge
-	setup_hot_edge(ushell, window)
-	
-	setup_touchscreen_gesture(window)
-	
-	gls.init_for_window(window)
-	gls.set_layer(window, gls.Layer.BOTTOM)
-	gls.set_anchor(window, gls.Edge.BOTTOM, True)
-	gls.set_anchor(window, gls.Edge.LEFT, True)
-	gls.set_anchor(window, gls.Edge.RIGHT, True)
-	gls.auto_exclusive_zone_enable(window)
-	gls.set_keyboard_mode(window, gls.KeyboardMode.NONE)
-	
-	window.present()
+	bar_window.present()
 
-def setup_click_evctl(window :gtk.Window):
-	# click to toggle the main panel
-	def on_click():
-		gio.Subprocess(["dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"], gio.SubprocessFlags.NONE)
-	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('begin', on_click)
-	window.add_controller(click_evctl)
+def reveal_all_layershell_windows(ushell :gtk.Application):
+	# if timer is less than 2 sec
+	# 	if overlay_dim is present, close it
+	# 	otherwise set the layer of all ushell windows to OVERLAY
+	# otherwise put them all in BOTTOM layer, and
 	
-	# right click or long'press to show app closer dialog popup (at click position)
-	def popup_close_dialog():
-		pass
-	right_click_evctl = gtk.GestureClick(button=3, exclusive=True)
-	right_click_evctl.connect('begin', popup_close_dialog)
-	window.add_controller(right_click_evctl)
-	# long press
-	longpress_evctl = gtk.GestureLongPress()
-	longpress_evctl.connect('begin', popup_close_dialog)
-	window.add_controller(longpress_evctl)
-
-def setup_hot_edge(ushell :gtk.Application, bar_window :gtk.Window):
-	window = gtk.Window(application=ushell)
-	window.set_default_size(width=-1, height=1)
-	setup_click_evctl(window)
+	# make all ushell's layer windows OVERLAY
+	# for window in ushell.get_windows():
+	# 	if gls.is_layer_window(window):
+	# 		gls.set_layer(window, gls.Layer.OVERLAY)
 	
-	# when pointer enters it, set the layer of bar_window to overlay, so it will show above fullscreen window
-	# gls.set_layer(bar_window, gls.Layer.OVERLAY)
-	# when mouse leaves bar, if pointer is not on edge, set the bar layer back to bottom
-	# gls.set_layer(bar_window, gls.Layer.BOTTOM)
-	
-	gls.init_for_window(window)
-	gls.set_layer(window, gls.Layer.OVERLAY)
-	gls.set_anchor(window, gls.Edge.BOTTOM, True)
-	gls.set_anchor(window, gls.Edge.LEFT, True)
-	gls.set_anchor(window, gls.Edge.RIGHT, True)
-	gls.set_exclusive_zone(window, -1)
-	gls.set_keyboard_mode(window, gls.KeyboardMode.NONE)
-	gls.set_respect_close(window, True)
-	
-	window.present()
-
-def setup_touchscreen_gesture(bar_window :gtk.Window):
-	# swipe up from the bottom edge without lifting the finger, just a little, enough to reveal the bar
-	# continue to complete the swipe, to open panel as well
-	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && doas lisgd "
-		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.OverlayBar'"
-		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel'"
-	], gio.SubprocessFlags.NONE)
-	
+	# after opening the panel, create an overlay dimmer
 	overlay_dim = gtk.Window(application=ushell)
-	# the moment this window recieves a click event, it hides itself, then hide_all(ushell)
+	# the moment this window recieves a click/tap event, it hides itself, then hide_all(ushell)
 	def hide_all():
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
@@ -99,6 +99,42 @@ def setup_touchscreen_gesture(bar_window :gtk.Window):
 	gls.set_anchor(overlay_dim, gls.Edge.BOTTOM, True)
 	gls.set_keyboard_mode(overlay_dim, gls.KeyboardMode.NONE)
 	gls.set_respect_close(overlay_dim, True)
+
+def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
+	edge_window = gtk.Window(application=ushell)
+	edge_window.set_default_size(width=-1, height=1)
+	
+	gls.init_for_window(edge_window)
+	gls.set_layer(edge_window, gls.Layer.OVERLAY)
+	gls.set_anchor(edge_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(edge_window, gls.Edge.LEFT, True)
+	gls.set_anchor(edge_window, gls.Edge.RIGHT, True)
+	gls.set_exclusive_zone(edge_window, -1)
+	gls.set_keyboard_mode(edge_window, gls.KeyboardMode.NONE)
+	gls.set_respect_close(edge_window, True)
+	
+	# when pointer enters edge_window, set the layer of bar_window to overlay, so it will be above fullscreen window
+	# and make edge_window transparent to mouse using gdk_urface
+	# edge_window.get_surface().set_input_region(cairo.Region())
+	pointer_eventctl = gtk.EventControllerMotion()
+	pointer_eventctl.connect('enter', lambda _, _: gls.set_layer(bar_window, gls.Layer.OVERLAY))
+	edge_window.add_controller(pointer_eventctl)
+	
+	# when mouse leaves bar, set the layer of bar_window back to bottom
+	# and make edge_window reactive to mouse again edge_window.get_surface().set_input_region()
+	pointer_eventctl = gtk.EventControllerMotion()
+	pointer_eventctl.connect('leave', lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM))
+	bar_window.add_controller(pointer_eventctl)
+	
+	edge_window.present()
+
+def setup_touchscreen_gesture(bar_window :gtk.Window):
+	# swipe up from the bottom edge to toggle panel
+	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && "
+		"doas lisgd -g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel'"
+	], gio.SubprocessFlags.NONE)
+	
+	
 	
 	def reveal_bar():
 		gls.set_layer(bar_window, gls.Layer.OVERLAY)
@@ -109,6 +145,30 @@ def setup_touchscreen_gesture(bar_window :gtk.Window):
 			None, "ushell.Ushell", "OverlayDim", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, show_overlay_dim)
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "OverlayBar", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, reveal_bar)
+
+def setup_close_app_dialog(bar_window :gtk.Window):
+	dialog_window = gtk.Window()
+	
+	gls.init_for_window(dialog_window)
+	gls.set_layer(dialog_window, gls.Layer.OVERLAY)
+	gls.set_anchor(dialog_window, gls.Edge.BOTTOM, True)
+	gls.set_keyboard_mode(dialog_window, gls.KeyboardMode.NONE)
+	gls.set_respect_close(dialog_window, True)
+	
+	close_dialog.add_child(dialog_box)
+	close_button = gtk.Button(
+		action = lambda: gio.Subprocess(['swaymsg', '[workspace=__focused__] kill'], gio.SubprocessFlags.NONE)
+	)
+	cancel_button = gtk.Button()
+	dialog_box.add_child(cancel_button)
+	dialog_box.add_child(close_button)
+	
+	# right click or long'press to show app'closer dialog window
+	
+	# long press
+	longpress_eventctl = gtk.GestureLongPress()
+	longpress_eventctl.connect('begin', popup_close_dialog)
+	bar_window.add_controller(longpress_eventctl)
 
 def setup_notifications(box :gtk.Box):
 	pass

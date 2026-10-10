@@ -31,11 +31,6 @@ script_dir = pathlib.Path(__file__).resolve().parent
 
 # locked panel: show password entry
 
-def hide_panel(ushell :gtk.Application):
-	for window in ushell.get_windows():
-		if gls.is_layer_window(window):
-			gls.set_layer(window, gsl.Layer.BOTTOM)
-
 def setup_panel(ushell :gtk.Application):
 	window = gtk.Window(application=ushell)
 	window.set_default_size(width=294, height=360)
@@ -48,29 +43,9 @@ def setup_panel(ushell :gtk.Application):
 	gls.set_respect_close(window, True)
 	window.present()
 	
-	# after opening the panel
-	# gio.Subprocess(['dbus-send' ,'--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.OverlayBar'])
-	
-	# when a "Panel" message is received from dbus, 
-	def toggle_panel():
-		# reveal panel if hidden or not in apps view
-		# otherwise hide panel
-		
-		# make all ushell's layer windows OVERLAY
-		# for window in ushell.get_windows():
-		# 	if gls.is_layer_window(window):
-		# 		gls.set_layer(window, gls.Layer.OVERLAY)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Panel", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, toggle_panel)
-	
 	# when panel's window is focused:
 	# if in locks workspace show password entry
 	# otherwise go to apps
-	
-	# swaymsg:
-	# bindsym --release Super_L exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
-	# bindsym --release Super_R exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
-	# bindsym Mod1+Tab exec "dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Panel"
 	
 	# FlowBox containing apps
 	# https://github.com/otsaloma/catapult
@@ -101,9 +76,7 @@ def setup_panel(ushell :gtk.Application):
 	# put in clipboard
 	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
 	
-	# press escape or click/tap outside of panel: close panel
-	
-	# when window is unfocused: gls.set_layer(window, gls.Layer.BOTTOM)
+	# press escape: close panel
 	
 	# when window is focused, return back to apps list
 	
