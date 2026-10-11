@@ -1,100 +1,35 @@
 import datetime
 import cairo
 
+from gi.repository import GLib as glib
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
-def setup_bar(ushell :gtk.Application):
-	bar_window = gtk.Window(application=ushell)
-	bar_window.set_default_size(width=-1, height=18)
-	
-	gls.init_for_window(bar_window)
-	gls.set_layer(bar_window, gls.Layer.BOTTOM)
-	gls.set_anchor(bar_window, gls.Edge.BOTTOM, True)
-	gls.set_anchor(bar_window, gls.Edge.LEFT, True)
-	gls.set_anchor(bar_window, gls.Edge.RIGHT, True)
-	gls.auto_exclusive_zone_enable(bar_window)
-	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
-	gls.set_respect_close(bar_window, True)
-	
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "AltTabPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: gls.set_layer(bar_window. gls.Layer.OVERLAY)
-	)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "AltTabRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: on_release(ushell)
-	)
-	
-	# click on bar to toggle the main panel
-	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect(
-		'begin',
-		lambda: gio.Subprocess(
-			['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'],
-			gio.SubprocessFlags.NONE
-		)
-	)
-	bar_window.add_controller(click_evctl)
-	
-	# right click on bar to close focused window
-	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
-	right_click_eventctl.connect('begin',
-		lambda: gio.Subprocess(['swaymsg', 'kill'], gio.SubprocessFlags.NONE)
-	)
-	bar_window.add_controller(right_click_eventctl)
-	
-	# when there is a fullscreen window, there is no bar to click on
-	# so the bar must be revealed whenever the pointer touches the bottom edge
-	setup_bottom_edge(ushell, bar_window)
-	
-	# touchscreen gestures
-	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
-		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Press' "
-		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Release' "
-		"-g '2,DU,B,*,P,swaymsg kill'"
-	], gio.SubprocessFlags.NONE)
-	
-	notifications_box = gtk.Box(spacing=5)
-	setup_notifications(notification_box)
-	system_status_box = gtk.Box(spacing=5)
-	setup_system_status(system_status_box)
-	bar_window.set_child(gtk.CenterBox(
-		start_widget=notification_box,
-		end_widget=system_status_box,
-		margin_start=2,
-		margin_end=2
-	))
-	
-	bar_window.present()
+def on_alttab_press(bar_window :gtk.Window, timer :glib.Timer):
+	timer.start()
+	gls.set_layer(bar_window. gls.Layer.OVERLAY)
 
-def on_release(ushell :gtk.Application):
-	# if timer is less than 2 sec
-	# 	if overlay_dim is present, close it
-	# 	otherwise set the layer of all ushell windows to OVERLAY
-	# otherwise put them all in BOTTOM layer, and
-	
-	# make all ushell's layer windows OVERLAY
-	# for window in ushell.get_windows():
-	# 	if gls.is_layer_window(window):
-	# 		gls.set_layer(window, gls.Layer.OVERLAY)
-	
-	# after opening the panel, create an overlay dimmer
-	overlay_dim = gtk.Window(application=ushell)
-	# the moment this window recieves a click/tap event, it hides itself, then hide_all(ushell)
+def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 	def hide_all():
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
-				gls.set_layer(window, gsl.Layer.BOTTOM)
-	gls.init_for_window(overlay_dim)
-	gls.set_layer(overlay_dim, gls.Layer.OVERLAY)
-	gls.set_anchor(overlay_dim, gls.Edge.LEFT, True)
-	gls.set_anchor(overlay_dim, gls.Edge.RIGHT, True)
-	gls.set_anchor(overlay_dim, gls.Edge.TOP, True)
-	gls.set_anchor(overlay_dim, gls.Edge.BOTTOM, True)
-	gls.set_keyboard_mode(overlay_dim, gls.KeyboardMode.NONE)
-	gls.set_respect_close(overlay_dim, True)
+				if window.props.title = 'dim-layer':
+					gls.set_layer(window, gsl.Layer.BACKGROUND)
+				else:
+					gls.set_layer(window, gsl.Layer.BOTTOM)
+	
+	if !timer or timer.elapsed(0) < 2:
+		# if dim_layer window is in overlay layer, hide_all
+		# otherwise for all layer'windows of ushell, set the layer to OVERLAY
+		for window in ushell.get_windows():
+			if gls.is_layer_window(window):
+				if window.props.title == 'dim-layer' and gls.get_layer(window) == gls.Layer.OVERLAY:
+					hide_all()
+					break
+				gls.set_layer(window, gls.Layer.OVERLAY)
+	else:
+		hide_all()
 
 def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	edge_window = gtk.Window(application=ushell)
@@ -109,18 +44,23 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	gls.set_keyboard_mode(edge_window, gls.KeyboardMode.NONE)
 	gls.set_respect_close(edge_window, True)
 	
-	# when pointer enters edge_window, set the layer of bar_window to overlay, so it will be above fullscreen window
-	# and make edge_window transparent to mouse using gdk_urface
-	# edge_window.get_surface().set_input_region(cairo.Region())
+	# when mouse enters edge_window, set the layer of bar_window to overlay, so it will be above fullscreen window
+	# and make edge_window transparent to mouse
+	def on_pointer_enter(_, _):
+		gls.set_layer(bar_window, gls.Layer.OVERLAY)
+		edge_window.get_surface().set_input_region(cairo.Region())
 	pointer_eventctl = gtk.EventControllerMotion()
-	pointer_eventctl.connect('enter', lambda _, _: gls.set_layer(bar_window, gls.Layer.OVERLAY))
+	pointer_eventctl.connect('enter', on_pointer_enter)
 	edge_window.add_controller(pointer_eventctl)
 	
-	# when mouse leaves bar, set the layer of bar_window back to bottom
-	# and make edge_window reactive to mouse again edge_window.get_surface().set_input_region()
-	pointer_eventctl = gtk.EventControllerMotion()
-	pointer_eventctl.connect('leave', lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM))
-	bar_window.add_controller(pointer_eventctl)
+	# when pointer leaves bar, set the layer of bar_window back to bottom
+	# and make edge_window reactive to mouse again
+	def on_pointer_leave():
+		gls.set_layer(bar_window, gls.Layer.BOTTOM)
+		edge_window.get_surface().set_input_region()
+	pointer_eventctl2 = gtk.EventControllerMotion()
+	pointer_eventctl2.connect('leave', on_pointer_leave)
+	bar_window.add_controller(pointer_eventctl2)
 	
 	edge_window.present()
 
@@ -311,3 +251,61 @@ def setup_system_status(box :gtk.Box):
 	# fi
 	# waits for the location updated signal from GeoClue, then repeat
 
+def setup_bar(ushell :gtk.Application):
+	bar_window = gtk.Window(application=ushell)
+	bar_window.set_default_size(width=-1, height=18)
+	
+	gls.init_for_window(bar_window)
+	gls.set_layer(bar_window, gls.Layer.BOTTOM)
+	gls.set_anchor(bar_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(bar_window, gls.Edge.LEFT, True)
+	gls.set_anchor(bar_window, gls.Edge.RIGHT, True)
+	gls.auto_exclusive_zone_enable(bar_window)
+	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
+	gls.set_respect_close(bar_window, True)
+	
+	alttab_timer = glib.Timer()
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "AltTabPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_alttab_press(bar_window, alttab_timer)
+	)
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "AltTabRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_alttab_release(ushell, alttab_timer)
+	)
+	
+	# click on bar to toggle the main panel
+	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
+	click_evctl.connect('begin', lambda: on_alttab_release(ushell))
+	bar_window.add_controller(click_evctl)
+	
+	# right click on bar to close focused window
+	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
+	right_click_eventctl.connect('begin',
+		lambda: gio.Subprocess(['swaymsg', 'kill'], gio.SubprocessFlags.NONE)
+	)
+	bar_window.add_controller(right_click_eventctl)
+	
+	# when there is a fullscreen window, there is no bar to click on
+	# so the bar must be revealed whenever the pointer touches the bottom edge
+	setup_bottom_edge(ushell, bar_window)
+	
+	# touchscreen gestures
+	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
+		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' "
+		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' "
+		"-g '2,DU,B,*,P,swaymsg kill'"
+	], gio.SubprocessFlags.NONE)
+	
+	notifications_box = gtk.Box(spacing=5)
+	setup_notifications(notification_box)
+	system_status_box = gtk.Box(spacing=5)
+	setup_system_status(system_status_box)
+	bar_window.set_child(gtk.CenterBox(
+		start_widget=notification_box,
+		end_widget=system_status_box,
+		margin_start=2,
+		margin_end=2
+	))
+	
+	bar_window.present()

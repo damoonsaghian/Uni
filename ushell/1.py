@@ -17,6 +17,7 @@ from osk import setup_osk
 from panel import setup_panel
 from voicekey import setup_voicekey
 
+
 def on_startup(ushell :gtk.Application):
 	setup_bar(ushell)
 	setup_displays(ushell)

@@ -31,7 +31,23 @@ script_dir = pathlib.Path(__file__).resolve().parent
 
 # locked panel: show password entry
 
+def setup_dim_layer():
+	# used behind panel
+	overlay_dim = gtk.Window(application=ushell, title='dim-layer')
+	# the moment this window recieves a click/tap event, it hides itself, then hide_all()
+	gls.init_for_window(overlay_dim)
+	gls.set_layer(overlay_dim, gls.Layer.BACKGROUND)
+	gls.set_anchor(overlay_dim, gls.Edge.LEFT, True)
+	gls.set_anchor(overlay_dim, gls.Edge.RIGHT, True)
+	gls.set_anchor(overlay_dim, gls.Edge.TOP, True)
+	gls.set_anchor(overlay_dim, gls.Edge.BOTTOM, True)
+	gls.set_keyboard_mode(overlay_dim, gls.KeyboardMode.NONE)
+	gls.set_respect_close(overlay_dim, True)
+	overlay_dim.present()
+
 def setup_panel(ushell :gtk.Application):
+	setup_dim_layer()
+	
 	window = gtk.Window(application=ushell)
 	window.set_default_size(width=294, height=360)
 	
