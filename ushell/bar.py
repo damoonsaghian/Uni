@@ -291,7 +291,7 @@ def setup_bar(ushell :gtk.Application):
 	setup_bottom_edge(ushell, bar_window)
 	
 	# touchscreen gestures
-	gio.Subprocess(['sh', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
+	gio.Subprocess(['sh', '-c', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
 		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' "
 		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' "
 		"-g '2,DU,B,*,P,swaymsg kill'"
