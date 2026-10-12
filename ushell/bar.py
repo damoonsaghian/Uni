@@ -19,7 +19,7 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 				else:
 					gls.set_layer(window, gsl.Layer.BOTTOM)
 	
-	if !timer or timer.elapsed(0) < 2:
+	if timer == None or timer.elapsed(0) < 2:
 		# if dim_layer window is in overlay layer, hide_all
 		# otherwise for all layer'windows of ushell, set the layer to OVERLAY
 		for window in ushell.get_windows():
