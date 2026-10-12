@@ -32,7 +32,7 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 		hide_all()
 
 def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
-	edge_window = gtk.Window(application=ushell)
+	edge_window = gtk.Window(application=ushell, opacity=0.5)
 	edge_window.set_default_size(width=-1, height=1)
 	
 	gls.init_for_window(edge_window)

@@ -7,33 +7,32 @@ from gi.repository import Gtk4LayerShell as gls
 from prompt import prompt_view
 from system import system_view
 
-script_dir = pathlib.Path(__file__).resolve().parent
+swaywrap_script = r"""
+run programs in a bwrap sandbox that blocks sway's socket,
+	and protects wayland socket using wayland security context
+this prevents a malicious program from stealing root password, by faking password entry
+https://niri-wm.github.io/niri/Security-Model.html
+so using sudo in Ushell does not suffer from these flaws:
+https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
+https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
 
-#!/usr/bin/env sh
+program="$@"
+[ -z "$program" ] && program="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
 
-# run programs in a bwrap sandbox that blocks sway's socket,
-# 	and protects wayland socket using wayland security context
-# this prevents a malicious program from stealing root password, by faking password entry
-# https://niri-wm.github.io/niri/Security-Model.html
-# so using sudo in Ushell does not suffer from these flaws:
-# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
-# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
-#
-# program="$@"
-# [ -z "$program" ] && program="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
-#
-# bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
-# 	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
-# 	--bind /dev/null /usr/bin/lisgd \
-# 	--bind /dev/null "$HOME/.config/ushell/screens" \
-# 	--bind /dev/null "$HOME/.config/ushell/autostart" \
-# 	-- $program
+bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
+	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
+	--bind /dev/null /usr/bin/lisgd \
+	--bind /dev/null "$HOME/.config/ushell/screens" \
+	--bind /dev/null "$HOME/.config/ushell/autostart" \
+	-- $program
+"""
+gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
 
 # locked panel: show password entry
 
 def setup_dim_layer():
 	# used behind panel
-	overlay_dim = gtk.Window(application=ushell, title='dim-layer')
+	overlay_dim = gtk.Window(application=ushell, title='dim-layer', opacity=0.5)
 	# the moment this window recieves a click/tap event, it hides itself, then hide_all()
 	gls.init_for_window(overlay_dim)
 	gls.set_layer(overlay_dim, gls.Layer.BACKGROUND)

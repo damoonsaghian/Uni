@@ -1,10 +1,17 @@
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
-from gi.repository import Gtk4LayerShell as LayerShell
+from gi.repository import Gtk4LayerShell as gls
 
-def lock():
-	# create a blury fullscreen layer showing a 10 seconds countdown
+def lock(ushell :gtk.Application):
+	# create a semi'transparent fullscreen layer showing a 10 seconds countdown
 	# upon any input activity, or when unfocused, close the layer
+	
+	counter_window = gtk.Window(application=ushell, opacity=0.5)
+	
+	eventctl = gtk.EventControllerLegacy()
+	eventctl.connect('event', lambda _: counter_window.close())
+	window.add_controller(eventctl)
+	
 	# after 10 seconds:
 	# , swaymsg 'workspace lock'
 	# , show password layer, with a transparent window, the size of the screen
@@ -15,6 +22,19 @@ def lock():
 	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
 	# upon any input activity, or if unfocused, or resume from suspend:
 	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
+			
+	gls.init_for_window(counter_window)
+	gls.set_layer(counter_window, gls.Layer.OVERLAY)
+	gls.set_anchor(counter_window, gls.Edge.TOP, True)
+	gls.set_anchor(counter_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(counter_window, gls.Edge.LEFT, True)
+	gls.set_anchor(counter_window, gls.Edge.RIGHT, True)
+	gls.set_exclusive_zone(counter_window, -1)
+	gls.set_keyboard_mode(counter_window, gls.KeyboardMode.EXCLUSIVE)
+	gls.set_respect_close(counter_window, True)
+	
+	counter_window.present()
+	if not counter_window.contains_focus(): counter_window.close()
 	
 	# double tap -> turn on the screen
 	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
@@ -68,4 +88,4 @@ def setup_locker(ushell :gtk.Application):
 	], gio.SubprocessFlags.NONE)
 	
 	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock)
+		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lambda: lock(ushell))
