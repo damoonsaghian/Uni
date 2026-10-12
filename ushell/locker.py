@@ -1,18 +1,6 @@
+from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as LayerShell
-
-def setup_locker(ushell :gtk.Application):
-	# swayidle -w \
-	# timeout 60 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.LockIfBattery' \
-	# timeout 600 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
-	
-	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock)
-	app.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "LockIfBattery", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock_if_battery)
-
-def lock_if_battery():
-	#
 
 def lock():
 	# create a blury fullscreen layer showing a 10 seconds countdown
@@ -69,3 +57,15 @@ def lock():
 	# , if an unlock pattern is set, show pattern unlocking
 	# , otherwise ask for password, and if no keyboard is connected, show virtual keyboard,
 	# 	and after the password is entered correctly, ask user to set a pattern
+
+def setup_locker(ushell :gtk.Application):
+	bat_stat_path = '/sys/class/power_supply/BAT0/status'
+	lock_cmd = 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
+	
+	gio.Subprocess(['swayidle', '-w',
+		'timeout', '60', '[ -e {bat_stat_path} ] && [ $(cat {bat_stat_path}) = Discharging ] && {lock_cmd}',
+		'timeout', '600', lock_cmd
+	], gio.SubprocessFlags.NONE)
+	
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, Gio.DBusSignalFlags.NONE, lock)
