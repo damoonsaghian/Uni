@@ -10,8 +10,10 @@ def lock(ushell :gtk.Application):
 	
 	eventctl = gtk.EventControllerLegacy()
 	eventctl.connect('event', lambda _: counter_window.close())
-	window.add_controller(eventctl)
+	counter_window.add_controller(eventctl)
 	
+	timeout :glib.Source = glib.add_timeout()
+	counter_window.connect('close_request', lambda: timeout.remove())
 	# after 10 seconds:
 	# , swaymsg 'workspace lock'
 	# , show password layer, with a transparent window, the size of the screen

@@ -368,6 +368,3 @@ fi
 
 # screenshot and screencast
 # when finished, cut the file to clipboard
-
-from gi.repository import Vte as vte
-# vts.Terminal()

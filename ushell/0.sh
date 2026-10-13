@@ -56,7 +56,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	bindsym Mod1+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress'
 	bindsym --release Mod1+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease'
 	bindsym Mod1+Escape kill
-	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
+	exec 'GTK_THEME=Adwaita:dark python3 \"$script_dir\"/1.py; swaymsg exit'
 	" > "$sway_config"
 	sway -c "$sway_config" || start_cli
 else

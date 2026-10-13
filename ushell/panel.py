@@ -19,6 +19,8 @@ https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
 program="$@"
 [ -z "$program" ] && program="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
 
+export GTK_THEME=''
+
 bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
 	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
 	--bind /dev/null /usr/bin/lisgd \
@@ -86,6 +88,9 @@ def setup_panel(ushell :gtk.Application):
 	# left: super prompt (selected by default)
 	# center: terminal views (press ';,.)
 	# right: system menu (press enter)
+	
+	# from gi.repository import Vte as vte
+	# vte.Terminal()
 	
 	# an item for screenshot and screencast
 	# put in clipboard
