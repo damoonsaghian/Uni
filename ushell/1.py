@@ -7,6 +7,7 @@ gi.require_version('Gdk', '4.0')
 gi.require_version('Gtk', '4.0')
 
 from gi.repository import Gio as gio
+from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
 from bar import setup_bar
@@ -28,6 +29,14 @@ def on_startup(ushell :gtk.Application):
 	setup_voicekey(ushell)
 
 gtk.Settings.get_default().props.gtk_overlay_scrolling = False
+
+css_provider = gtk.CssProvider(prefers_color_scheme=gtk.InterfaceColorScheme.DARK)
+css_provider.load_from_resource('/org/gnome/Adwaita/styles/gtk.css')
+gtk.StyleContext.add_provider_for_display(
+	gdk.Display.get_default(),
+	css_provider,
+	gtk.STYLE_PROVIDER_PRIORITY_THEME
+)
 
 ushell = gtk.Application(application_id='ushell.Ushell')
 ushell.connect('startup', on_startup)

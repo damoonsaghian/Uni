@@ -1,42 +1,61 @@
+from gi.repository import GLib as glib
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
 def lock(ushell :gtk.Application):
-	# create a semi'transparent fullscreen layer showing a 10 seconds countdown
+	# if there is a window titled 'locker' in application's window list,
+	# replace it's child with counter
+	# otherwise create a semi'transparent fullscreen layer showing a 10 seconds countdown
 	# upon any input activity, or when unfocused, close the layer
 	
-	counter_window = gtk.Window(application=ushell, opacity=0.5)
+	lock_window = gtk.Window(application=ushell, opacity=0.5)
 	
 	eventctl = gtk.EventControllerLegacy()
-	eventctl.connect('event', lambda _: counter_window.close())
-	counter_window.add_controller(eventctl)
+	eventctl.connect('event', lambda _: lock_window.close())
+	lock_window.add_controller(eventctl)
 	
-	timeout :glib.Source = glib.add_timeout()
-	counter_window.connect('close_request', lambda: timeout.remove())
-	# after 10 seconds:
-	# , swaymsg 'workspace lock'
-	# , show password layer, with a transparent window, the size of the screen
-	# password layer can be closed by pressing escape, or clicking outside of the entry box
-	# when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
-	# if correct password is entered (check using su): close password layer, swaymsg workspace lock
-	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
-	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
-	# upon any input activity, or if unfocused, or resume from suspend:
-	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
+	def on_timeout(timeout_source :glib.Source):
+		timeout_source.destroy()
+		# replace counter with
+		
+		# , swaymsg 'workspace lock'
+		# , show password layer, with a transparent window, the size of the screen
+		# password layer can be closed by pressing escape, or clicking outside of the entry box
+		# when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
+		# if correct password is entered (check using su): close password layer, swaymsg workspace lock
+		# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
+		# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
+		# upon any input activity, or if unfocused, or resume from suspend:
+		# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
+		
+		gls.init_for_window(lock_window)
+		gls.set_layer(lock_window, gls.Layer.OVERLAY)
+		gls.set_anchor(lock_window, gls.Edge.TOP, True)
+		gls.set_anchor(lock_window, gls.Edge.BOTTOM, True)
+		gls.set_anchor(lock_window, gls.Edge.LEFT, True)
+		gls.set_anchor(lock_window, gls.Edge.RIGHT, True)
+		gls.set_exclusive_zone(lock_window, -1)
+		gls.set_keyboard_mode(lock_window, gls.KeyboardMode.EXCLUSIVE)
+		gls.set_respect_close(lock_window, True)
+	
+	timeout_source = glib.timeout_source_new_seconds(10)
+	timeout_source.set_callback()
+	timeout_source.attach(glib.MainContext.default())
+	counter.connect('close_request', lambda: timeout_source.destroy())
 			
-	gls.init_for_window(counter_window)
-	gls.set_layer(counter_window, gls.Layer.OVERLAY)
-	gls.set_anchor(counter_window, gls.Edge.TOP, True)
-	gls.set_anchor(counter_window, gls.Edge.BOTTOM, True)
-	gls.set_anchor(counter_window, gls.Edge.LEFT, True)
-	gls.set_anchor(counter_window, gls.Edge.RIGHT, True)
-	gls.set_exclusive_zone(counter_window, -1)
-	gls.set_keyboard_mode(counter_window, gls.KeyboardMode.EXCLUSIVE)
-	gls.set_respect_close(counter_window, True)
+	gls.init_for_window(lock_window)
+	gls.set_layer(lock_window, gls.Layer.OVERLAY)
+	gls.set_anchor(lock_window, gls.Edge.TOP, True)
+	gls.set_anchor(lock_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(lock_window, gls.Edge.LEFT, True)
+	gls.set_anchor(lock_window, gls.Edge.RIGHT, True)
+	gls.set_exclusive_zone(lock_window, -1)
+	gls.set_keyboard_mode(lock_window, gls.KeyboardMode.EXCLUSIVE)
+	gls.set_respect_close(lock_window, True)
 	
-	counter_window.present()
-	if not counter_window.contains_focus(): counter_window.close()
+	lock_window.present()
+	if not lock_window.contains_focus(): lock_window.close()
 	
 	# double tap -> turn on the screen
 	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
