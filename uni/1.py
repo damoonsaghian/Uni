@@ -10,11 +10,6 @@ Gtk.Settings.get_default().props.gtk_overlay_scrolling = False
 # qpplication.organization = "Uni"
 # qpplication.domain" = "uni.Uni"
 
-# if arg[1] == lock:
-# qpplication.name = "UniLock"
-# qpplication.organization = "UniLock"
-# qpplication.domain" = "uni.UniLock"
-
 # projectViews = StackLayout()
 # overview = Overview(id = overview, projectViews = projectViews)
 # keybinding to show the overview
