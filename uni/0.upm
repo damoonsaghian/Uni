@@ -15,4 +15,13 @@ StartupNotify=true
 Type=Application
 ' > /usr/share/applications/uni.desktop
 
+echo '[Desktop Entry]
+Name=Uni
+Comment=Collaborative Development
+Icon=uni
+exec=uni lock
+StartupNotify=true
+Type=Application
+' > /usr/share/applications/uni-lock.desktop
+
 # unet and usm executables
