@@ -4,12 +4,11 @@ from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
 def lock(ushell :gtk.Application):
-	# if there is a window titled 'locker' in application's window list,
-	# replace it's child with counter
-	# otherwise create a semi'transparent fullscreen layer showing a 10 seconds countdown
+	# if there is no window titled 'locker' in application's window list,
+	# create a semi'transparent fullscreen layer showing a 10 seconds countdown
 	# upon any input activity, or when unfocused, close the layer
 	
-	lock_window = gtk.Window(application=ushell, opacity=0.5)
+	counter_window = gtk.Window(application=ushell, opacity=0.5)
 	
 	eventctl = gtk.EventControllerLegacy()
 	eventctl.connect('event', lambda _: lock_window.close())
@@ -17,33 +16,13 @@ def lock(ushell :gtk.Application):
 	
 	def on_timeout(timeout_source :glib.Source):
 		timeout_source.destroy()
-		# replace counter with
-		
-		# , swaymsg 'workspace lock'
-		# , show password layer, with a transparent window, the size of the screen
-		# password layer can be closed by pressing escape, or clicking outside of the entry box
-		# when password layer is closed, and the workspace is empty (ie "swaymsg focus" fails), run: uni lock
-		# if correct password is entered (check using su): close password layer, swaymsg workspace lock
-		# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
-		# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
-		# upon any input activity, or if unfocused, or resume from suspend:
-		# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
-		
-		gls.init_for_window(lock_window)
-		gls.set_layer(lock_window, gls.Layer.OVERLAY)
-		gls.set_anchor(lock_window, gls.Edge.TOP, True)
-		gls.set_anchor(lock_window, gls.Edge.BOTTOM, True)
-		gls.set_anchor(lock_window, gls.Edge.LEFT, True)
-		gls.set_anchor(lock_window, gls.Edge.RIGHT, True)
-		gls.set_exclusive_zone(lock_window, -1)
-		gls.set_keyboard_mode(lock_window, gls.KeyboardMode.EXCLUSIVE)
-		gls.set_respect_close(lock_window, True)
+		# dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock
 	
 	timeout_source = glib.timeout_source_new_seconds(10)
 	timeout_source.set_callback()
 	timeout_source.attach(glib.MainContext.default())
 	counter.connect('close_request', lambda: timeout_source.destroy())
-			
+	
 	gls.init_for_window(lock_window)
 	gls.set_layer(lock_window, gls.Layer.OVERLAY)
 	gls.set_anchor(lock_window, gls.Edge.TOP, True)
@@ -57,25 +36,6 @@ def lock(ushell :gtk.Application):
 	lock_window.present()
 	if not lock_window.contains_focus(): lock_window.close()
 	
-	# double tap -> turn on the screen
-	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
-	
-	# lock
-	# switch to workspace lock, and if workspace is empty, run: uni lock
-	# super, alt+tab or click on statusbar: toggle password prompt
-	# password prompt closes (showing  in lock mode) when Escape is pressed,
-	# 	or when empty password is entered, or simply when password prompt is unfocused
-	# start in locked mode
-	# lock after 10m idle, if lock inhibit is not active
-	# before lock, show a 10s countdown screen
-	#
-	# check for the password of user "nu":
-	# su nu -c true
-	#
-	# plugged in: lock after 10 min idle, turn off display after 15 min idle
-	# battery: decrease brightness after 5 min idle, lock after 10 min idle, turn off display after 11 min idle
-	# low battery: decrease brightness after 2 min idle, lock and turn off display after 4 min idle,
-	# 	suspend after 5 min idle
 	# https://wiki.archlinux.org/title/Backlight
 	# https://github.com/FedeDP/Clight/wiki/Modules#wayland-support
 	# https://quickshell.org/docs/v0.1.0/types/Quickshell.Widgets/WrapperItem/
@@ -87,17 +47,9 @@ def lock(ushell :gtk.Application):
 	# 	https://github.com/linrunner/TLP
 	# https://github.com/Hummer12007/brightnessctl
 	#
-	# 30s idle after lock, poweroff screen
 	# in modern systems, other hardwares (cpu, network ...) are automatically put into low consumption (high latency) mode,
 	# 	unless an application specifically request for low latency using Linux PM QoS
 	# 	https://docs.kernel.org/power/pm_qos_interface.html
-	#
-	# lock before suspend: https://systemd.io/INHIBITOR_LOCKS/
-	
-	# on touch screen:
-	# , if an unlock pattern is set, show pattern unlocking
-	# , otherwise ask for password, and if no keyboard is connected, show virtual keyboard,
-	# 	and after the password is entered correctly, ask user to set a pattern
 
 def setup_locker(ushell :gtk.Application):
 	bat_stat_path = '/sys/class/power_supply/BAT0/status'

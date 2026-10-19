@@ -7,30 +7,38 @@ from gi.repository import Gtk4LayerShell as gls
 from prompt import prompt_view
 from system import system_view
 
-swaywrap_script = r"""
-run programs in a bwrap sandbox that blocks sway's socket,
-	and protects wayland socket using wayland security context
-this prevents a malicious program from stealing root password, by faking password entry
-https://niri-wm.github.io/niri/Security-Model.html
-so using sudo in Ushell does not suffer from these flaws:
-https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
-https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
-
-program="$@"
-[ -z "$program" ] && program="/usr/bin/bash --rcfile /usr/share/bash/bashrc"
-
-export GTK_THEME=''
+swaywrap_script = """
+launch = "from gi.repository import GioUnix as giox
+giox.DesktopAppInfo.new('$@').launch()
+"
 
 bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
-	--bind "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox" "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
+	--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
 	--bind /dev/null /usr/bin/lisgd \
 	--bind /dev/null "$HOME/.config/ushell/screens" \
 	--bind /dev/null "$HOME/.config/ushell/autostart" \
-	-- $program
+	-- python -c "$launch"
 """
-gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
+
+swaywrap_py = """
+"""
+
+locked = True
 
 # locked panel: show password entry
+# if correct password is entered (su nu -c true): close password layer, swaymsg workspace lock
+# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
+# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
+# upon any input activity, or if unfocused, or resume from suspend:
+# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
+
+# double tap -> turn on the screen
+# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
+
+# on touch screen:
+# , if an unlock pattern is set, show pattern unlocking
+# , otherwise ask for password, and if no keyboard is connected, show virtual keyboard,
+# 	and after the password is entered correctly, ask user to set a pattern
 
 def setup_dim_layer():
 	# used behind panel
@@ -102,13 +110,25 @@ def setup_panel(ushell :gtk.Application):
 	
 	# implement an interface to select and close applications (keyboard and long'press gesture)
 	
-	gio.Subprocess(['swaymsg', 'assign [app_id="uni.Uni"] workspace uni.Uni'], gio.SubprocessFlags.NONE)
-	app_exec = 
-	gio.Subprocess(['sh', '-c', f'{script_dir}/swaywrap.sh', app_exec], gio.SubprocessFlags.NONE)
-	# monitor dbus connection at uni.Uni, and when it's closed relaunch Uni
+	gio.Subprocess(['swaymsg', 'workspace uni'], gio.SubprocessFlags.NONE)
+	gio.Subprocess(['sh', '-c', swaywrap_script, 'uni.desktop'], gio.SubprocessFlags.NONE)
+	# monitor dbus connection at uni.Uni, and when it's closed, relaunch Uni
+	
+	def lock():
+		lock = True
+		# go to lock workspace, and open main panel (which will show the password entry)
+		gio.Subprocess(['swaymsg', 'workspace uni-lock'], gio.SubprocessFlags.NONE)
+		gio.Subprocess(['sh', '-c', swaywrap_script, 'uni-lock.desktop'], gio.SubprocessFlags.NONE)
+	
+	# start in locked mode
+	lock()
+	
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_alttab_press(bar_window, lock)
+	)
 
 class AppEntry(gtk.Widget):
-	pass
 	# apps will open in separate desktops
 	# swaymsg "workspace '$spp_name'"
 	# swaymsg "[workspace=__focused__ tiling] focus" || {
@@ -124,7 +144,12 @@ class AppEntry(gtk.Widget):
 	
 	# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
 	
-	# gio.Subprocess(['sh', '-c', f'{script_dir}/swaywrap.sh', app_exec], gio.SubprocessFlags.NONE)
+	app = giox.DesktopAppInfo.new(desktop_file_name)
+	
+	gio.Subprocess(
+		['sh', '-c', swaywrap_script, app.get_executable(), app.get_commandline()],
+		gio.SubprocessFlags.NONE
+	)
 
 class AppsList:
 	# self.selected_item = self.apps_list.get_item(0)

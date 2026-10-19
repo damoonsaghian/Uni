@@ -1,5 +1,26 @@
 #!/usr/bin/env sh
 
+# if not called as login shell, just run bash, and ignore the rest
+# if we are in Sway, run bash inside a bwrap sandbox that blocks sway's socket,
+# 	and protects wayland socket using wayland security context
+# this prevents a malicious program from stealing root password, by faking password entry
+# https://niri-wm.github.io/niri/Security-Model.html
+# so using sudo in Ushell does not suffer from these flaws:
+# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
+# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
+[ "$0" = "-/usr/local/bin/ushell" ] || {
+	if [ -n "$SWAYSOCK" ] && [ -n "$WAYLAND_DISPLAY" ]; then
+		exec bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
+			--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
+			--bind /dev/null /usr/bin/lisgd \
+			--bind /dev/null "$HOME/.config/ushell/screens" \
+			--bind /dev/null "$HOME/.config/ushell/autostart" \
+			-- /usr/bin/bash --rcfile /usr/share/bash/bashrc
+	else
+		exec /usr/bin/bash --rcfile /usr/share/bash/bashrc
+	fi
+}
+
 script_dir="$(dirname "$(readlink -f "$0")")"
 
 umask 022
@@ -14,19 +35,23 @@ mkdir -pm 0700 "$XDG_RUNTIME_DIR"
 dinit --services-dir /var/lib/dinit/user --services-dir /usr/share/dinit/user
 
 start_cli() {
+	local bs="\033[1m" # bold start
+	local be="\033[0m" # bold end
+	
 	echo 'there was a problem in starting the graphical shell'
+	
 	while true; do
 		echo 'rescue options:'
 		# auto repair (if no internet and no LAN, setup network; upm update; restart tty1)
 		# backup
 		# copy projects
-		echo '\n	term: terminal (root)\n	exit'
+		echo "\n	${bs}t${be}erminal\n	${bs}e${be}xit\n	${bs}p${be}oweroff"
 		printf 'choose one by typing its name: '
 		read ans
 		case "$ans" in
-		term) exec su -l ;;
-		exit) exit ;;
-		poweroff) poweroff ;;
+		t*) exec su -l nu ;;
+		e*) exit ;;
+		p*) poweroff ;;
 		esac
 	done
 }
