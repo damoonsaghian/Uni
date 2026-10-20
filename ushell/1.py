@@ -13,7 +13,7 @@ from gi.repository import Gtk as gtk
 from bar import setup_bar
 from displays import setup_displays
 from floater import setup_floater
-from locker import setup_locker
+from idle_manager import setup_idle_manager
 from osk import setup_osk
 from panel import setup_panel
 from voicekey import setup_voicekey
@@ -23,7 +23,7 @@ def on_startup(ushell :gtk.Application):
 	setup_bar(ushell)
 	setup_displays(ushell)
 	setup_floater(ushell)
-	setup_locker(ushell)
+	setup_idle_manager(ushell)
 	setup_osk(ushell)
 	setup_pannel(ushell)
 	setup_voicekey(ushell)

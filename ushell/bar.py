@@ -14,7 +14,7 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 	def hide_all():
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
-				if window.props.title = 'dim-layer':
+				if window.props.title == 'dim-layer':
 					gls.set_layer(window, gsl.Layer.BACKGROUND)
 				else:
 					gls.set_layer(window, gsl.Layer.BOTTOM)
