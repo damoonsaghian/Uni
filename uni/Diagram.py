@@ -7,18 +7,21 @@
 # python-matplotlib
 # https://matplotlib.org/
 
-# https://github.com/f3d-app/f3d
-# https://diligentgraphics.github.io/docs/de/d6b/README.html
 # https://www.vtk.org/
-
+# https://github.com/f3d-app/f3d
 # https://github.com/o3de/o3de/
-# https://www.cgal.org/
-# https://github.com/fougue/mayo
+# https://diligentgraphics.github.io/docs/de/d6b/README.html
+
+# https://github.com/dune3d/dune3d
+# https://github.com/Open-Cascade-SAS/OCCT
 # https://github.com/FreeCAD/FreeCAD
-# https://github.com/coin3d/coin
-# https://github.com/LibreCAD/LibreCAD
 # https://github.com/openscad/openscad/
+# https://github.com/gumyr/build123d
 # https://pymadcad.readthedocs.io/en/latest/index.html
+# https://github.com/solvespace/solvespace
+# https://www.salome-platform.org/
+# https://www.cgal.org/
+# https://github.com/coin3d/coin
 # https://github.com/simbody/simbody
 # https://github.com/precice/precice
 # https://github.com/coal-library/coal

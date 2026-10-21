@@ -1,3 +1,6 @@
+import pathlib
+script_dir = pathlib.Path(__file__).resolve().parent
+
 # https://github.com/kra-mo/hyperplane
 # https://github.com/tchx84/Portfolio
 

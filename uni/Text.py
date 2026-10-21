@@ -1,3 +1,5 @@
+# https://pygobject.gnome.org/tutorials/gtk4/textview.html
+
 # next and previous: word, line, paragraph
 
 # "psi" followed by two succesive apostrophes will be replaced by "ψ"

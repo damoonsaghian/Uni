@@ -8,20 +8,19 @@
 
 echo '[Desktop Entry]
 Name=Uni
-Comment=Collaborative Development
 Icon=uni
-exec=uni
+Exec=uni
 StartupNotify=true
 Type=Application
-' > /usr/share/applications/uni.desktop
+Categories=Development;
+' > /usr/share/applications/uni.Uni.desktop
 
 echo '[Desktop Entry]
-Name=Uni
-Comment=Collaborative Development
-Icon=uni
-exec=uni lock
+Name=UniLock
+Exec=uni lock
 StartupNotify=true
 Type=Application
-' > /usr/share/applications/uni-lock.desktop
+NoDisplay=true
+' > /usr/share/applications/uni.UniLock.desktop
 
 # unet and usm executables
