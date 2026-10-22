@@ -5,8 +5,7 @@ applications can be selected by typing their name, or using the arrow keys
 press "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
 to close a window, press "alt+escape" (LeftMod+RightMod)
-
-while in main panel, press any one of these punctuation keys to open terminal view: ';,.
+to return back to previous application, in main panel, press one of these punctuation keys: ';,.
 
 right after opening the main panel, press "space" to open command prompt
 by typing special keywords in command prompt, you have instant access to various small but useful things like:
