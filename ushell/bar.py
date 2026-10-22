@@ -11,6 +11,8 @@ def on_alttab_press(bar_window :gtk.Window, timer :glib.Timer):
 	gls.set_layer(bar_window. gls.Layer.OVERLAY)
 
 def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
+	timer.stop()
+	
 	def hide_all():
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
@@ -276,12 +278,13 @@ def setup_bar(ushell :gtk.Application):
 	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('begin', lambda: on_alttab_release(ushell))
+	click_evctl.connect('pressed', lambda: on_alttab_press(ushell))
+	click_evctl.connect('released', lambda: on_alttab_release(ushell))
 	bar_window.add_controller(click_evctl)
 	
 	# right click on bar to close focused window
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
-	right_click_eventctl.connect('begin',
+	right_click_eventctl.connect('pressed',
 		lambda: gio.Subprocess(['swaymsg', 'kill'], gio.SubprocessFlags.NONE)
 	)
 	bar_window.add_controller(right_click_eventctl)

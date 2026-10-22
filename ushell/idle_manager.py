@@ -24,7 +24,7 @@ def idle_countdown(ushell :gtk.Application):
 	countdown = 10
 	
 	def on_timeout(countdown :int):
-		countdown = countdown - 1
+		countdown -= 1
 		countdown_label.set_label(f'<span size="xx-large" weight="bold">{str(countdown)}</span>')
 		if countdown == 0:
 			gio.Subprocess(
