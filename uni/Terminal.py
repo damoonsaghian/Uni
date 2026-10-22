@@ -26,3 +26,5 @@
 # bright7=FCFCFA
 # selection-background=555555
 # selection-foreground=dddddd
+
+# by default, run commands in bwrap that can only write to projects directory
