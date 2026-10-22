@@ -1,126 +1,57 @@
 from gi.repository import Gtk as gtk
+from gi.repository import Adw as adw
 
-def system_view():
-	pass
+# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/class.NavigationView.html
 
-# session
-# connections
-# passwords
-# packages: install, remove, update, make a new system)
-# terminal
-# backup
+class SysMenuEntry(gtk.Widget):
+	# name, icon, functin to call when activated
 
-# before shutdown/suspend run "fstrim <mount-point>" for devices supporting unqueued trim
-# [ "$(cat /sys/block/"$device"/queue/discard_granularity)" -gt 0 ] &&
-# [ "$(cat /sys/block/"$device"/queue/discard_max_bytes)" -lt 2147483648 ] &&
-# https://systemd.io/INHIBITOR_LOCKS/
-
-# if "inhibit suspend" is active, or there is high network activity, and a shutdown is requested,
-# 	lock the session, notice the user, and ask to confirm
-# wait for the inhibition and network activity to end, then do shutdown/restart/suspend
-# https://systemd.io/INHIBITOR_LOCKS/
-
-# screens
-# if there are multiple screens, shows a list of the extra screens
-# after selecting one, there would be the list of screens windows, plus the currently focused floating window
-# by pressing space the state of window entry will be toggled
-# when window is added to an empty screen, turn it on
-# when window is removed, if workspace is empty, turn the screen off
-# window states are stored in ~/.config/ushell/screens: [app_id=$app_id title=$title] move workspace $index
-# and the corresponding commands in ~/.config/ushell/autostart
-# 	find the pid of current window using "swaymsg -t get_tree"
-# 	https://man.archlinux.org/man/sway-ipc.7.en
-# 	find the correspoding command usig: ps -p $pid --no-headers -o args
-# window entries can be moved between screens
-# to delete an entry, press delete
-#
-# select a screen (by pressing enter), then select another screen, to switch them
-# store the new order of screen arrangment
-
-# https://networkmanager.dev/docs/
-# https://networkmanager.dev/docs/api/latest/nmcli.html
-# https://wiki.archlinux.org/index.php/NetworkManager
-
-# WIFI using nmcli:
-# ; nmcli dev wifi
-# ; nmcli --ask dev wifi con <ssid>
-# to disconnect from a WIFI network:
-# ; nmcli con down id <ssid>
-
-# nmcli connection add olpc-mesh
-# https://wiki.archlinux.org/title/Ad-hoc_networking
-# can actually replace both hotspot and wifi-p2p (wifi direct)
-# nmcli device wifi hotspot
-# 	https://wiki.archlinux.org/title/NetworkManager#Sharing_internet_connection_over_Wi-Fi
-# nmcli connection add wifi-p2p
-
-# power saving:
-# rfkill wwan when wifi is connected; reenable it when wifi is disconnected
-# rfkill wifi and wwan, when lan is connected; reenable them when lan is disconnected
-# i think adjusting cpufreq gpu pcie nvme/sata/usb power for laptops, is the job of the hardware itself, not the OS
-# 	the config for that, can be provided by the bios
-# 	https://wiki.archlinux.org/title/Power_management
-
-# home dir backup is done on a LUKS encrypted BTRFS formated device
-# use the luks header of root device
-# luksHeaderBackup <device> --header-backup-file <file>
-# luksHeaderRestore <device> --header-backup-file <file>
-#
-# dot directories will be synced
-# each project group is a separate subvolume, and its backup is done using btrfs send/receive
-# https://wiki.tnonline.net/w/Btrfs/Send
-#
-# when a backup device is connected run backup automatically
-# show the procedure in status bar
-#
-# backup procedure:
-# decrypt (/var/luks/key) and mount the storage device, then sync it with home dir
-# notes:
-# if there is not enough space, try to backup the most number of projects possible
-# each time a new backup is created, the number stored in .data/backups will be increased
-# this number will be decreased when removing a project from backup
-# when creating a new backup, the projects with least number of backups will take priority
-# do not follow mounts
-# in case of bit rot, try to repair
-#
-# when restoring a backup, check its gnunet url, and download and merge that, if it's newer
-#
-# backup through gnunet F2F
-# there is a timer that automatically syncs project groups, through this F2F network
-# if there are more than two devices, the whole data is distributed such that if one device fails,
-# 	the others contain the whole data
-# if a device is removed, and the remaining ones can't hold at least two copies, show a warning
-
-if [ -z "$1" ];then
-	menu() {
-		printf "$1" | fzy
-	}
-elif [ "$1" = ext-menu ]; then
-	menu() {
-		printf "$1"
-		read -r answer
-		printf "$answer"
-	}
-else
-	echo "usage: system [swapp]"
-	exit 1
-fi
-
-manage_session() {
-	selected_entry="$(menu "lock\nsuspend\nexit\nreboot\npoweroff")"
-	case "$selected_entry" in
-	lock) ;;
-	exit) swaymsg exit;;
-	reboot) loginctl reboot ;;
-	poweroff) loginctl poweroff ;;
-	suspend) loginctl suspend ;;
-	esac
-}
-
-manage_wifi() {
-	local mode="$(menu "connect\nremove")" device= ssid= answer=
+def session() -> gtk.Widget:
+	# lock
+	# suspend: loginctl suspend
+	# exit: swaymsg exit
+	# reboot: loginctl reboot
+	# poweroff: loginctl poweroff
 	
-	if [ "$mode" = connect ]; then
+	# before shutdown/suspend run "fstrim <mount-point>" for devices supporting unqueued trim
+	# [ "$(cat /sys/block/"$device"/queue/discard_granularity)" -gt 0 ] &&
+	# [ "$(cat /sys/block/"$device"/queue/discard_max_bytes)" -lt 2147483648 ] &&
+	# https://systemd.io/INHIBITOR_LOCKS/
+	
+	# if "inhibit suspend" is active, or there is high network activity, and a shutdown is requested,
+	# 	lock the session, notice the user, and ask to confirm
+	# wait for the inhibition and network activity to end, then do shutdown/restart/suspend
+	# https://systemd.io/INHIBITOR_LOCKS/
+
+def displays() -> gtk.Widget:
+	# displays
+	# if there are multiple displays, shows a list of the extra displays
+	# after selecting one, there would be the list of displays windows, plus the currently focused floating window
+	# by pressing space the state of window entry will be toggled
+	# when window is added to an empty display, turn it on
+	# when window is removed, if workspace is empty, turn the display off
+	# window states are stored in ~/.config/ushell/displays: [app_id=$app_id title=$title] move workspace $index
+	# and the corresponding commands in ~/.config/ushell/autostart
+	# 	find the pid of current window using "swaymsg -t get_tree"
+	# 	https://man.archlinux.org/man/sway-ipc.7.en
+	# 	find the correspoding command usig: ps -p $pid --no-headers -o args
+	# window entries can be moved between displays
+	# to delete an entry, press delete
+	#
+	# select a display (by pressing enter), then select another display, to switch them
+	# store the new order of display arrangment
+	
+	# screenshot and screencast
+	# when finished, move the file to clipboard
+	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
+
+def con_wifi():
+	# connect
+	# remove
+	
+	device= ssid= answer=
+	
+	# connect
 		echo 'select a device:'
 		device_list="$(iwctl device list | tail --line=+5 | cut -c 7-)"
 		device="$(menu "$device_list" | { read -r first _; echo "$first"; })"
@@ -130,9 +61,8 @@ manage_wifi() {
 		ssid_list="$(iwctl station "$device" get-networks | tail --line=+5 | cut -c 7-)"
 		ssid="$(menu "$ssid_list" | { read -r first _; echo "$first"; })"
 		iwctl station "$device" connect "$ssid"
-	fi
 	
-	if [ "$mode" = remove ]; then
+	# remove
 		echo 'select a network to remove:'
 		ssid_list="$(iwctl known-networks list | tail --line=+5 | cut -c 7-)"
 		ssid="$(menu "$ssid_list" | { read -r first _; echo "$first"; })"
@@ -142,20 +72,28 @@ manage_wifi() {
 		[ "$answer" = yes ] || exit
 		
 		doas iwctl known-networks "$ssid" forget
-	fi
-}
+	
+	# WIFI using nmcli:
+	# ; nmcli dev wifi
+	# ; nmcli --ask dev wifi con <ssid>
+	# to disconnect from a WIFI network:
+	# ; nmcli con down id <ssid>
+	
+	# nmcli connection add olpc-mesh
+	# https://wiki.archlinux.org/title/Ad-hoc_networking
+	# can actually replace both hotspot and wifi-p2p (wifi direct)
+	# nmcli device wifi hotspot
+	# 	https://wiki.archlinux.org/title/NetworkManager#Sharing_internet_connection_over_Wi-Fi
+	# nmcli connection add wifi-p2p
 
-manage_cell() {
-	echo "not yet implemented"
+def con_cell():
 	# https://gitlab.freedesktop.org/mobile-broadband/ModemManager
-}
 
 # use nmcli for bluetooth connection or:
 # https://wiki.alpinelinux.org/wiki/Bluetooth#Pairing_with_bluetoothctl
-manage_bluetooth() {
+def con_bluetooth():
 	local mode= device=
 	
-	echo "not yet implemented"; exit
 	# https://forum.endeavouros.com/t/how-to-script-bluetoothctl-commands/18225/10
 	# https://gist.github.com/RamonGilabert/046727b302b4d9fb0055
 	# "echo '' | ..." or expect
@@ -188,9 +126,8 @@ manage_bluetooth() {
 		doas bluetoothctl disconnect "$device"
 		doas bluetoothctl untrust "$device"
 	fi
-}
 
-manage_radio_devices() {
+def con_radio_devices():
 	# wifi, cellular, bluetooth, gps
 	local lines= device= action=
 	
@@ -203,9 +140,7 @@ manage_radio_devices() {
 	doas rfkill "$action" "$device"
 }
 
-manage_router() {
-	echo "not yet implemented"
-	
+def con_router():
 	# https://wiki.archlinux.org/title/Router
 	# https://developers.redhat.com/blog/2018/10/22/introduction-to-linux-interfaces-for-virtual-networking#veth
 	
@@ -240,22 +175,25 @@ manage_router() {
 	# https://hackaday.io/project/162164/instructions?page=2
 	# https://raspberrypi.stackexchange.com/questions/133403/configure-usb-wi-fi-dongle-as-stand-alone-access-point-with-systemd-networkd
 	# https://man.archlinux.org/man/core/systemd/systemd.netdev.5.en
-}
 
-# VPN
-# https://fedoramagazine.org/systemd-resolved-introduction-to-split-dns/
-# https://blogs.gnome.org/mcatanzaro/2020/12/17/understanding-systemd-resolved-split-dns-and-vpn-configuration/
+def con_vpn():
+	# VPN
+	# https://fedoramagazine.org/systemd-resolved-introduction-to-split-dns/
+	# https://blogs.gnome.org/mcatanzaro/2020/12/17/understanding-systemd-resolved-split-dns-and-vpn-configuration/
 
-local selected_option="$(menu "WiFi\ncellular\nBluetooth\nradio\nrouter")"
-case "$selected_option" in
-WiFi) manage_wifi ;;
-cellular) manage_cell ;;
-Bluetooth) manage_bluetooth ;;
-radio) manage_radio_devices ;;
-router) manage_router ;;
-esac
+def connections() -> gtk.Widget:
+	# https://networkmanager.dev/docs/
+	# https://networkmanager.dev/docs/api/latest/nmcli.html
+	# https://wiki.archlinux.org/index.php/NetworkManager
+	
+	# WiFi
+	# cellular
+	# Bluetooth
+	# radio
+	# router
+	# vpn
 
-set_timezone() {
+def timezone():
 	# "$HOME"/.config/tz
 	
 	local tzdata_path="$script_dir"/tzdata
@@ -293,78 +231,118 @@ set_timezone() {
 	# show the list produced by "tz city $continent"; select $net_tz_city as default
 	city=
 	tz set "$continent/$city"
-}
 
-set_password() {
+def password():
 	# user password, root password, root encryption password
 	# use "sudo passwd home", because we do not want to use PAM support of passwd
-}
 
-echo 'packages:'
-mode="$(menu "upgrade\nremove\ninstall SPM Linux")"
+def packages():
+	mode="$(menu "upgrade\nremove\ninstall UPM Linux")"
+	
+	# doas upm
+	
+	# make installer
+	[ -z "$ARCH" ] && ARCH="$(uname --machine)"
+	# bsdtar -C "$target_dir" -xf "$iso_file_path"
+	# printf "g\nn\n1\n\n\nt\nuefi\nw\nq\n" | sudo fdisk -w always /dev/sdX
+	# sudo mkfs.vfat -F 32 "/dev/sdX1"
+	# export target=/run/user/$(id -u)/mounts/sdX1
+	# mkdir -p $target
+	# sudo mount -o uid=$(id -u),gid=$(id -g) /dev/sdX1 $target
+	# copy files to $target
+	# sudo umount $target
+	
+	# fwupd
+	# boot'firmware updates need special care
+	# unless there is a read'only backup, firmware update is not a good idea
+	# so warn and ask the user if she wants the update
+	# doas fwupdmgr get-devices
+	# doas fwupdmgr refresh
+	# doas fwupdmgr get-updates
+	# doas fwupdmgr update
+	
+	# if the content of "$spm_dir/status" is "error", turn "packages" and the "update" item under it, red
+	
+	# add section: some suggested apps
+	
+	[ "$mode" = remove ] && {
+		package_name_list="$(spm list)"
+		package_name="$(menu "$package_name_list" | { read -r first _rest; echo "$first"; })"
+		printf "remove \"$package_name\"?"
+		answer="$(menu "no\nyes")"
+		[ "$answer" = yes ] || exit
+	}
+	spm "$mode" "$package_name" "$package_name"
+	
+	[ "$mode" = "install SPM Linux" ] && # if not already running, create a gtkvte and run: spm spmlinux
+	
+	# boot'firmware updates need special care
+	# unless there is a read'only backup, firmware update is not a good idea
+	# so warn and ask the user if she wants the update
+	# doas fwupdmgr get-devices
+	# doas fwupdmgr refresh
+	# doas fwupdmgr get-updates
+	# doas fwupdmgr update
+	# during update:
+	# [ ! -f /tmp/fwupdmgr-status ] &&
+	# 	fwupdmgr refresh -y >/dev/null 2>&1 &&
+	# 	fwupdmgr get-updates -y >/dev/null 2>&1 &&
+	# 	touch /tmp/fwupdmgr-status
+	if [ -f /tmp/fwupdmgr-status ] || {
+		fwupdmgr refresh -y >/dev/null 2>&1 &&
+		fwupdmgr get-updates -y >/dev/null 2>&1
+	}; then
+		echo "firmware updates are available"
+		echo "flashing firmware updates can break the system if interupted"
+		echo "apply firmware updates anyway? (y/N) "
+		read -r ans
+		[ "$ans" = y ] && fwupdmgr update
+	fi
 
-# doas upm
+def backup():
+	# home dir backup is done on a LUKS encrypted BTRFS formated device
+	# use the luks header of root device
+	# luksHeaderBackup <device> --header-backup-file <file>
+	# luksHeaderRestore <device> --header-backup-file <file>
+	#
+	# dot directories will be synced
+	# each project group is a separate subvolume, and its backup is done using btrfs send/receive
+	# https://wiki.tnonline.net/w/Btrfs/Send
+	#
+	# when a backup device is connected run backup automatically
+	# show the procedure in status bar
+	#
+	# backup procedure:
+	# decrypt (/var/luks/key) and mount the storage device, then sync it with home dir
+	# notes:
+	# if there is not enough space, try to backup the most number of projects possible
+	# each time a new backup is created, the number stored in .data/backups will be increased
+	# this number will be decreased when removing a project from backup
+	# when creating a new backup, the projects with least number of backups will take priority
+	# do not follow mounts
+	# in case of bit rot, try to repair
+	#
+	# when restoring a backup, check its gnunet url, and download and merge that, if it's newer
+	#
+	# backup through gnunet F2F
+	# there is a timer that automatically syncs project groups, through this F2F network
+	# if there are more than two devices, the whole data is distributed such that if one device fails,
+	# 	the others contain the whole data
+	# if a device is removed, and the remaining ones can't hold at least two copies, show a warning
 
-# make installer
-[ -z "$ARCH" ] && ARCH="$(uname --machine)"
-# bsdtar -C "$target_dir" -xf "$iso_file_path"
-# printf "g\nn\n1\n\n\nt\nuefi\nw\nq\n" | sudo fdisk -w always /dev/sdX
-# sudo mkfs.vfat -F 32 "/dev/sdX1"
-# export target=/run/user/$(id -u)/mounts/sdX1
-# mkdir -p $target
-# sudo mount -o uid=$(id -u),gid=$(id -g) /dev/sdX1 $target
-# copy files to $target
-# sudo umount $target
+def system_view() -> adw.NavigationView:
+	naview = adw.NavigationView()
+	# session
+	# displays
+	# connections
+	# timezone
+	# passwords
+	# packages (install, remove, update, create an installation media)
+	# backup (create, restore)
 
-# fwupd
-# boot'firmware updates need special care
-# unless there is a read'only backup, firmware update is not a good idea
-# so warn and ask the user if she wants the update
-# doas fwupdmgr get-devices
-# doas fwupdmgr refresh
-# doas fwupdmgr get-updates
-# doas fwupdmgr update
-
-# if the content of "$spm_dir/status" is "error", turn "packages" and the "update" item under it, red
-
-# add section: some suggested apps like termulator
-
-# sandbox <command>
-# run command as user 65534 (nobody)
-
-[ "$mode" = remove ] && {
-	package_name_list="$(spm list)"
-	package_name="$(menu "$package_name_list" | { read -r first _rest; echo "$first"; })"
-	printf "remove \"$package_name\"?"
-	answer="$(menu "no\nyes")"
-	[ "$answer" = yes ] || exit
-}
-spm "$mode" "$package_name" "$package_name"
-
-[ "$mode" = "install SPM Linux" ] && # if not already running, create a gtkvte and run: spm spmlinux
-
-# boot'firmware updates need special care
-# unless there is a read'only backup, firmware update is not a good idea
-# so warn and ask the user if she wants the update
-# doas fwupdmgr get-devices
-# doas fwupdmgr refresh
-# doas fwupdmgr get-updates
-# doas fwupdmgr update
-# during update:
-# [ ! -f /tmp/fwupdmgr-status ] &&
-# 	fwupdmgr refresh -y >/dev/null 2>&1 &&
-# 	fwupdmgr get-updates -y >/dev/null 2>&1 &&
-# 	touch /tmp/fwupdmgr-status
-if [ -f /tmp/fwupdmgr-status ] || {
-	fwupdmgr refresh -y >/dev/null 2>&1 &&
-	fwupdmgr get-updates -y >/dev/null 2>&1
-}; then
-	echo "firmware updates are available"
-	echo "flashing firmware updates can break the system if interupted"
-	echo "apply firmware updates anyway? (y/N) "
-	read -r ans
-	[ "$ans" = y ] && fwupdmgr update
-fi
-
-# screenshot and screencast
-# when finished, cut the file to clipboard
+# power saving:
+# rfkill wwan when wifi is connected; reenable it when wifi is disconnected
+# rfkill wifi and wwan, when lan is connected; reenable them when lan is disconnected
+# i think adjusting cpufreq gpu pcie nvme/sata/usb power for laptops, is the job of the hardware itself, not the OS
+# 	the config UI for that, can be provided by the bios
+# 	https://wiki.archlinux.org/title/Power_management

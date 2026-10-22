@@ -1,43 +1,46 @@
 from gi.repository import Gio as gio
+from gi.repository import GioUnix as giox
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
 from prompt import prompt_view
 from system import system_view
 
-def launch(app_name :str):
-	swaywrap_script = f"""
-	swaymsg workspace "{app_name}"
-	swaymsg [con_id=__focused__] focus ||
-	bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
-		--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
-		--bind /dev/null /usr/bin/lisgd \
-		--bind /dev/null "$HOME/.config/ushell/screens" \
-		--bind /dev/null "$HOME/.config/ushell/autostart" \
-		-- gtk4-launch "{app_name}"
-	"""
-	gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
+class SwayApp(giox.DesktopAppInfo):
+	# run apps inside a bwrap sandbox that blocks sway's socket,
+	# 	and protects wayland socket using wayland security context
+	# this prevents a malicious program from stealing root password, by faking password entry
+	# https://niri-wm.github.io/niri/Security-Model.html
+	# so using sudo in Ushell does not suffer from these flaws:
+	# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
+	# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
+	def do_launch(self):
+		swaywrap_script = f"""
+		swaymsg workspace "{app_name}"
+		swaymsg [con_id=__focused__] focus ||
+		bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
+			--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
+			--bind /dev/null /usr/bin/lisgd \
+			--bind /dev/null "$HOME/.config/ushell/screens" \
+			--bind /dev/null "$HOME/.config/ushell/autostart" \
+			-- gtk4-launch "{self.get_id()}"
+		"""
+		gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
 
 class AppEntry(gtk.Widget):
-	# apps will open in separate desktops
-	# swaymsg "workspace '$spp_name'"
-	# swaymsg "[workspace=__focused__ tiling] focus" || {
-	# 	swaymsg "[workspace=__focused__] kill"
-	# 	$app_command
-	# }
-	
-	# https://docs.gtk.org/gio/method.AppLaunchContext.get_startup_notify_id.html
-	# https://wayland.app/protocols/xdg-activation-v1
-	
-	# right click (hold) on app entries -> show close button on open app icons, plus a close all button
-	# backspace or delete -> close selected app's appspace
-	
-	# apps will be launched by pressing "space" (or whatever mod+space corresponds to)
-	
-	# app = giox.DesktopAppInfo.new(desktop_file_name)
-	# launch(app_name)
+	def __init__(self, app :SwayApp):
+		self = gtk.Widget()
+		self.app = app
+		
+		# on pressing enter, or click/tap: self.app.launch
+		
+		# right click (hold) on app entries -> show close button on open app icons, plus a close all button
+		# backspace or delete -> close selected app's appspace
 
 class AppsList:
+	def __init__(self):
+		self.apps_list :List[SwayApp] = []
+	
 	# self.selected_item = self.apps_list.get_item(0)
 	# flowbox_child = self.apps_flowbox.get_child_at_index(0)
 	# if flowbox_child:
@@ -173,17 +176,11 @@ def setup_panel(ushell :gtk.Application):
 	# app entries
 	# flowbox.append(app_entry)
 	
-	# three buttons at top
+	# two buttons at top
 	# left: super prompt (selected by default)
-	# center: terminal views (press ';,.)
 	# right: system menu (press enter)
 	
-	# from gi.repository import Vte as vte
-	# vte.Terminal()
-	
-	# an item for screenshot and screencast
-	# put in clipboard
-	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
+	# previous appspace: press ';,.
 	
 	# press escape: close panel
 	
@@ -191,12 +188,12 @@ def setup_panel(ushell :gtk.Application):
 	
 	# implement an interface to select and close applications (keyboard and long'press gesture)
 	
-	launch('uni.Uni')
+	SwayApp.new('uni.Uni.desktop').launch()
 	# monitor dbus connection at uni.Uni, and when it's closed, relaunch Uni
 	
 	def lock():
-		# show password entry
-		launch('uni.UniLock')
+		# switch to password entry view
+		SwayApp.new('uni.UniLock').launch()
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
 				gls.set_layer(window, gls.Layer.OVERLAY)

@@ -1,25 +1,8 @@
 #!/usr/bin/env sh
 
 # if not called as login shell, just run bash, and ignore the rest
-# if we are in Sway, run bash inside a bwrap sandbox that blocks sway's socket,
-# 	and protects wayland socket using wayland security context
-# this prevents a malicious program from stealing root password, by faking password entry
-# https://niri-wm.github.io/niri/Security-Model.html
-# so using sudo in Ushell does not suffer from these flaws:
-# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
-# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
-[ "$0" = "-/usr/local/bin/ushell" ] || {
-	if [ -n "$SWAYSOCK" ] && [ -n "$WAYLAND_DISPLAY" ]; then
-		exec bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
-			--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
-			--bind /dev/null /usr/bin/lisgd \
-			--bind /dev/null "$HOME/.config/ushell/screens" \
-			--bind /dev/null "$HOME/.config/ushell/autostart" \
-			-- /usr/bin/bash --rcfile /usr/share/bash/bashrc
-	else
-		exec /usr/bin/bash --rcfile /usr/share/bash/bashrc
-	fi
-}
+[ "$0" = "-/usr/local/bin/ushell" ] ||
+	exec /usr/bin/bash --rcfile /usr/share/bash/bashrc
 
 script_dir="$(dirname "$(readlink -f "$0")")"
 
