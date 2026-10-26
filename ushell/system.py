@@ -1,8 +1,6 @@
 from gi.repository import Gtk as gtk
 from gi.repository import Adw as adw
 
-# https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1-latest/class.NavigationView.html
-
 class SysMenuEntry(gtk.Widget):
 	# name, icon, functin to call when activated
 

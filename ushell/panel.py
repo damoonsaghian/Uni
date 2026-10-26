@@ -55,13 +55,13 @@ class AppsList:
 	# app_name = app_item.get_name()
 	# gio.Subprocess([
 	# 	'swaymsg',
-	# 	f'[app_id=codev] move workspace {app_name}; workspace {app_name}' 
+	# 	f'[app_id=codev] move workspace {app_name}; workspace {app_name}'
 	# ], gio.SubprocessFlags.NONE)
 	# if not gio.Subprocess(['swaymsg', '[floating] focus'], gio.SubprocessFlags.NONE):
 	# 	gio.Subprocess(['swaymsg', 'exec ' + app_item.get_executable()], gio.SubprocessFlags.NONE)
-
+	
 	# notify:has-focus: select system
-
+	
 	# app list is a flowbox whose model is a list store that will be updated when .desktop files of apps changes
 	def compare_apps(self, app1 :gio.AppInfo, app2 :gio.AppInfo):
 		app1_name = app1.get_name()
@@ -87,7 +87,7 @@ class AppsList:
 		)
 		icon = app_item.get_icon()
 		if not icon:
-			if app_name = "settings":
+			if app_name == "settings":
 				icon = gio.ThemedIcon("applications-system-symbolic")
 			else:
 				icon = gio.ThemedIcon("")
@@ -109,14 +109,14 @@ def create_password_entry() -> gtk.Entry:
 	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
 	# 	anchor the panel's layer to all the edges of the screen, unset title of dimmer window (this prevents hiding layers)
 	# 	keyboard focus on panel window
-	# upon any input activity, or if unfocused, or resume from suspend:
+	# upon any input activity, or if unfocused, or if power button is pressed, or when resume from suspend:
 	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
 	# 	unanchor the panel's layer from top left and right edges, reset title of dimmer window to "dim-layer"
 	# 	keyboard focus on passwrod entry
 	
 	# when password is entered correctly, set panel's layer to BOTTOM, show apps view
 	
-	# double tap -> turn on the screen
+	# double tap -> turn the screen on/off
 	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
 	
 	# on touch screen:
@@ -180,8 +180,6 @@ def setup_panel(ushell :gtk.Application):
 	# left: super prompt (selected by default)
 	# right: system menu (press enter)
 	
-	# previous appspace: press ';,.
-	
 	# press escape: close panel
 	
 	# when window is focused, return back to apps list
@@ -200,6 +198,14 @@ def setup_panel(ushell :gtk.Application):
 	
 	# start in locked mode
 	lock()
+	
+	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
+	# and instead run lock()
+	# https://systemd.io/INHIBITOR_LOCKS/
+	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
+	# hook dirs are a hacky alternative:
+		# https://manned.org/man/alpine-3.23/loginctl.1
+		# https://manned.org/man/alpine-3.23/logind.conf.5
 	
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,

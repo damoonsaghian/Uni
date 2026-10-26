@@ -11,7 +11,7 @@ floater_script = """
 		swaymsg "[workspace=__focused__ floating] kill"
 		swaymsg focus prev && swaymsg "focus next; floating enable"
 	elif swaymsg "[con_id=__focused__ floating] focus" &&
-		! swaymsg "[workspace=__focused__ app_id='ushell\.Ushell' title='dim-floater'] floating enable"
+		! swaymsg "[workspace=__focused__ app_id='ushell\\.Ushell' title='dim-floater'] floating enable"
 	then
 		dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.DimFloater
 	fi
@@ -32,9 +32,9 @@ def open_dim_floater(ushell :gtk.Application):
 def setup_floater(ushell :gtk.Application):
 	gio.Subprocess(['sh', '-c', floater_script], gio.SubprocessFlags.NONE)
 	
-	gio.Subprocess(['swaymsg', 'no_focus [app_id="ushell\.Ushell" title="dim-floater"]'], gio.SubprocessFlags.NONE)
+	gio.Subprocess(['swaymsg', 'no_focus [app_id="ushell\\.Ushell" title="dim-floater"]'], gio.SubprocessFlags.NONE)
 	gio.Subprocess(['swaymsg',
-		'for_window [app_id="ushell\.Ushell" title="dim-floater"] opacity 0.5, floating enable, ' +
+		'for_window [app_id="ushell\\.Ushell" title="dim-floater"] opacity 0.5, floating enable, ' +
 		'resize set 100 ppt 100 ppt, move position center'
 	], gio.SubprocessFlags.NONE)
 	

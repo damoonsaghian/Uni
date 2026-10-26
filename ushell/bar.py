@@ -17,9 +17,9 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
 				if window.props.title == 'dim-layer':
-					gls.set_layer(window, gsl.Layer.BACKGROUND)
+					gls.set_layer(window, gls.Layer.BACKGROUND)
 				else:
-					gls.set_layer(window, gsl.Layer.BOTTOM)
+					gls.set_layer(window, gls.Layer.BOTTOM)
 	
 	if timer == None or timer.elapsed(0) < 2:
 		# if dim_layer window is in overlay layer, hide_all
@@ -28,6 +28,7 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 			if gls.is_layer_window(window):
 				if window.props.title == 'dim-layer' and gls.get_layer(window) == gls.Layer.OVERLAY:
 					hide_all()
+					gio.Subprocess(['swaymsg', 'workspace back_and_forth'], gio.SubprocessFlags.NONE)
 					break
 				gls.set_layer(window, gls.Layer.OVERLAY)
 	else:
@@ -48,7 +49,7 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	
 	# when mouse enters edge_window, set the layer of bar_window to overlay, so it will be above fullscreen window
 	# and make edge_window transparent to mouse
-	def on_pointer_enter(_, _):
+	def on_pointer_enter(_1, _2):
 		gls.set_layer(bar_window, gls.Layer.OVERLAY)
 		edge_window.get_surface().set_input_region(cairo.Region())
 	pointer_eventctl = gtk.EventControllerMotion()
@@ -226,7 +227,7 @@ def setup_system_status(box :gtk.Box):
 	# date'time indicator
 	dt = datetime.now()
 	datetime_indicator = gtk.Label(dt.strftime("%Y-%m-%d %a %p %I:%M"))
-	def update_datetime_indicator(_,_,_):
+	def update_datetime_indicator(_1,_2,_3):
 		dt2 = datetime.now()
 		if dt2 != dt:
 			dt = dt2
@@ -294,13 +295,13 @@ def setup_bar(ushell :gtk.Application):
 	setup_bottom_edge(ushell, bar_window)
 	
 	# touchscreen gestures
-	gio.Subprocess(['sh', '-c', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 "
-		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' "
-		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' "
+	gio.Subprocess(['sh', '-c', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
+		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' " +
+		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' " +
 		"-g '2,DU,B,*,P,swaymsg kill'"
 	], gio.SubprocessFlags.NONE)
 	
-	notifications_box = gtk.Box(spacing=5)
+	notification_box = gtk.Box(spacing=5)
 	setup_notifications(notification_box)
 	system_status_box = gtk.Box(spacing=5)
 	setup_system_status(system_status_box)
