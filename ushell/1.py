@@ -6,17 +6,16 @@ import gi
 gi.require_version('Gdk', '4.0')
 gi.require_version('Gtk', '4.0')
 
-from gi.repository import Gio as gio
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-from bar			import setup_bar
-from displays		import setup_displays
-from floater		import setup_floater
-from idle_manager	import setup_idle_manager
-from osk			import setup_osk
-from panel			import setup_panel
-from voicekey		import setup_voicekey
+from bar import setup_bar
+from displays import setup_displays
+from floater import setup_floater
+from idle_manager import setup_idle_manager
+from osk import setup_osk
+from panel import setup_panel
+from voicekey import setup_voicekey
 
 def on_startup(ushell :gtk.Application):
 	setup_bar(ushell)

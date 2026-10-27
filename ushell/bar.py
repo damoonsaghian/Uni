@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import cairo
 
 from gi.repository import GLib as glib
@@ -10,7 +10,7 @@ def on_alttab_press(bar_window :gtk.Window, timer :glib.Timer):
 	timer.start()
 	gls.set_layer(bar_window. gls.Layer.OVERLAY)
 
-def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
+def on_alttab_release(ushell :gtk.Application, timer :glib.Timer):
 	timer.stop()
 	
 	def hide_all():
@@ -21,8 +21,8 @@ def on_alttab_release(ushell :gtk.Application, timer :glib.Timer|None = None):
 				else:
 					gls.set_layer(window, gls.Layer.BOTTOM)
 	
-	if timer == None or timer.elapsed(0) < 2:
-		# if dim_layer window is in overlay layer, hide_all
+	if timer.elapsed(0) < 2:
+		# if dim_layer window is in overlay layer, hide_all, and go to previous workspace
 		# otherwise for all layer'windows of ushell, set the layer to OVERLAY
 		for window in ushell.get_windows():
 			if gls.is_layer_window(window):
@@ -228,6 +228,7 @@ def setup_system_status(box :gtk.Box):
 	dt = datetime.now()
 	datetime_indicator = gtk.Label(dt.strftime("%Y-%m-%d %a %p %I:%M"))
 	def update_datetime_indicator(_1,_2,_3):
+		nonlocal dt
 		dt2 = datetime.now()
 		if dt2 != dt:
 			dt = dt2
@@ -279,8 +280,8 @@ def setup_bar(ushell :gtk.Application):
 	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('pressed', lambda: on_alttab_press(ushell))
-	click_evctl.connect('released', lambda: on_alttab_release(ushell))
+	click_evctl.connect('pressed', lambda: on_alttab_press(ushell, alttab_timer))
+	click_evctl.connect('released', lambda: on_alttab_release(ushell, alttab_timer))
 	bar_window.add_controller(click_evctl)
 	
 	# right click on bar to close focused window

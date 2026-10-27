@@ -3,7 +3,7 @@ from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
-def setup_displays(app :gtk.Application):
+def setup_displays(ushell :gtk.Application):
 	# when monitors are added/removed:
 	# , move ushell's layer'windows to first output: gls.set_monitor(gtkwindow, gdkmonitor)
 	# , take the list of workspaces (using swaymsg)

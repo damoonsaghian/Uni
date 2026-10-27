@@ -329,7 +329,6 @@ def backup():
 	# if a device is removed, and the remaining ones can't hold at least two copies, show a warning
 
 def system_view() -> adw.NavigationView:
-	naview = adw.NavigationView()
 	# session
 	# displays
 	# connections

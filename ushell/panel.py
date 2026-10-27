@@ -156,6 +156,8 @@ def setup_panel(ushell :gtk.Application):
 	# if in locked mode, anchor panel to all edges, and show password entry
 	# otherwise go to apps
 	
+	naview = adw.NavigationView()
+	
 	# FlowBox containing apps
 	# https://github.com/otsaloma/catapult
 	# https://github.com/abenz1267/walker
@@ -177,8 +179,8 @@ def setup_panel(ushell :gtk.Application):
 	# flowbox.append(app_entry)
 	
 	# two buttons at top
-	# left: super prompt (selected by default)
-	# right: system menu (press enter)
+	# left: super prompt (press any punctuation key ';,.)
+	# right: system menu (selected by default)
 	
 	# press escape: close panel
 	
