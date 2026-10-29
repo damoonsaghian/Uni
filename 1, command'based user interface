@@ -15,10 +15,10 @@ for those who neither can use all their fingers, nor can talk, gesture based (2d
 
 ".data/keyboard.png"
 
-navigation keys (arrows, page up, page down, home, end, tab, esc), and ctrl/shift/alt based keybindings,
-	are available by pressing and holding "mod" (modifier) and/or "bom" (its mirror)
-pressing "mod+bom", is equivalent to "alt+tab"
-pressing "mod+bom", is equivalent to "alt+escape"
+navigation keys (arrows, page up, page down, home, end, tab, esc), and common ctrl/shift/alt based keybindings,
+	are available using "mod1" and "mod2"
+pressing "mod1 mod2", is equivalent to "alt+tab"
+pressing "mod2 mod1", is equivalent to "alt+escape"
 
 to insert punctuations, press "pun"
 	after entering a punctuation charactor, it automatically returns to normal mode
@@ -28,8 +28,8 @@ to insert capital letters, press "cap"
 	unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
 to insert numbers, press and hold "num"
 
-pressing and releasing "Fn", sends "Super+L" key press (usually bound to session locking)
-holding "Fn" and pressing a number eg 1, sends "F1" key
+pressing and releasing "fn", sends "super l" key press (usually bound to session locking)
+holding "fn" and pressing a number eg 1, sends "f1" key
 
 "https://jasoncarloscox.com/writing/my-strange-keyboards/"
 	"https://jasoncarloscox.com/creations/kyria/"

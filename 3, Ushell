@@ -1,18 +1,27 @@
 Ushell provides a graphical shell consisting of a main panel and a status bar
-the main panel can be opened by pressing "alt+tab" ("mod+bom"), showing all available applications
-to return back to previous application, press "alt+tab" again
-to close main panel press "escape" key
+the main panel can be opened by pressing "alt+tab" ("mod1 mod2"), showing all available applications
+to close main panel press "escape"
+to go to previous application, press "alt tab" again
 applications can be selected by typing their name, or using the arrow keys
-	space entered while typing application's name, will be considered the wild card character "*"
-press "enter" to open the selected application in its own workspace
+	some characters in an application's name, are slightly highlighted
+	entering them is enough to select that application
+	to reset the selection, press "backspace"
+press "space" or "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
-to close a window, press "alt+escape" (bom+mod)
+to close a window, press "alt escape" ("mod2 mod1")
 
-in main panel, press any punctuation key (';,.) to open the command prompt
+right after opening the main panel, or after reseting selection using "backspace",
+	press space to open the command prompt
 by typing special keywords in command prompt, you have instant access to various small but useful things like:
-	calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+	terminal, calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+for example, by typing "t" followed by a "space", the terminal mode will be activated,
+	and the entered command will be run in a terminal
+the list of produced outputs will be placed under the prompt
+	the user can navigate between them, using "ctrl page'up/page'down" 
+for interactive commands, the focus will be moved to the output view
+	to go back to the prompt, just press "ctrl page'up"
 
-right after opening the main panel, "system" is selected by default, and can be opened by pressing "enter":
+right after opening the main panel, or after reseting selection using "backspace", press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
 , displays
 , connections
