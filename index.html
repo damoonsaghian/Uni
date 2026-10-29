@@ -33,10 +33,10 @@ body {
 </span></div><div><span>
 </span></div><div><span><img src="keyboard.png" alt="keyboard.png"/>
 </span></div><div><span>
-</span></div><div><span>navigation keys (arrows, page up, page down, home, end, tab, esc), and ctrl/shift/alt based keybindings,
-</span></div><div><span></span>	<span>are available by pressing and holding "mod" (modifier) and/or "bom" (its mirror)
-</span></div><div><span>pressing "mod+bom", is equivalent to "alt+tab"
-</span></div><div><span>pressing "mod+bom", is equivalent to "alt+escape"
+</span></div><div><span>navigation keys (arrows, page up, page down, home, end, tab, esc), and common ctrl/shift/alt based keybindings,
+</span></div><div><span></span>	<span>are available using "mod1" and "mod2"
+</span></div><div><span>pressing "mod1 mod2", is equivalent to "alt+tab"
+</span></div><div><span>pressing "mod2 mod1", is equivalent to "alt+escape"
 </span></div><div><span>
 </span></div><div><span>to insert punctuations, press "pun"
 </span></div><div><span></span>	<span>after entering a punctuation charactor, it automatically returns to normal mode
@@ -46,8 +46,8 @@ body {
 </span></div><div><span></span>	<span>unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
 </span></div><div><span>to insert numbers, press and hold "num"
 </span></div><div><span>
-</span></div><div><span>pressing and releasing "Fn", sends "Super+L" key press (usually bound to session locking)
-</span></div><div><span>holding "Fn" and pressing a number eg 1, sends "F1" key
+</span></div><div><span>pressing and releasing "fn", sends "super l" key press (usually bound to session locking)
+</span></div><div><span>holding "fn" and pressing a number eg 1, sends "f1" key
 </span></div><div><span>
 </span></div><div><span><a href="https://jasoncarloscox.com/writing/my-strange-keyboards/">https://jasoncarloscox.com/writing/my-strange-keyboards/</a>
 </span></div><div><span></span>	<span><a href="https://jasoncarloscox.com/creations/kyria/">https://jasoncarloscox.com/creations/kyria/</a>
@@ -130,20 +130,29 @@ body {
 </span></div><div><span>"the GNUnet system" by Christian Grothoff (<a href="https://grothoff.org/christian/habil.pdf">https://grothoff.org/christian/habil.pdf</a>)
 </span></div>
 <h2>3, Ushell</h2><div><span>Ushell provides a graphical shell consisting of a main panel and a status bar
-</span></div><div><span>the main panel can be opened by pressing "alt+tab" ("mod+bom"), showing all available applications
-</span></div><div><span>to return back to previous application, press "alt+tab" again
-</span></div><div><span>to close main panel press "escape" key
+</span></div><div><span>the main panel can be opened by pressing "alt+tab" ("mod1 mod2"), showing all available applications
+</span></div><div><span>to close main panel press "escape"
+</span></div><div><span>to go to previous application, press "alt tab" again
 </span></div><div><span>applications can be selected by typing their name, or using the arrow keys
-</span></div><div><span></span>	<span>space entered while typing application's name, will be considered the wild card character "*"
-</span></div><div><span>press "enter" to open the selected application in its own workspace
+</span></div><div><span></span>	<span>some characters in an application's name, are slightly highlighted
+</span></div><div><span></span>	<span>entering them is enough to select that application
+</span></div><div><span></span>	<span>to reset the selection, press "backspace"
+</span></div><div><span>press "space" or "enter" to open the selected application in its own workspace
 </span></div><div><span>any extra windows opened by the application, will be shown in a modal floating window
-</span></div><div><span>to close a window, press "alt+escape" (bom+mod)
+</span></div><div><span>to close a window, press "alt escape" ("mod2 mod1")
 </span></div><div><span>
-</span></div><div><span>in main panel, press any punctuation key (';,.) to open the command prompt
+</span></div><div><span>right after opening the main panel, or after reseting selection using "backspace",
+</span></div><div><span></span>	<span>press space to open the command prompt
 </span></div><div><span>by typing special keywords in command prompt, you have instant access to various small but useful things like:
-</span></div><div><span></span>	<span>calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+</span></div><div><span></span>	<span>terminal, calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+</span></div><div><span>for example, by typing "t" followed by a "space", the terminal mode will be activated,
+</span></div><div><span></span>	<span>and the entered command will be run in a terminal
+</span></div><div><span>the list of produced outputs will be placed under the prompt
+</span></div><div><span></span>	<span>the user can navigate between them, using "ctrl page'up/page'down" 
+</span></div><div><span>for interactive commands, the focus will be moved to the output view
+</span></div><div><span></span>	<span>to go back to the prompt, just press "ctrl page'up"
 </span></div><div><span>
-</span></div><div><span>right after opening the main panel, "system" is selected by default, and can be opened by pressing "enter":
+</span></div><div><span>right after opening the main panel, or after reseting selection using "backspace", press "enter" to open system menu:
 </span></div><div><span>, session (lock, suspend, exit, reboot, poweroff)
 </span></div><div><span>, displays
 </span></div><div><span>, connections
