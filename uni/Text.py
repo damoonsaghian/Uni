@@ -1,4 +1,5 @@
 # https://pygobject.gnome.org/tutorials/gtk4/textview.html
+# https://tree-sitter.github.io/tree-sitter/
 
 # next and previous: word, line, paragraph
 
