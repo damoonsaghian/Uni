@@ -25,6 +25,7 @@ right after opening the main panel, or after reseting selection using "backspace
 , session (lock, suspend, exit, reboot, poweroff)
 , connections
 , timezone
+, autostart
 , passwords
 , packages (install, remove, update, create an installation media)
 , backup (create, restore)

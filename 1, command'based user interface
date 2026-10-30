@@ -17,8 +17,8 @@ for those who neither can use all their fingers, nor can talk, gesture based (2d
 
 navigation keys (arrows, page up, page down, home, end, tab, esc), and common ctrl/shift/alt based keybindings,
 	are available using "mod1" and "mod2"
-pressing "mod1 mod2", is equivalent to "alt+tab"
-pressing "mod2 mod1", is equivalent to "alt+escape"
+pressing "mod1 mod2", is equivalent to "alt tab"
+pressing "mod2 mod1", is equivalent to "alt escape"
 
 to insert punctuations, press "pun"
 	after entering a punctuation charactor, it automatically returns to normal mode
