@@ -13,7 +13,7 @@ to close a window, press "alt escape" ("mod2 mod1")
 right after opening the main panel, or after reseting selection using "backspace",
 	press space to open the command prompt
 by typing special keywords in command prompt, you have instant access to various small but useful things like:
-	terminal, calculator, unit conversion, timer, date at different timezones, weather, dictionary, encyclopedia, etc
+	terminal, screenshot, calculator, unit conversion, timer, date at different timezones, weather, dictionary, etc
 for example, by typing "t" followed by a "space", the terminal mode will be activated,
 	and the entered command will be run in a terminal
 the list of produced outputs will be placed under the prompt
@@ -23,7 +23,6 @@ for interactive commands, the focus will be moved to the output view
 
 right after opening the main panel, or after reseting selection using "backspace", press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
-, displays
 , connections
 , timezone
 , passwords
