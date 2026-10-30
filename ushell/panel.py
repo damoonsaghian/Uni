@@ -1,10 +1,12 @@
 from gi.repository import Gio as gio
 from gi.repository import GioUnix as giox
 from gi.repository import Gtk as gtk
+from gi.repository import Adw as adw
 from gi.repository import Gtk4LayerShell as gls
 
 from prompt import prompt_view
 from system import system_view
+from termulator import termulator
 
 class SwayApp(giox.DesktopAppInfo):
 	# run apps inside a bwrap sandbox that blocks sway's socket,
@@ -16,18 +18,24 @@ class SwayApp(giox.DesktopAppInfo):
 	# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
 	def do_launch(self):
 		swaywrap_script = f"""
-		swaymsg workspace "{app_name}"
+		# if file $HOME/.config/ushell/autostart/<workspace-name> exists (containg output-num):
+		# swaymsg move workspace to output-num
 		swaymsg [con_id=__focused__] focus ||
 		bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
 			--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
 			--bind /dev/null /usr/bin/lisgd \
-			--bind /dev/null "$HOME/.config/ushell/screens" \
-			--bind /dev/null "$HOME/.config/ushell/autostart" \
 			-- gtk4-launch "{self.get_id()}"
 		"""
 		gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
+	
+	# when an app "StartupNotify=true" in its .destop file is selected by holding space for 2 seconds,
+		# one of the context menu entries is "autostart"
+	# it asks for a display number starting from 2
+	# then makes a symbolic link in: $HOME/.config/ushell/autostart/"$display_num"
+	# self.launch()
+	# swaymsg "move workspace to $output_name; workspace back_and_forth"
 
-class AppEntry(gtk.Widget):
+class Item(gtk.Widget):
 	def __init__(self, app :SwayApp):
 		self = gtk.Widget()
 		self.app = app
@@ -37,9 +45,28 @@ class AppEntry(gtk.Widget):
 		# right click (hold) on app entries -> show close button on open app icons, plus a close all button
 		# backspace or delete -> close selected app's appspace
 
-class AppsList:
+class ItemList(gtk.Widget):
 	def __init__(self):
 		self.apps_list :List[SwayApp] = []
+		# adw.Clamp
+		
+		# FlowBox containing apps
+		scrolled_window = gtk.ScrolledWindow()
+		scrolled_window.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
+		flowbox = gtk.FlowBox()
+		flowbox.set_margin_top(12)
+		flowbox.set_margin_end(12)
+		flowbox.set_margin_bottom(12)
+		flowbox.set_margin_start(12)
+		flowbox.set_valign(gtk.Align.START)
+		flowbox.set_max_children_per_line(5)
+		flowbox.set_selection_mode(gtk.SelectionMode.NONE)
+		scrolled_window.set_child(flowbox)
+		# flowbox.insert(widget)
+		# flowbox.append(app_entry)
+
+	# for all items, determine those characters in their names, that are enough to reach them
+	# and slightly highlight them
 	
 	# self.selected_item = self.apps_list.get_item(0)
 	# flowbox_child = self.apps_flowbox.get_child_at_index(0)
@@ -103,18 +130,20 @@ class AppsList:
 	# 	self.selected_item = self.apps_list.get_item(index)
 	# 	self.on_activate()
 
-def create_password_entry() -> gtk.Entry:
+def setup_lock(ushell :gtk.Application, main_view :gtk.Stack, naview :gtk.NavigationView):
 	# if correct password is entered (su nu -c true): close password layer, swaymsg workspace lock
 	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
 	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
-	# 	anchor the panel's layer to all the edges of the screen, unset title of dimmer window (this prevents hiding layers)
+	# 	anchor the panel's layer to all the edges of the screen
 	# 	keyboard focus on panel window
 	# upon any input activity, or if unfocused, or if power button is pressed, or when resume from suspend:
 	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
-	# 	unanchor the panel's layer from top left and right edges, reset title of dimmer window to "dim-layer"
+	# 	unanchor the panel's layer from top left and right edges
 	# 	keyboard focus on passwrod entry
 	
 	# when password is entered correctly, set panel's layer to BOTTOM, show apps view
+	
+	# passwd_entry keybinding: escape -> close panel
 	
 	# double tap -> turn the screen on/off
 	# gio.Subprocess(["swaymsg", "output - power on"], gio.SubprocessFlags.NONE)
@@ -123,6 +152,36 @@ def create_password_entry() -> gtk.Entry:
 	# , if an unlock pattern is set, show pattern unlocking
 	# , otherwise ask for password, and if no keyboard is connected, show virtual keyboard,
 	# 	and after the password is entered correctly, ask user to set a pattern
+	
+	def lock():
+		naview.set_visible_child_name('lock')
+		SwayApp.new('uni.UniLock').launch()
+		for window in ushell.get_windows():
+			if gls.is_layer_window(window):
+				gls.set_layer(window, gls.Layer.OVERLAY)
+	
+	# start in locked mode
+	lock()
+
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "PanelLock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, lock
+	)
+	
+	def unlock():
+		naview.set_visible_child_name('nav')
+		gio.Subprocess(['swaymsg', 'workspace back_and_forth'], gio.SubprocessFlags.NONE)
+	
+	passwd_entry = gtk.PasswordEntry()
+	passwd_entry.connect('activate', unlock)
+	main_view.add_named(passwd_entry, 'lock')
+
+	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
+	# and instead run lock()
+	# https://systemd.io/INHIBITOR_LOCKS/
+	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
+	# hook dirs are a hacky alternative:
+		# https://manned.org/man/alpine-3.23/loginctl.1
+		# https://manned.org/man/alpine-3.23/logind.conf.5
 
 def setup_dim_layer():
 	# used behind panel
@@ -152,64 +211,68 @@ def setup_panel(ushell :gtk.Application):
 	gls.set_respect_close(window, True)
 	window.present()
 	
-	# when panel's window is focused:
-	# if in locked mode, anchor panel to all edges, and show password entry
-	# otherwise go to apps
+	main_view = gtk.Stack()
+	main_view.add_named(naview, 'nav')
+	window.set_child(main_view)
 	
 	naview = adw.NavigationView()
+	naview.add(
+		gtk.NavigationPage(child=apps_list, tag='home')
+	)
 	
-	# FlowBox containing apps
-	# https://github.com/otsaloma/catapult
-	# https://github.com/abenz1267/walker
-	scrolled_window = gtk.ScrolledWindow()
-	scrolled_window.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
-	window.set_child(scrolled_window)
-	flowbox = gtk.FlowBox()
-	flowbox.set_margin_top(12)
-	flowbox.set_margin_end(12)
-	flowbox.set_margin_bottom(12)
-	flowbox.set_margin_start(12)
-	flowbox.set_valign(gtk.Align.START)
-	flowbox.set_max_children_per_line(5)
-	flowbox.set_selection_mode(gtk.SelectionMode.NONE)
-	scrolled_window.set_child(flowbox)
-	# flowbox.insert(widget)
+	# when naview is focused go to home
+	naview.connect('focused', naview.set_visible_child_name('home'))
 	
-	# app entries
-	# flowbox.append(app_entry)
-	
+	# gtk.ActionBar
 	# two buttons at top
 	# left: super prompt (press any punctuation key ';,.)
 	# right: system menu (selected by default)
 	
-	# press escape: close panel
+	# naview keybinding: escape -> close panel
 	
-	# when window is focused, return back to apps list
+	# page with application items plus terminal item, with prompt and system on top actionbar
+	# terminal item activation: open_termulator(naview)
+	naview.add(
+		gtk.NavigationPage(child=termulator(), tag='termulator')
+	)
 	
 	# implement an interface to select and close applications (keyboard and long'press gesture)
+	
+	# autostart
+	# for each $HOME/.config/ushell/autostart/$app_id (contaning output-num), if there is an output:
+		# create a SwayApp and launch it
+		# swaymsg "move workspace to $output_name"
+	# swaymsg "workspace 1"
+	# turn off empty outputs (except the primary one)
+	
+	# swaymsg -t workspace subscribe
+	# when workspace changes, if this is not the primary output: move workspace to $primary_output
 	
 	SwayApp.new('uni.Uni.desktop').launch()
 	# monitor dbus connection at uni.Uni, and when it's closed, relaunch Uni
 	
-	def lock():
-		# switch to password entry view
-		SwayApp.new('uni.UniLock').launch()
-		for window in ushell.get_windows():
-			if gls.is_layer_window(window):
-				gls.set_layer(window, gls.Layer.OVERLAY)
+	setup_lock(ushell, main_view, naview)
 	
-	# start in locked mode
-	lock()
-	
-	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
-	# and instead run lock()
-	# https://systemd.io/INHIBITOR_LOCKS/
-	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
-	# hook dirs are a hacky alternative:
-		# https://manned.org/man/alpine-3.23/loginctl.1
-		# https://manned.org/man/alpine-3.23/logind.conf.5
+	def toggle_panel():
+		# if apps page has focus, close panel and go to previous workspace
+		# otherwise focus apps page
+		if naview.get_visible_page().tag == 'home':
+			for window in ushell.get_windows():
+				if gls.is_layer_window(window):
+					if window.props.title == 'dim-layer':
+						gls.set_layer(window, gls.Layer.BACKGROUND)
+					else:
+						gls.set_layer(window, gls.Layer.BOTTOM)
+			# if file $HOME/.config/ushell/autostart/<workspace-name> exists (containg output-num):
+			# swaymsg move workspace to output-num
+			gio.Subprocess(['swaymsg', 'workspace back_and_forth'], gio.SubprocessFlags.NONE)
+		else:
+			for window in ushell.get_windows():
+				if gls.is_layer_window(window):
+					gls.set_layer(window, gls.Layer.OVERLAY)
+			naview.set_visible_child_name('home')
 	
 	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Lock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: on_alttab_press(bar_window, lock)
+		None, "ushell.Ushell", "PanelToggle", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		toggle_panel
 	)

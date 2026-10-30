@@ -28,7 +28,7 @@ def idle_countdown(ushell :gtk.Application):
 		countdown_label.set_label(f'<span size="xx-large" weight="bold">{countdown}</span>')
 		if countdown == 0:
 			gio.Subprocess(
-				['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Lock'],
+				['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.PanelLock'],
 				gio.SubprocessFlags.NONE
 			)
 			countdown_win.close()

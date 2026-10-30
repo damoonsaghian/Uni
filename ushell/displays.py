@@ -16,12 +16,6 @@ def setup_displays(ushell :gtk.Application):
 	# https://docs.gtk.org/gdk4/method.Monitor.get_connector.html
 	# https://github.com/tamirzb/qkdisplays
 	
-	# run commands in ~/.config/ushell/displays using swaymsg
-	# focus the first output
-	# turn off empty outputs (except the primary one)
-	
-	# [ -e "$HOME"/.config/ushell/autostart ] && sh "$HOME"/.config/ushell/autostart
-	
 	# if display is landscape: width=80 height=80 pos="center"
 	# if display is portrait: width=100 height=80 pos="0 ppt 20 ppt"
 	ws=".*"

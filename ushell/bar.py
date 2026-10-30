@@ -8,31 +8,18 @@ from gi.repository import Gtk4LayerShell as gls
 
 def on_alttab_press(bar_window :gtk.Window, timer :glib.Timer):
 	timer.start()
-	gls.set_layer(bar_window. gls.Layer.OVERLAY)
+	gls.set_layer(bar_window, gls.Layer.OVERLAY)
 
-def on_alttab_release(ushell :gtk.Application, timer :glib.Timer):
+def on_alttab_release(bar_window :gtk.Window, timer :glib.Timer):
 	timer.stop()
 	
-	def hide_all():
-		for window in ushell.get_windows():
-			if gls.is_layer_window(window):
-				if window.props.title == 'dim-layer':
-					gls.set_layer(window, gls.Layer.BACKGROUND)
-				else:
-					gls.set_layer(window, gls.Layer.BOTTOM)
-	
 	if timer.elapsed(0) < 2:
-		# if dim_layer window is in overlay layer, hide_all, and go to previous workspace
-		# otherwise for all layer'windows of ushell, set the layer to OVERLAY
-		for window in ushell.get_windows():
-			if gls.is_layer_window(window):
-				if window.props.title == 'dim-layer' and gls.get_layer(window) == gls.Layer.OVERLAY:
-					hide_all()
-					gio.Subprocess(['swaymsg', 'workspace back_and_forth'], gio.SubprocessFlags.NONE)
-					break
-				gls.set_layer(window, gls.Layer.OVERLAY)
+		gio.Subprocess(
+			['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'],
+			gio.SubprocessFlags.NONE
+		)
 	else:
-		hide_all()
+		gls.set_layer(bar_window, gls.Layer.BOTTOM)
 
 def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	edge_window = gtk.Window(application=ushell, opacity=0)
@@ -275,13 +262,13 @@ def setup_bar(ushell :gtk.Application):
 	)
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "AltTabRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: on_alttab_release(ushell, alttab_timer)
+		lambda: on_alttab_release(bar_window, alttab_timer)
 	)
 	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('pressed', lambda: on_alttab_press(ushell, alttab_timer))
-	click_evctl.connect('released', lambda: on_alttab_release(ushell, alttab_timer))
+	click_evctl.connect('pressed', lambda: on_alttab_press(bar_window, alttab_timer))
+	click_evctl.connect('released', lambda: on_alttab_release(bar_window, alttab_timer))
 	bar_window.add_controller(click_evctl)
 	
 	# right click on bar to close focused window

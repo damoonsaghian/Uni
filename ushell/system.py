@@ -17,31 +17,14 @@ def session() -> gtk.Widget:
 	# https://systemd.io/INHIBITOR_LOCKS/
 	
 	# if "inhibit suspend" is active, or there is high network activity, and a shutdown is requested,
-	# 	lock the session, notice the user, and ask to confirm
+		# lock the session, notice the user, and ask to confirm
 	# wait for the inhibition and network activity to end, then do shutdown/restart/suspend
 	# https://systemd.io/INHIBITOR_LOCKS/
 
-def displays() -> gtk.Widget:
-	# displays
-	# if there are multiple displays, shows a list of the extra displays
-	# after selecting one, there would be the list of displays windows, plus the currently focused floating window
-	# by pressing space the state of window entry will be toggled
-	# when window is added to an empty display, turn it on
-	# when window is removed, if workspace is empty, turn the display off
-	# window states are stored in ~/.config/ushell/displays: [app_id=$app_id title=$title] move workspace $index
-	# and the corresponding commands in ~/.config/ushell/autostart
-	# 	find the pid of current window using "swaymsg -t get_tree"
-	# 	https://man.archlinux.org/man/sway-ipc.7.en
-	# 	find the correspoding command usig: ps -p $pid --no-headers -o args
-	# window entries can be moved between displays
-	# to delete an entry, press delete
-	#
-	# select a display (by pressing enter), then select another display, to switch them
-	# store the new order of display arrangment
-	
-	# screenshot and screencast
-	# when finished, move the file to clipboard
-	# grim -o "$$HOME/.cache/screen.png" | wl-copy --type text/uri-list "file://$$HOME/.cache/screen.png"
+def autostart():
+	# the first item allows to add current app and set a display number for that
+	# under that, show the list of autostart apps: ~/.config/ushell/autostart/*
+	# it's ordered by display number (catch from file content)
 
 def con_wifi():
 	# connect
@@ -330,7 +313,7 @@ def backup():
 
 def system_view() -> adw.NavigationView:
 	# session
-	# displays
+	# autostart
 	# connections
 	# timezone
 	# passwords

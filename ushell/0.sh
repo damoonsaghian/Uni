@@ -64,6 +64,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	bindsym Alt+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress'
 	bindsym --release Alt+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease'
 	bindsym Alt+Escape kill
+	bindsym Super+l exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
 	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
 	" > "$sway_config"
 	sway -c "$sway_config" || start_cli
