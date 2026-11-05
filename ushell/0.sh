@@ -21,7 +21,7 @@ start_cli() {
 	local bs="\033[1m" # bold start
 	local be="\033[0m" # bold end
 	
-	echo 'there was a problem in starting the graphical shell'
+	[ "$(tty)" = "/dev/tty1" ] && echo 'there was a problem in starting the graphical shell'
 	
 	while true; do
 		echo 'rescue options:'
@@ -32,7 +32,7 @@ start_cli() {
 		printf 'choose one by typing its name: '
 		read ans
 		case "$ans" in
-		t*) exec su -l nu ;;
+		t*) exec su nu ;;
 		e*) exit ;;
 		p*) poweroff ;;
 		esac
@@ -40,20 +40,9 @@ start_cli() {
 }
 
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
-	ln -s "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox"
-	# todo: create an unprivilaged wayland socket in "$XDG_RUNTIME_DIR/${WAYLAND_DISPLAY}-sandbox"
-	# python ffi
-	# https://git.sr.ht/~emersion/wlsecctx/tree/master/item/main.c
-	# https://github.com/bencejuhaasz/bcont/blob/main/src/wayland.rs
-	# https://kttnr.net/blog/sandboxing-wayland-applications/
-	# 	https://git.sr.ht/~whynothugo/way-secure/tree/main/item/src/main.rs
-	# https://gitea.angry.im/PeterCxy/wl-mitm
-	# https://github.com/mahkoh/wl-proxy/blob/master/update-protocols/src/main.rs
-	# https://git.sr.ht/~gk/python-wayland
-	# 	https://python-wayland.org/wayland/wp_security_context_manager_v1/
-	
 	sway_config="$(mktemp)"
-	echo -n "output * bg #222222 solid_color
+	cat <<-EOF > "$sway_config"
+	output * bg #222222 solid_color
 	input type:touchpad {
 		tap enabled
 		scroll_method two_finger
@@ -66,7 +55,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	bindsym Alt+Escape kill
 	bindsym Super+l exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
 	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
-	" > "$sway_config"
+	EOF
 	sway -c "$sway_config" || start_cli
 else
 	start_cli

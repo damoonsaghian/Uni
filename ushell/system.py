@@ -21,11 +21,6 @@ def session() -> gtk.Widget:
 	# wait for the inhibition and network activity to end, then do shutdown/restart/suspend
 	# https://systemd.io/INHIBITOR_LOCKS/
 
-def autostart():
-	# the first item allows to add current app and set a display number for that
-	# under that, show the list of autostart apps: ~/.config/ushell/autostart/*
-	# it's ordered by display number (catch from file content)
-
 def con_wifi():
 	# connect
 	# remove
@@ -167,6 +162,8 @@ def connections() -> gtk.Widget:
 	# https://networkmanager.dev/docs/api/latest/nmcli.html
 	# https://wiki.archlinux.org/index.php/NetworkManager
 	
+	# https://github.com/hyprltm/hyprltm-net
+	
 	# WiFi
 	# cellular
 	# Bluetooth
@@ -212,6 +209,14 @@ def timezone():
 	# show the list produced by "tz city $continent"; select $net_tz_city as default
 	city=
 	tz set "$continent/$city"
+
+def autostart():
+	# the first item allows to add current app and set a display number for that
+	# under that, show the list of autostart apps: ~/.config/ushell/autostart/*
+	# it's ordered by display number (catch from file content)
+	
+	# when window is added to an empty display, turn it on
+	# when window is removed, if workspace is empty, turn the display off
 
 def password():
 	# user password, root password, root encryption password
@@ -313,9 +318,9 @@ def backup():
 
 def system_view() -> adw.NavigationView:
 	# session
-	# autostart
 	# connections
 	# timezone
+	# autostart (on extra displays)
 	# passwords
 	# packages (install, remove, update, create an installation media)
 	# backup (create, restore)

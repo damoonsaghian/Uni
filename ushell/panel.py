@@ -9,22 +9,11 @@ from system import system_view
 from termulator import termulator
 
 class SwayApp(giox.DesktopAppInfo):
-	# run apps inside a bwrap sandbox that blocks sway's socket,
-	# 	and protects wayland socket using wayland security context
-	# this prevents a malicious program from stealing root password, by faking password entry
-	# https://niri-wm.github.io/niri/Security-Model.html
-	# so using sudo in Ushell does not suffer from these flaws:
-	# https://www.reddit.com/r/linuxquestions/comments/8mlil7/whats_the_point_of_the_sudo_password_prompt_if/
-	# https://security.stackexchange.com/questions/119410/why-should-one-use-sudo
 	def do_launch(self):
 		swaywrap_script = f"""
 		# if file $HOME/.config/ushell/autostart/<workspace-name> exists (containg output-num):
 		# swaymsg move workspace to output-num
-		swaymsg [con_id=__focused__] focus ||
-		bwrap --bind / / --bind /dev/null "$SWAYSOCK" \
-			--bind "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY"-sandbox "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" \
-			--bind /dev/null /usr/bin/lisgd \
-			-- gtk4-launch "{self.get_id()}"
+		swaymsg [con_id=__focused__] focus || gtk4-launch "{self.get_id()}"
 		"""
 		gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
 	
@@ -89,6 +78,15 @@ class ItemList(gtk.Widget):
 	
 	# notify:has-focus: select system
 	
+	def _list_apps(self):
+    key = lambda x: x.get_filename().lower()
+    for app in sorted(Gio.AppInfo.get_all(), key=key):
+    	if not self.conf.ignore_only_show_in and not app.should_show(): continue
+    	if not app.get_commandline(): continue
+    	id = app.get_id()
+    	if id == "io.otsaloma.catapult.desktop": continue
+    	yield id, app
+    
 	# app list is a flowbox whose model is a list store that will be updated when .desktop files of apps changes
 	def compare_apps(self, app1 :gio.AppInfo, app2 :gio.AppInfo):
 		app1_name = app1.get_name()

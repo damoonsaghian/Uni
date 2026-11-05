@@ -72,6 +72,7 @@ def setup_notifications(box :gtk.Box):
 def setup_system_status(box :gtk.Box):
 	# https://gitlab.gnome.org/GNOME/gnome-usage
 	# https://pkgs.alpinelinux.org/package/edge/main/x86_64/smartmontools
+	# https://github.com/JakeStanger/ironbar
 	
 	# screen recorder indicator
 	# watch for $HOME/.cache/swaycap/screen.mp4

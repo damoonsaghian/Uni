@@ -14,3 +14,4 @@ def setup_osk(app :gtk.Application):
 # on'screen keyboard for touch screen
 # https://github.com/fortime/fcitx5-osk
 # https://wiki.archlinux.org/title/Fcitx5
+# https://gitlab.gnome.org/World/Phosh/stevia
