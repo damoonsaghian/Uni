@@ -11,17 +11,12 @@ any extra windows opened by the application, will be shown in a modal floating w
 to close a window, press "alt escape" ("mod2 mod1")
 
 right after opening the main panel, or after reseting selection using "backspace",
-	press space to open the command prompt
+	press "space" to open the command prompt
 by typing special keywords in command prompt, you have instant access to various small but useful things like:
-	terminal, screenshot, calculator, unit conversion, timer, date at different timezones, weather, dictionary, etc
-for example, by typing "t" followed by a "space", the terminal mode will be activated,
-	and the entered command will be run in a terminal
-the list of produced outputs will be placed under the prompt
-	the user can navigate between them, using "ctrl page'up/page'down" 
-for interactive commands, the focus will be moved to the output view
-	to go back to the prompt, just press "ctrl page'up"
+	screenshot, calculator, unit conversion, timer, date at different timezones, weather, dictionary, etc
 
-right after opening the main panel, or after reseting selection using "backspace", press "enter" to open system menu:
+right after opening the main panel, or after reseting selection using "backspace",
+	press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
 , connections
 , timezone
