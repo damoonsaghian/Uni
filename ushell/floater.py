@@ -11,7 +11,7 @@ floater_script = """
 		swaymsg "[workspace=__focused__ floating] kill"
 		swaymsg focus prev && swaymsg "focus next; floating enable"
 	elif swaymsg "[con_id=__focused__ floating] focus" &&
-		! swaymsg "[workspace=__focused__ app_id='ushell\\.Ushell' title='dim-floater'] floating enable"
+		! swaymsg '[workspace=__focused__ app_id="^ushell\\.Ushell$" title="^dim-floater$"] floating enable'
 	then
 		dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.DimFloater
 	fi

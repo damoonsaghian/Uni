@@ -42,6 +42,8 @@ start_cli() {
 if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	sway_config="$(mktemp)"
 	cat <<-EOF > "$sway_config"
+	default_border none
+	default_floating_border none
 	output * bg #222222 solid_color
 	input type:touchpad {
 		tap enabled

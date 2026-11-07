@@ -6,19 +6,19 @@ from gi.repository import Gtk4LayerShell as gls
 
 from prompt import prompt_view
 from system import system_view
-from termulator import termulator
 
 class SwayApp(giox.DesktopAppInfo):
 	def do_launch(self):
-		swaywrap_script = f"""
-		# if file $HOME/.config/ushell/autostart/<workspace-name> exists (containg output-num):
-		# swaymsg move workspace to output-num
-		swaymsg [con_id=__focused__] focus || gtk4-launch "{self.get_id()}"
-		"""
+		app_id = self.get_id()
+		workspace_name = app_id
+		# if app_id is ~/.config/ushell/autostart, put the line number in workspace_name instead
+		swaywrap_script = f'swaymsg workspace "{workspace_name}"; '
+		f'swaymsg [con_id=__focused__] focus || gtk4-launch "{app_id}"'
+		
 		gio.Subprocess(['sh', '-c', swaywrap_script], gio.SubprocessFlags.NONE)
 	
 	# when an app "StartupNotify=true" in its .destop file is selected by holding space for 2 seconds,
-		# one of the context menu entries is "autostart"
+	# 	one of the context menu entries is "autostart"
 	# it asks for a display number starting from 2
 	# then makes a symbolic link in: $HOME/.config/ushell/autostart/"$display_num"
 	# self.launch()
@@ -160,7 +160,7 @@ def setup_lock(ushell :gtk.Application, main_view :gtk.Stack, naview :gtk.Naviga
 	
 	# start in locked mode
 	lock()
-
+	
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "PanelLock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, lock
 	)
@@ -178,8 +178,8 @@ def setup_lock(ushell :gtk.Application, main_view :gtk.Stack, naview :gtk.Naviga
 	# https://systemd.io/INHIBITOR_LOCKS/
 	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
 	# hook dirs are a hacky alternative:
-		# https://manned.org/man/alpine-3.23/loginctl.1
-		# https://manned.org/man/alpine-3.23/logind.conf.5
+	# 	https://manned.org/man/alpine-3.23/loginctl.1
+	# 	https://manned.org/man/alpine-3.23/logind.conf.5
 
 def setup_dim_layer():
 	# used behind panel
@@ -234,17 +234,12 @@ def setup_panel(ushell :gtk.Application):
 		gtk.NavigationPage(child=termulator(), tag='termulator')
 	)
 	
-	# implement an interface to select and close applications (keyboard and long'press gesture)
+	# implement an interface to show a context menu for applications (keyboard and long'press gesture)
+	# in the context menu provide two options: close, autostart
+	# if the app is already in autostart list, only show "close"
 	
-	# autostart
-	# for each $HOME/.config/ushell/autostart/$app_id (contaning output-num), if there is an output:
-		# create a SwayApp and launch it
-		# swaymsg "move workspace to $output_name"
-	# swaymsg "workspace 1"
-	# turn off empty outputs (except the primary one)
-	
-	# swaymsg -t workspace subscribe
-	# when workspace changes, if this is not the primary output: move workspace to $primary_output
+	# for apps in ~/.config/ushell/autostart/<app-id>
+	# create a SwayApp and launch it
 	
 	SwayApp.new('uni.Uni.desktop').launch()
 	# monitor dbus connection at uni.Uni, and when it's closed, relaunch Uni
@@ -261,8 +256,6 @@ def setup_panel(ushell :gtk.Application):
 						gls.set_layer(window, gls.Layer.BACKGROUND)
 					else:
 						gls.set_layer(window, gls.Layer.BOTTOM)
-			# if file $HOME/.config/ushell/autostart/<workspace-name> exists (containg output-num):
-			# swaymsg move workspace to output-num
 			gio.Subprocess(['swaymsg', 'workspace back_and_forth'], gio.SubprocessFlags.NONE)
 		else:
 			for window in ushell.get_windows():

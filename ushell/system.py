@@ -210,14 +210,6 @@ def timezone():
 	city=
 	tz set "$continent/$city"
 
-def autostart():
-	# the first item allows to add current app and set a display number for that
-	# under that, show the list of autostart apps: ~/.config/ushell/autostart/*
-	# it's ordered by display number (catch from file content)
-	
-	# when window is added to an empty display, turn it on
-	# when window is removed, if workspace is empty, turn the display off
-
 def password():
 	# user password, root password, root encryption password
 	# use "sudo passwd home", because we do not want to use PAM support of passwd
@@ -320,7 +312,6 @@ def system_view() -> adw.NavigationView:
 	# session
 	# connections
 	# timezone
-	# autostart (on extra displays)
 	# passwords
 	# packages (install, remove, update, create an installation media)
 	# backup (create, restore)
