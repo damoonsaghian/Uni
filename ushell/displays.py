@@ -3,6 +3,35 @@ from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
+def setup_display_windows(ushell :gtk.Application):
+	# display windows: windows with title __ext__ or with specs mentioned in ~/.config/ushell/display-windows.json
+	# specs: app_id/class, title
+	
+	def manage_display_windows():
+		pass
+		
+		# display_windows_specs = '[{"title": "__ext__"}]'
+		# extend this list with the list of specs mentioned in ~/.config/ushell/display-windows.json
+		
+		# get the list of windows, filter with display_windows_specs
+		# move them to workspace 1 ...
+		# turn on the corresponding outputs
+		# turn off empty outputs (except the primary one)
+	
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "ManageDisplayWindows", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		manage_display_windows
+	)
+	
+	manage_display_windows_script = """
+	{ swaymsg -m -t subscribe '["window"]' || swaynag -m "display windows manager failed"; } | while read _; do
+		dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.ManageDisplayWindows
+	done
+	"""
+	gio.Subprocess(['sh', '-c', manage_display_windows_script],	gio.SubprocessFlags.NONE)
+	
+	# when ~/.config/ushell/display-windows changes: manage_display_windows
+
 def setup_displays(ushell :gtk.Application):
 	# when monitors are added/removed:
 	# , move ushell's layer'windows to primary output: gls.set_monitor(gtkwindow, gdkmonitor)
@@ -17,24 +46,7 @@ def setup_displays(ushell :gtk.Application):
 	
 	# turn off empty outputs (except the primary one)
 	
-	# when window is removed from a numeric workspace, turn the display off
-	
-	# display windows: windows with title ' ' or with specs mentioned in ~/.config/ushell/display-windows
-	# specs: app_id/class title
-	def make_display_window():
-		pass
-		# find the first empty numeric workspace (try to disable floating; if it fails, then workspace is empty)
-		# move the window to the workspace
-		# turn on the corresponding output
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "Displays", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		make_display_window
-	)
-	display_windows_spec = 'title="^ $"'
-	gio.Subprocess([
-		'swaymsg',
-		f'for_window [{display_windows_spec}] exec dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Displays'
-	], gio.SubprocessFlags.NONE)
+	setup_display_windows(ushell)
 	
 	# if display is landscape: width=80 height=80 pos="center"
 	# if display is portrait: width=100 height=80 pos="0 ppt 20 ppt"

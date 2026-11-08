@@ -234,15 +234,12 @@ def setup_panel(ushell :gtk.Application):
 		gtk.NavigationPage(child=termulator(), tag='termulator')
 	)
 	
-	# implement an interface to show a context menu for applications (keyboard and long'press gesture)
-	# in the context menu provide two options: close, autostart
-	# if the app is already in autostart list, only show "close"
+	# implement an interface to close applications (delete key, right click, and long'press geature)
 	
-	# for apps in ~/.config/ushell/autostart/<app-id>
+	# for apps in ~/.config/autostart/
 	# create a SwayApp and launch it
 	
 	SwayApp.new('uni.Uni.desktop').launch()
-	# monitor dbus connection at uni.Uni, and when it's closed, relaunch Uni
 	
 	setup_lock(ushell, main_view, naview)
 	
