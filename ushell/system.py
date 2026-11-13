@@ -1,8 +1,16 @@
 from gi.repository import Gtk as gtk
 from gi.repository import Adw as adw
 
-class SysMenuEntry(gtk.Widget):
-	# name, icon, functin to call when activated
+from ..uni.menu import Menu
+
+# each item has an icon, a name, and an action
+# the action can be a function (which will be calles)
+# or another list model, which will be viewed in a new NavigationView
+
+class SysMenu(Menu):
+	def __init__(self, items: list[MenuItem], naveiw : gtk.NavigationView):
+		super().__init__(items)
+		self.naview = naview
 
 def session() -> gtk.Widget:
 	# lock
@@ -25,10 +33,12 @@ def con_wifi():
 	# connect
 	# remove
 	
-	device= ssid= answer=
+	# device =
+	# ssid =
+	# answer =
 	
 	# connect
-		echo 'select a device:'
+		print('select a device:'
 		device_list="$(iwctl device list | tail --line=+5 | cut -c 7-)"
 		device="$(menu "$device_list" | { read -r first _; echo "$first"; })"
 		
@@ -308,7 +318,7 @@ def backup():
 	# 	the others contain the whole data
 	# if a device is removed, and the remaining ones can't hold at least two copies, show a warning
 
-def system_view() -> adw.NavigationView:
+def system_view() -> gtk.Widget:
 	# session
 	# connections
 	# timezone
@@ -322,3 +332,8 @@ def system_view() -> adw.NavigationView:
 # i think adjusting cpufreq gpu pcie nvme/sata/usb power for laptops, is the job of the hardware itself, not the OS
 # 	the config UI for that, can be provided by the bios
 # 	https://wiki.archlinux.org/title/Power_management
+# https://github.com/adi1090x/rofi
+# https://github.com/jorchube/monitorets
+# https://github.com/v81d/wattage
+# https://github.com/Steve-Tech/YAFI
+# https://github.com/Nokse22/inspector

@@ -14,7 +14,7 @@ def setup_display_windows(ushell :gtk.Application):
 		# extend this list with the list of specs mentioned in ~/.config/ushell/display-windows.json
 		
 		# get the list of windows, filter with display_windows_specs
-		# move them to workspace 1 ...
+		# move them to workspace 1 2 3 ...
 		# turn on the corresponding outputs
 		# turn off empty outputs (except the primary one)
 	

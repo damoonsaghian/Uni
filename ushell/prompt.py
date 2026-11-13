@@ -1,7 +1,8 @@
 from gi.repository import Gtk as gtk
 
-def prompt_view():
-	pass
+def prompt_view() -> gtk.Widget:
+	main_box = gtk.Box()
+	return main_box
 
 # up/down navigate between results
 # enter to run them again
