@@ -28,7 +28,7 @@ def setup_display_windows(ushell :gtk.Application):
 		dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.ManageDisplayWindows
 	done
 	"""
-	gio.Subprocess(['sh', '-c', manage_display_windows_script],	gio.SubprocessFlags.NONE)
+	gio.Subprocess(argv=['sh', '-c', manage_display_windows_script])
 	
 	# when ~/.config/ushell/display-windows changes: manage_display_windows
 
@@ -54,7 +54,7 @@ def setup_displays(ushell :gtk.Application):
 	width="80"
 	height="80"
 	pos="center"
-	gio.Subprocess(
-		["swaymsg", f"for_window [workspace={ws} floating] resize set {width} ppt {height} ppt; move position {pos}"],
-		gio.SubprocessFlags.NONE
-	)
+	gio.Subprocess(argv=[
+		"swaymsg",
+		f"for_window [workspace={ws} floating] resize set {width} ppt {height} ppt; move position {pos}"
+	])

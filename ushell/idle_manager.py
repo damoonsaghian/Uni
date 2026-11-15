@@ -27,10 +27,9 @@ def idle_countdown(ushell :gtk.Application):
 		countdown -= 1
 		countdown_label.set_label(f'<span size="xx-large" weight="bold">{countdown}</span>')
 		if countdown == 0:
-			gio.Subprocess(
-				['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.PanelLock'],
-				gio.SubprocessFlags.NONE
-			)
+			gio.Subprocess(argv=[
+				'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.PanelLock'
+			])
 			countdown_win.close()
 	timeout_id = glib.timeout_add_seconds(1, lambda: on_timeout(countdown))
 	countdown_win.connect('close_request', lambda: glib.source_remove(timeout_id))
@@ -51,10 +50,11 @@ def setup_idle_manager(ushell :gtk.Application):
 	bat_stat_path = '/sys/class/power_supply/BAT0/status'
 	countdown_cmd = 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.IdleCountdown'
 	
-	gio.Subprocess(['swayidle', '-w',
+	gio.Subprocess(argv=[
+		'swayidle', '-w',
 		'timeout', '60', f'[ -e {bat_stat_path} ] && [ $(cat {bat_stat_path}) = Discharging ] && {countdown_cmd}',
 		'timeout', '600', countdown_cmd
-	], gio.SubprocessFlags.NONE)
+	])
 	
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "IdleCountdown", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,

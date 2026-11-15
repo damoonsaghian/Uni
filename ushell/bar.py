@@ -14,10 +14,9 @@ def on_alttab_release(bar_window :gtk.Window, timer :glib.Timer):
 	timer.stop()
 	
 	if timer.elapsed(0) < 2:
-		gio.Subprocess(
-			['dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'],
-			gio.SubprocessFlags.NONE
-		)
+		gio.Subprocess(argv=[
+			'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'
+		])
 	else:
 		gls.set_layer(bar_window, gls.Layer.BOTTOM)
 
@@ -268,14 +267,14 @@ def setup_bar(ushell :gtk.Application):
 	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('pressed', lambda: on_alttab_press(bar_window, alttab_timer))
-	click_evctl.connect('released', lambda: on_alttab_release(bar_window, alttab_timer))
+	click_evctl.connect('pressed', lambda _n, _x, _y: on_alttab_press(bar_window, alttab_timer))
+	click_evctl.connect('released', lambda _n, _x, _y: on_alttab_release(bar_window, alttab_timer))
 	bar_window.add_controller(click_evctl)
 	
 	# right click on bar to close focused window
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
 	right_click_eventctl.connect('pressed',
-		lambda: gio.Subprocess(['swaymsg', 'kill'], gio.SubprocessFlags.NONE)
+		lambda _n, _x, _y: gio.Subprocess(argv=['swaymsg', 'kill'])
 	)
 	bar_window.add_controller(right_click_eventctl)
 	
@@ -284,11 +283,12 @@ def setup_bar(ushell :gtk.Application):
 	setup_bottom_edge(ushell, bar_window)
 	
 	# touchscreen gestures
-	gio.Subprocess(['sh', '-c', "[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
+	gio.Subprocess(argv=['sh', '-c',
+		"[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
 		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' " +
 		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' " +
 		"-g '2,DU,B,*,P,swaymsg kill'"
-	], gio.SubprocessFlags.NONE)
+	])
 	
 	notification_box = gtk.Box(spacing=5)
 	setup_notifications(notification_box)

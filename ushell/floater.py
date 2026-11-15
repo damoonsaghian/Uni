@@ -23,20 +23,22 @@ def open_dim_floater(ushell :gtk.Application):
 	# when it's focused, close all windows in current workspace	
 	window = gtk.Window(application=ushell, title='dim-floater')
 	focus_eventctl = gtk.EventControllerFocus()
-	focus_eventctl.connect('enter', lambda: gio.Subprocess(
-		['swaymsg', '[workspace=__focused__ floating] kill'], gio.SubprocessFlags.NONE
-	))
+	focus_eventctl.connect(
+		'enter',
+		lambda: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__ floating] kill'])
+	)
 	window.add_controller(focus_eventctl)
 	window.present()
 
 def setup_floater(ushell :gtk.Application):
-	gio.Subprocess(['sh', '-c', floater_script], gio.SubprocessFlags.NONE)
+	gio.Subprocess(argv=['sh', '-c', floater_script])
 	
-	gio.Subprocess(['swaymsg', 'no_focus [app_id="ushell\\.Ushell" title="dim-floater"]'], gio.SubprocessFlags.NONE)
-	gio.Subprocess(['swaymsg',
+	gio.Subprocess(argv=['swaymsg', 'no_focus [app_id="ushell\\.Ushell" title="dim-floater"]'])
+	gio.Subprocess(argv=[
+		'swaymsg',
 		'for_window [app_id="ushell\\.Ushell" title="dim-floater"] opacity 0.5, floating enable, ' +
-		'resize set 100 ppt 100 ppt, move position center'
-	], gio.SubprocessFlags.NONE)
+			'resize set 100 ppt 100 ppt, move position center'
+	])
 	
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "DimFloater", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
