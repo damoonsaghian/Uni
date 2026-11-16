@@ -15,7 +15,7 @@ def idle_countdown(ushell :gtk.Application):
 	countdown_win = gtk.Window(application=ushell, opacity=0.5, title='lock-countdown')
 	
 	eventctl = gtk.EventControllerLegacy()
-	eventctl.connect('event', lambda _: countdown_win.close())
+	eventctl.connect('event', lambda *_: countdown_win.close())
 	countdown_win.add_controller(eventctl)
 	
 	countdown_label = gtk.Label(halign=gtk.Align.CENTER, valign=gtk.Align.CENTER)
@@ -32,7 +32,7 @@ def idle_countdown(ushell :gtk.Application):
 			])
 			countdown_win.close()
 	timeout_id = glib.timeout_add_seconds(1, lambda: on_timeout(countdown))
-	countdown_win.connect('close_request', lambda: glib.source_remove(timeout_id))
+	countdown_win.connect('close_request', lambda _: glib.source_remove(timeout_id))
 	
 	gls.init_for_window(countdown_win)
 	gls.set_layer(countdown_win, gls.Layer.OVERLAY)

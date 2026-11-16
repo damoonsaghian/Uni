@@ -35,7 +35,7 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	
 	# when mouse enters edge_window, set the layer of bar_window to overlay, so it will be above fullscreen window
 	# and make edge_window transparent to mouse
-	def on_pointer_enter(_1, _2):
+	def on_pointer_enter(*_):
 		gls.set_layer(bar_window, gls.Layer.OVERLAY)
 		edge_window.get_surface().set_input_region(cairo.Region())
 	pointer_eventctl = gtk.EventControllerMotion()
@@ -44,7 +44,7 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	
 	# when pointer leaves bar, set the layer of bar_window back to bottom
 	# and make edge_window reactive to mouse again
-	def on_pointer_leave():
+	def on_pointer_leave(*_):
 		gls.set_layer(bar_window, gls.Layer.BOTTOM)
 		edge_window.get_surface().set_input_region()
 	pointer_eventctl2 = gtk.EventControllerMotion()
@@ -214,7 +214,7 @@ def setup_system_status(box :gtk.Box):
 	# date'time indicator
 	dt = datetime.now()
 	datetime_indicator = gtk.Label(dt.strftime("%Y-%m-%d %a %p %I:%M"))
-	def update_datetime_indicator(_1,_2,_3):
+	def update_datetime_indicator(*_):
 		nonlocal dt
 		dt2 = datetime.now()
 		if dt2 != dt:
@@ -266,15 +266,22 @@ def setup_bar(ushell :gtk.Application):
 	)
 	
 	# click on bar to toggle the main panel
-	click_evctl = gtk.GestureClick(button=1, exclusive=True) # exclusive: only pointer events
-	click_evctl.connect('pressed', lambda _n, _x, _y: on_alttab_press(bar_window, alttab_timer))
-	click_evctl.connect('released', lambda _n, _x, _y: on_alttab_release(bar_window, alttab_timer))
+	click_evctl = gtk.GestureClick(button=1, exclusive=True)  # exclusive: only pointer events
+	click_evctl.connect(
+		'pressed',
+		lambda *_: on_alttab_press(bar_window, alttab_timer)
+	)
+	click_evctl.connect(
+		'released',
+		lambda *_: on_alttab_release(bar_window, alttab_timer)
+	)
 	bar_window.add_controller(click_evctl)
 	
 	# right click on bar to close focused window
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
-	right_click_eventctl.connect('pressed',
-		lambda _n, _x, _y: gio.Subprocess(argv=['swaymsg', 'kill'])
+	right_click_eventctl.connect(
+		'pressed',
+		lambda *_: gio.Subprocess(argv=['swaymsg', 'kill'])
 	)
 	bar_window.add_controller(right_click_eventctl)
 	

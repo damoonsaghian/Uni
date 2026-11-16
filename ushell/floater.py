@@ -25,7 +25,7 @@ def open_dim_floater(ushell :gtk.Application):
 	focus_eventctl = gtk.EventControllerFocus()
 	focus_eventctl.connect(
 		'enter',
-		lambda: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__ floating] kill'])
+		lambda _: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__ floating] kill'])
 	)
 	window.add_controller(focus_eventctl)
 	window.present()

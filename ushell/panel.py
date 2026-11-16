@@ -7,16 +7,20 @@ from .prompt import prompt_view
 from .system import system_view
 from ..uni.menu import Menu
 
-def swapp(app_id):
+current_app = "uni.Uni"
+previous_app = "uni.Uni"
+
+def swapp(app_id :str):
+	global current_app, previous_app
 	swaywrap_script = f'swaymsg workspace "{app_id}"; swaymsg [con_id=__focused__] focus || gtk4-launch "{app_id}"'
 	gio.Subprocess(argv=['sh', '-c', swaywrap_script])
+	if app_id != 'uni.UniLock':
+		previous_app = current_app
+		current_app = app_id
 
 def close_panel(ushell :gtk.Application):
 	for window in ushell.get_windows():
 		if gls.is_layer_window(window):
-			if window.props.title == 'dim-layer':
-				gls.set_layer(window, gls.Layer.BACKGROUND)
-			else:
 				gls.set_layer(window, gls.Layer.BOTTOM)
 
 def open_panel(ushell :gtk.Application):
@@ -24,16 +28,14 @@ def open_panel(ushell :gtk.Application):
 		if gls.is_layer_window(window):
 			gls.set_layer(window, gls.Layer.OVERLAY)
 
-def setup_dim_layer(ushell :gtk.Application):	
-	# used behind the panel
-	# the moment this window recieves a click/tap event, it closes panel
+def setup_dim_layer(ushell :gtk.Application):
 	dim_window = gtk.Window(application=ushell, title='dim-layer', opacity=0.5)
-	click_evctl = gtk.GestureClick(button=0) # listen for any button
-	click_evctl.connect('released', lambda _n, _x, _y: close_panel(ushell))
+	click_evctl = gtk.GestureClick(button=0)  # listen for any button
+	click_evctl.connect('released', lambda *_: close_panel(ushell))
 	dim_window.add_controller(click_evctl)
 	
 	gls.init_for_window(dim_window)
-	gls.set_layer(dim_window, gls.Layer.BACKGROUND)
+	gls.set_layer(dim_window, gls.Layer.BOTTOM)
 	gls.set_anchor(dim_window, gls.Edge.LEFT, True)
 	gls.set_anchor(dim_window, gls.Edge.RIGHT, True)
 	gls.set_anchor(dim_window, gls.Edge.TOP, True)
@@ -46,10 +48,6 @@ def setup_lock(ushell :gtk.Application, naview :gtk.NavigationView):
 	passwd_entry = gtk.PasswordEntry(placeholder_text='password', show_peek_icon=True)
 	passwd_page = gtk.NavigationPage(child=passwd_entry, tag='lock', can_pop=False)
 	naview.add(passwd_page)
-	
-	# on touch screen:
-	# , if an unlock pattern is set, show pattern unlocking instead
-	# , otherwise ask for password, and after the password is entered correctly, ask user to set a pattern
 	
 	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
 	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
@@ -75,12 +73,12 @@ def setup_lock(ushell :gtk.Application, naview :gtk.NavigationView):
 		None, "ushell.Ushell", "PanelLock", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, lock
 	)
 	
-	def unlock():
+	def unlock(passwd_entry :gtk.PasswordEntry):
 		def unlock_finish():
 			close_panel(ushell)
 			naview.set_visible_child_name('apps')
 			gio.Subprocess(argv=['swaymsg', 'workspace back_and_forth'])
-			# unblock passed_entry input
+			# unblock passwd_entry input
 		
 		gio.Subprocess(
 			argv=['sh', '-c', f'echo {passwd_entry.get_text()} | su nu -c true'],
@@ -122,9 +120,6 @@ def setup_panel(ushell :gtk.Application):
 	
 	# adw.Clamp
 	
-	# when naview is focused go to apps view
-	naview.connect('focused', naview.set_visible_child_name('apps'))
-	
 	naview.add(
 		gtk.NavigationPage(child=prompt_view(), tag='prompt')
 	)
@@ -156,12 +151,12 @@ def setup_panel(ushell :gtk.Application):
 	setup_lock(ushell, naview)
 	
 	def toggle_panel():
-		# if apps page has focus, close panel and go to previous workspace
+		# if apps page has focus, close panel and go to previous app
 		# otherwise if lock page has focus, close panel
 		# otherwise open the panel and focus apps page
 		if naview.get_visible_page().tag == 'apps':
 			close_panel()
-			gio.Subprocess(argv=['swaymsg', 'workspace back_and_forth'])
+			gio.Subprocess(argv=['swaymsg', f'workspace {previous_app}'])
 		elif naview.get_visible_page().tag == 'lock'
 			close_panel()
 		else:
