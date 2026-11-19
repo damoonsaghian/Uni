@@ -126,8 +126,8 @@ echo 'permit nopass nu cmd /usr/bin/lisgd' > "$new_root"/etc/doas.d/lisgd.conf
 script_dir="$(dirname "$(readlink -f "$0")")"
 
 cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
-chmod +x "$new_root"/usr/local/share/ushell/1.sh
-ln -s /usr/local/share/ushell/1.sh "$new_root"/usr/local/bin/ushell
+chmod +x "$new_root"/usr/local/share/ushell/0.sh
+ln -s /usr/local/share/ushell/0.sh "$new_root"/usr/local/bin/ushell
 
 cp -r "$script_dir"/uni "$new_root"/usr/local/share/
 chmod +x "$new_root"/usr/local/share/uni/usm.sh
