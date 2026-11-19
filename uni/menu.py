@@ -37,12 +37,12 @@ class Menu(gtk.ListView):
 	
 	# app_item = self.selected_item
 	# app_name = app_item.get_name()
-	# gio.Subprocess([
+	# gio.Subprocess(argv=[
 	# 	'swaymsg',
 	# 	f'[app_id=codev] move workspace {app_name}; workspace {app_name}'
-	# ], gio.SubprocessFlags.NONE)
-	# if not gio.Subprocess(['swaymsg', '[floating] focus'], gio.SubprocessFlags.NONE):
-	# 	gio.Subprocess(['swaymsg', 'exec ' + app_item.get_executable()], gio.SubprocessFlags.NONE)
+	# ])
+	# if not gio.Subprocess(argv=['swaymsg', '[floating] focus']):
+	# 	gio.Subprocess(argv=['swaymsg', 'exec ' + app_item.get_executable()])
 	
 	# notify:has-focus: select system
 	

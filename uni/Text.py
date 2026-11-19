@@ -1,5 +1,7 @@
 # https://pygobject.gnome.org/tutorials/gtk4/textview.html
+# https://gitlab.com/zulfian1732/jollpi-text-editor
 # https://tree-sitter.github.io/tree-sitter/
+# https://github.com/nextpad-plus-plus/nextpad-plus-plus-linux
 
 # next and previous: word, line, paragraph
 
