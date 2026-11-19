@@ -181,6 +181,12 @@ def connections() -> gtk.Widget:
 	# router
 	# vpn
 
+def display():
+	# brightness auto/manual
+	# https://github.com/FedeDP/Clight
+	
+	# scale
+
 def timezone():
 	# "$HOME"/.config/tz
 	
@@ -321,6 +327,7 @@ def backup():
 def system_view() -> gtk.Widget:
 	# session
 	# connections
+	# display
 	# timezone
 	# passwords
 	# packages (install, remove, update, create an installation media)

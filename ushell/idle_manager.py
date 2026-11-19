@@ -6,13 +6,13 @@ from gi.repository import Gtk4LayerShell as gls
 def idle_countdown(ushell :gtk.Application):
 	# if there already is a lock-countdown, do nothing
 	for window in ushell.get_windows():
-		if window.props.title == 'lock-countdown': return
+		if window.props.title == 'lock-layer': return
 	
 	# create a semi'transparent fullscreen layer showing a 10 seconds countdown
 	# upon any input activity, or when unfocused, close the layer
 	# when countdown is finished, close the layer, and lock Ushell
 	
-	countdown_win = gtk.Window(application=ushell, opacity=0.5, title='lock-countdown')
+	countdown_win = gtk.Window(application=ushell, opacity=0.5, title='lock-layer')
 	
 	eventctl = gtk.EventControllerLegacy()
 	eventctl.connect('event', lambda *_: countdown_win.close())

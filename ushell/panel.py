@@ -1,4 +1,6 @@
+from gi.repository import GLib as glib
 from gi.repository import Gio as gio
+from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 from gi.repository import Adw as adw
 from gi.repository import Gtk4LayerShell as gls
@@ -44,22 +46,53 @@ def setup_dim_layer(ushell :gtk.Application):
 	gls.set_respect_close(dim_window, True)
 	dim_window.present()
 
-def setup_lock(ushell :gtk.Application, naview :gtk.NavigationView):
+def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.NavigationView):
 	passwd_entry = gtk.PasswordEntry(placeholder_text='password', show_peek_icon=True)
 	passwd_page = gtk.NavigationPage(child=passwd_entry, tag='lock', can_pop=False)
 	naview.add(passwd_page)
 	
-	# the password layer has a 60 sec (10 sec on battery) idle timer that will turn the screens off:
-	# 	swaymsg "output - power off; seat - idle_inhibit keyboard pointer touchpad tablet_pad tablet_tool switch;"
-	# 	anchor the panel's layer to all the edges of the screen
-	# 	keyboard focus on panel window
-	# upon any input activity (including pressing power button), or if unfocused, or when resume from suspend:
-	# 	swaymsg "output - power on; seat - idle_inhibit keyboard pointer touchpad tablet_pad touch tablet_tool switch"
-	# 	unanchor the panel's layer from top left and right edges
-	# 	keyboard focus on passwrod entry
-	#
+	# passwd_page has a 20 sec idle timeout that will turn off the screen
+	# upon a key/button press, or if passwd_page does not have focus, turn on the screen
+	def display_off():
+		gio.Subprocess(argv=["swaymsg",	"output - power off"])
+		# to capture pointer/touch, anchor panel_window to all edges
+		gls.set_anchor(panel_window, gls.Edge.TOP, True)
+		gls.set_anchor(panel_window, gls.Edge.BOTTOM, True)
+		gls.set_anchor(panel_window, gls.Edge.LEFT, True)
+		gls.set_anchor(panel_window, gls.Edge.RIGHT, True)
+		panel_window.props.title = "lock-layer"  # to prevent the idle-manager from opening a counter layer
+		passwd_entry.props.editable = False
+	def display_on():
+		gio.Subprocess(argv=["swaymsg",	"output - power on"])
+		gls.set_anchor(panel_window, gls.Edge.TOP, False)
+		gls.set_anchor(panel_window, gls.Edge.BOTTOM, True)
+		gls.set_anchor(panel_window, gls.Edge.LEFT, False)
+		gls.set_anchor(panel_window, gls.Edge.RIGHT, False)
+		panel_window.props.title = ""
+		passwd_entry.props.editable = True
+	timeout_id = 0
+	def set_timeout(_ = None, event :gdk.Event|None = None):
+		nonlocal timeout_id
+		if timeout_id != 0: glib.source_remove(timeout_id)
+		timeout_id = glib.timeout_add_seconds(20, display_off)
+		match event:
+			case gdk.EventType.BUTTON_PRESS | gdk.EventType.PAD_BUTTON_PRESS | gdk.EventType.KEY_PRESS:
+				display_on()
+	def focus_changed(passwd_page :gtk.NavigationPage, _):
+		nonlocal timeout_id
+		if passwd_page.props.has_focus:
+			set_timeout()
+		else:
+			if timeout_id != 0: glib.source_remove(timeout_id)
+			display_on()
+	passwd_page.connect('notify::has_focus', focus_changed)
+	eventctl = gtk.EventControllerLegacy()
+	eventctl.connect('event', set_timeout)
+	passwd_page.add_controller(eventctl)
+	
+	# when resume from suspend, screen_on
+	
 	# double tap -> turn the screen on/off
-	# gio.Subprocess(argv=["swaymsg", "output - power on"])
 	
 	def lock():
 		naview.set_visible_child_name('lock')
@@ -84,13 +117,11 @@ def setup_lock(ushell :gtk.Application, naview :gtk.NavigationView):
 			argv=['sh', '-c', f'echo {passwd_entry.get_text()} | su nu -c true'],
 			flags=gio.SubprocessFlags.STDOUT_SILENCE
 		).communicate_async(callback=unlock_finish)
-		
-		# block passwd_enry input
 	
 	passwd_entry.connect('activate', unlock)
 	
 	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
-	# and instead run lock()
+	# and instead run lock() and display_on/display_off
 	# https://systemd.io/INHIBITOR_LOCKS/
 	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
 	# hook dirs are a hacky alternative:
@@ -100,19 +131,19 @@ def setup_lock(ushell :gtk.Application, naview :gtk.NavigationView):
 def setup_panel(ushell :gtk.Application):
 	setup_dim_layer(ushell)
 	
-	window = gtk.Window(application=ushell)
-	window.set_default_size(width=294, height=360)
+	panel_window = gtk.Window(application=ushell)
+	panel_window.set_default_size(width=294, height=360)
 	
-	gls.init_for_window(window)
-	gls.set_layer(window, gls.Layer.BOTTOM)
-	gls.set_anchor(window, gls.Edge.BOTTOM, True)
-	gls.set_margin(window, gls.Edge.BOTTOM, 20)
-	gls.set_keyboard_mode(window, gls.KeyboardMode.EXCLUSIVE)
-	gls.set_respect_close(window, True)
-	window.present()
+	gls.init_for_window(panel_window)
+	gls.set_layer(panel_window, gls.Layer.BOTTOM)
+	gls.set_anchor(panel_window, gls.Edge.BOTTOM, True)
+	gls.set_margin(panel_window, gls.Edge.BOTTOM, 20)
+	gls.set_keyboard_mode(panel_window, gls.KeyboardMode.EXCLUSIVE)
+	gls.set_respect_close(panel_window, True)
+	panel_window.present()
 	
 	naview = adw.NavigationView()
-	window.set_child(naview)
+	panel_window.set_child(naview)
 	
 	naview.add(
 		gtk.NavigationPage(child=apps_view(), tag='apps', can_pop=False)
@@ -148,7 +179,7 @@ def setup_panel(ushell :gtk.Application):
 	
 	swapp('uni.Uni')
 	
-	setup_lock(ushell, naview)
+	setup_lock(ushell, panel_window, naview)
 	
 	def toggle_panel():
 		# if apps page has focus, close panel and go to previous app
