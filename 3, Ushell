@@ -19,6 +19,7 @@ right after opening the main panel, or after reseting selection using "backspace
 	press "enter" to open system menu:
 , session (lock, suspend, exit, reboot, poweroff)
 , connections
+, display
 , timezone
 , passwords
 , packages (install, remove, update, create an installation media)
