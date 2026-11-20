@@ -55,7 +55,7 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 	# upon a key/button press, or if passwd_page does not have focus, turn on the screen
 	def display_off():
 		gio.Subprocess(argv=["swaymsg",	"output - power off"])
-		# to capture pointer/touch, anchor panel_window to all edges
+		# to capture pointer/touch while display is off, anchor panel_window to all edges
 		gls.set_anchor(panel_window, gls.Edge.TOP, True)
 		gls.set_anchor(panel_window, gls.Edge.BOTTOM, True)
 		gls.set_anchor(panel_window, gls.Edge.LEFT, True)
@@ -90,9 +90,35 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 	eventctl.connect('event', set_timeout)
 	passwd_page.add_controller(eventctl)
 	
-	# when resume from suspend, screen_on
+	# double tap/click on passwd_page to turn the screen on/off
+	clickctl = gtk.GestureClick()
+	def on_press(clickctl :gtk.GestureClick, n_clicks :int, _x, _y):
+		clickctl.set_state(Gtk.EventSequenceState.CLAIMED)
+		if n_clicks == 2:
+			gio.Subprocess(argv=["swaymsg",	"output - power toggle"])
+	clickctl.connect('pressed', on_press)
+	passwd_page.add_controller(clickctl)
 	
-	# double tap -> turn the screen on/off
+	# on wakeup from suspend, call screen_on
+	def dbus_proxy_callback(_object, result :gio.AsyncResult, _data):
+		dbus_proxy = gio.DBusProxy.new_for_bus_finish(result)
+		def sleep_handler(_dbus_proxy, _sender_name, _signal_name, parameters: glib.Variant):
+			# if we are after suspend, turn on the display
+			try:
+				if not parameters.get_boolean(): display_on()
+			except:
+				display_on()
+		dbus_proxy.connect('g-signal::PrepareForSleep', sleep_handler)
+	gio.DBusProxy.new_for_bus(
+		gio.BusType.SYSTEM,
+		gio.DBusProxyFlags.NONE,
+		None,
+		"org.freedesktop.login1",
+		"/org/freedesktop/login1",
+		"org.freedesktop.login1.Manager",
+		None,
+		dbus_proxy_callback
+	)
 	
 	def lock():
 		naview.set_visible_child_name('lock')
@@ -107,21 +133,30 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 	)
 	
 	def unlock(passwd_entry :gtk.PasswordEntry):
-		def unlock_finish():
-			close_panel(ushell)
-			naview.set_visible_child_name('apps')
-			gio.Subprocess(argv=['swaymsg', 'workspace back_and_forth'])
-			# unblock passwd_entry input
+		def unlock_finish(subprocess :gio.Subprocess, _result, _data):
+			if subprocess.get_exit_status() == 0:
+				close_panel(ushell)
+				naview.set_visible_child_name('apps')
+				gio.Subprocess(argv=['swaymsg', 'workspace back_and_forth'])
+			passwd_entry.props.editable = True
+		
+		passwd_entry.props.editable = False
 		
 		gio.Subprocess(
 			argv=['sh', '-c', f'echo {passwd_entry.get_text()} | su nu -c true'],
 			flags=gio.SubprocessFlags.STDOUT_SILENCE
-		).communicate_async(callback=unlock_finish)
+		).wait_async(callback=unlock_finish)
 	
 	passwd_entry.connect('activate', unlock)
 	
+	def handle_power_key():
+		if panel_window.props.title == "lock-layer":
+			display_on()
+		else:
+			lock()
+			display_off()
 	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
-	# and instead run lock() and display_on/display_off
+	# and instead run handle_power_key()
 	# https://systemd.io/INHIBITOR_LOCKS/
 	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
 	# hook dirs are a hacky alternative:
