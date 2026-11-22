@@ -109,6 +109,7 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 			except:
 				display_on()
 		dbus_proxy.connect('g-signal::PrepareForSleep', sleep_handler)
+	
 	gio.DBusProxy.new_for_bus(
 		gio.BusType.SYSTEM,
 		gio.DBusProxyFlags.NONE,
@@ -155,13 +156,9 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 		else:
 			lock()
 			display_off()
-	# use handle-power-key inhibitor lock to prevent system poweroff when pressing power button
-	# and instead run handle_power_key()
-	# https://systemd.io/INHIBITOR_LOCKS/
-	# https://www.freedesktop.org/software/systemd/man/latest/org.freedesktop.login1.html
-	# hook dirs are a hacky alternative:
-	# 	https://manned.org/man/alpine-3.23/loginctl.1
-	# 	https://manned.org/man/alpine-3.23/logind.conf.5
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "PanelPowerKey", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE, handle_power_key
+	)
 
 def setup_panel(ushell :gtk.Application):
 	setup_dim_layer(ushell)

@@ -55,10 +55,13 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	bindsym Alt+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress'
 	bindsym --release Alt+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease'
 	bindsym Alt+Escape kill
-	bindsym Super+l exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.Lock'
+	bindsym Super+l exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelLock'
+	bindsym XF86PowerOff 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelPowerKey'
 	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
 	EOF
-	sway -c "$sway_config" || start_cli
+	# elogind-inhibit aquires a handle-power-key inhibitor lock
+	# so sway can bind power key to display on/off instead
+	elogind-inhibit --what=handle-power-key sway -c "$sway_config" || start_cli
 else
 	start_cli
 fi
