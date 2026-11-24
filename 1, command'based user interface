@@ -16,16 +16,21 @@ for those who neither can use all their fingers, nor can talk, gesture based (2d
 ".data/keyboard.png"
 
 navigation keys (arrows, page up, page down, home, end, tab, esc), and common ctrl/shift/alt based keybindings,
-	are available using "mod1" and "mod2"
-pressing "mod1 mod2", is equivalent to "alt tab"
-pressing "mod2 mod1", is equivalent to "alt escape"
+	are available using "mod1", "mod2" and "mod1 mod2"
+note that "mod1 mod2" will be released only when both of the keys are release
+	so in key combinations, it's enough to keep only one of them pressed
+pressing "mod2 mod1", is equivalent to pressing "super"
+pressing "mod1 mod2 space", is equivalent to pressing "alt tab"
+pressing "mod1 mod2 backspace", is equivalent to pressing "alt f4"
+pressing "mod1 mod2 f", is equivalent to pressing "f11"
 
 to insert punctuations, press "pun"
 	after entering a punctuation charactor, it automatically returns to normal mode
 	unless the "pun" key is still pressed, in which case, it will return to normal mode after releasing "pun"
 to insert capital letters, press "cap"
 	after entering a charactor, it automatically returns to normal mode
-	unless the "cap" key is pressed twice, in which case, it will return to normal mode after pressing "cap", "space" or "enter"
+	unless the "cap" key is pressed twice, in which case,
+		it will return to normal mode after pressing "cap", "space" or "enter"
 to insert numbers, press and hold "num"
 
 pressing and releasing "fn", sends "super l" key press (usually bound to session locking)
