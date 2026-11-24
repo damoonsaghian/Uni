@@ -1,8 +1,15 @@
 from gi.repository import Gtk as gtk
+from gi.repository import Adw as adw
 
 def prompt_view() -> gtk.Widget:
 	main_box = gtk.Box()
-	return main_box
+	
+	return adw.Clamp(
+		child=main_box,
+		orientation=gtk.Orientation.HORIZONTAL,
+		maximum_size=960,
+		unit=adw.LengthUnit.SP
+	)
 
 # up/down navigate between results
 # enter to run them again

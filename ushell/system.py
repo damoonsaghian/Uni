@@ -332,6 +332,13 @@ def system_view() -> gtk.Widget:
 	# passwords
 	# packages (install, remove, update, create an installation media)
 	# backup (create, restore)
+	
+	return adw.Clamp(
+		child=,
+		orientation=gtk.Orientation.HORIZONTAL,
+		maximum_size=960,
+		unit=adw.LengthUnit.SP
+	)
 
 # power saving:
 # rfkill wwan when wifi is connected; reenable it when wifi is disconnected

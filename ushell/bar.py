@@ -1,32 +1,17 @@
 from datetime import datetime
 import cairo
 
-from gi.repository import GLib as glib
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
-def on_alttab_press(bar_window :gtk.Window, timer :glib.Timer):
-	timer.start()
-	gls.set_layer(bar_window, gls.Layer.OVERLAY)
-
-def on_alttab_release(bar_window :gtk.Window, timer :glib.Timer):
-	timer.stop()
-	
-	if timer.elapsed(0) < 2:
-		gio.Subprocess(argv=[
-			'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Panel'
-		])
-	else:
-		gls.set_layer(bar_window, gls.Layer.BOTTOM)
-
-def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
+def setup_top_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	edge_window = gtk.Window(application=ushell, opacity=0)
 	edge_window.set_default_size(width=-1, height=1)
 	
 	gls.init_for_window(edge_window)
 	gls.set_layer(edge_window, gls.Layer.OVERLAY)
-	gls.set_anchor(edge_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(edge_window, gls.Edge.TOP, True)
 	gls.set_anchor(edge_window, gls.Edge.LEFT, True)
 	gls.set_anchor(edge_window, gls.Edge.RIGHT, True)
 	gls.set_exclusive_zone(edge_window, -1)
@@ -54,7 +39,7 @@ def setup_bottom_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	edge_window.present()
 
 def setup_notifications(box :gtk.Box):
-	pass
+	...
 	# temporary show the message on the bar
 	# after that just show app icon and the number of notifications (if there are more than one)
 	# https://specifications.freedesktop.org/notification/latest/protocol.html
@@ -248,53 +233,53 @@ def setup_bar(ushell :gtk.Application):
 	
 	gls.init_for_window(bar_window)
 	gls.set_layer(bar_window, gls.Layer.BOTTOM)
-	gls.set_anchor(bar_window, gls.Edge.BOTTOM, True)
+	gls.set_anchor(bar_window, gls.Edge.TOP, True)
 	gls.set_anchor(bar_window, gls.Edge.LEFT, True)
 	gls.set_anchor(bar_window, gls.Edge.RIGHT, True)
 	gls.auto_exclusive_zone_enable(bar_window)
 	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
 	gls.set_respect_close(bar_window, True)
 	
-	alttab_timer = glib.Timer()
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "AltTabPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: on_alttab_press(bar_window, alttab_timer)
-	)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "AltTabRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: on_alttab_release(bar_window, alttab_timer)
-	)
-	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True)  # exclusive: only pointer events
 	click_evctl.connect(
 		'pressed',
-		lambda *_: on_alttab_press(bar_window, alttab_timer)
-	)
-	click_evctl.connect(
-		'released',
-		lambda *_: on_alttab_release(bar_window, alttab_timer)
+		lambda *_: gio.Subprocess(argv=[
+			'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.PanelToggle'
+		])
 	)
 	bar_window.add_controller(click_evctl)
 	
-	# right click on bar to close focused window
+	# right click on bar to go to previous app
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
 	right_click_eventctl.connect(
 		'pressed',
-		lambda *_: gio.Subprocess(argv=['swaymsg', 'kill'])
+		lambda *_: gio.Subprocess(argv=[
+			'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.SwappPrevious'
+		])
 	)
 	bar_window.add_controller(right_click_eventctl)
 	
 	# when there is a fullscreen window, there is no bar to click on
-	# so the bar must be revealed whenever the pointer touches the bottom edge
-	setup_bottom_edge(ushell, bar_window)
+	# so the bar must be revealed whenever the pointer touches the top edge
+	setup_top_edge(ushell, bar_window)
+	
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "BarOverlay", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: gls.set_layer(bar_window, gls.Layer.OVERLAY)
+	)
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "BarTop", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM)
+	)
 	
 	# touchscreen gestures
 	gio.Subprocess(argv=['sh', '-c',
 		"[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
-		"-g '1,DU,B,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabPress' " +
-		"-g '1,DU,B,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.AltTabRelease' " +
-		"-g '2,DU,B,*,P,swaymsg kill'"
+		"-g '1,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarOverlay' " +
+		"-g '1,DU,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarBOTTOM' " +
+		"-g '1,UD,T,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle' " +
+		"-g '2,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SwappPrevious'"
 	])
 	
 	notification_box = gtk.Box(spacing=5)
