@@ -8,7 +8,6 @@ applications can be selected by typing their name, or using the arrow keys
 press "space" or "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
 to close a window, press "alt escape" or "alt f4" ("mod1 mod2 backspace")
-to toggle fullscreen mode for a window, press "f1" or "f11" ("mod1 mod2 f")
 
 right after opening the main panel, or after reseting selection using "backspace",
 	press "space" to open the command prompt

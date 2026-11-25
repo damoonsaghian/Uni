@@ -22,7 +22,6 @@ note that "mod1 mod2" will be released only when both of the keys are release
 pressing "mod2 mod1", is equivalent to pressing "super"
 pressing "mod1 mod2 space", is equivalent to pressing "alt tab"
 pressing "mod1 mod2 backspace", is equivalent to pressing "alt f4"
-pressing "mod1 mod2 f", is equivalent to pressing "f11"
 
 to insert punctuations, press "pun"
 	after entering a punctuation charactor, it automatically returns to normal mode
