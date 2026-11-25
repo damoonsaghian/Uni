@@ -1,6 +1,7 @@
 from datetime import datetime
 import cairo
 
+from gi.repository import GLib as glib
 from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
@@ -250,6 +251,14 @@ def setup_bar(ushell :gtk.Application):
 	)
 	bar_window.add_controller(click_evctl)
 	
+	# longpress on bar to close windows of current workspace
+	lpress_eventctl = gtk.GestureLongPress(button=3, exclusive=True)
+	lpress_eventctl.connect(
+		'pressed',
+		lambda *_: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__] kill'])
+	)
+	bar_window.add_controller(lpress_eventctl)
+	
 	# right click on bar to go to previous app
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
 	right_click_eventctl.connect(
@@ -264,21 +273,26 @@ def setup_bar(ushell :gtk.Application):
 	# so the bar must be revealed whenever the pointer touches the top edge
 	setup_top_edge(ushell, bar_window)
 	
+	def bar_overlay():
+		gls.set_layer(bar_window, gls.Layer.OVERLAY)
+		# automatically return bar to bottom layer after 3 sec
+		glib.timeout_add_seconds(3, lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM) and False)
 	ushell.get_dbus_connection().signal_subscribe(
 		None, "ushell.Ushell", "BarOverlay", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: gls.set_layer(bar_window, gls.Layer.OVERLAY)
+		bar_overlay
 	)
 	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "BarTop", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM)
+		None, "ushell.Ushell", "BarBottom", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		gls.set_layer(bar_window, gls.Layer.BOTTOM)
 	)
 	
 	# touchscreen gestures
 	gio.Subprocess(argv=['sh', '-c',
-		"[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
-		"-g '1,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarOverlay' " +
-		"-g '1,DU,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarBOTTOM' " +
+		"[ -e /dev/input/touchscreen ] && doas lisgd " +
+		"-g '1,UD,T,S,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarOverlay' " +
+		"-g '1,DU,T,S,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarBottom' " +
 		"-g '1,UD,T,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle' " +
+		"-g '1,UD,T,L,P,swaymsg \"[workspace=__focused__]\" kill'" +
 		"-g '2,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SwappPrevious'"
 	])
 	

@@ -52,14 +52,13 @@ if [ "$(tty)" = "/dev/tty1" ] && [ "$(id -u)" != 0 ]; then
 	}
 	focus_follows_mouse no
 	seat * hide_cursor 8000
-	bindsym Super_R exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle'
-	bindsym Super_L exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle'
+	bindsym --release Super_R exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle'
+	bindsym --release Super_L exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle'
 	bindsym Alt+space exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle'
 	bindsym Alt+Tab exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SwappPrevious'
 	bindsym Alt+Escape kill
 	bindsym Alt+F4 kill
-	bindsym F1 fullscreen toggle
-	bindsym F11 fullscreen toggle
+	bindsym Super+space exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarOverlay'
 	bindsym Super+l exec 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelLock'
 	bindsym XF86PowerOff 'dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelPowerKey'
 	exec 'python3 \"$script_dir\"/1.py; swaymsg exit'
