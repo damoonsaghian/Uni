@@ -1,4 +1,5 @@
 from gi.repository import Gio as gio
+from gi.repository import Gtk as gtk
 
 current_app = "uni.Uni"
 previous_app = "uni.Uni"
@@ -28,5 +29,8 @@ def swapp_view():
 	
 	# implement an interface to close applications (delete key, right click, and long'press geature)
 
-def swapp_previous():
-	gio.Subprocess(argv=['swaymsg', f'workspace {previous_app}'])
+def setup_swapp(ushell :gtk.Application):
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "SwappPrevious", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: gio.Subprocess(argv=['swaymsg', f'workspace {previous_app}'])
+	)

@@ -7,7 +7,7 @@ from gi.repository import Gtk4LayerShell as gls
 
 from .prompt import prompt_view
 from .system import system_view
-from .swapp import swapp, swapp_view, swapp_previous
+from .swapp import swapp, swapp_view, setup_swapp
 from ..uni.menu import Menu
 
 def close_panel(ushell :gtk.Application):
@@ -142,15 +142,11 @@ def setup_panel(ushell :gtk.Application):
 	naview = adw.NavigationView()
 	panel_window.set_child(naview)
 	
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "SwappPrevious", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		swapp_previous
-	)
+	setup_swapp(ushell)
 	
 	naview.add(
 		gtk.NavigationPage(child=swapp_view(), tag='swapp', can_pop=False)
 	)
-	
 	
 	naview.add(
 		gtk.NavigationPage(child=prompt_view(), tag='prompt')

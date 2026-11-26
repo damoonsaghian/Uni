@@ -6,6 +6,20 @@ from gi.repository import Gio as gio
 from gi.repository import Gtk as gtk
 from gi.repository import Gtk4LayerShell as gls
 
+def on_super_press(bar_window :gtk.Window, timer :glib.Timer):
+	timer.start()
+	gls.set_layer(bar_window, gls.Layer.OVERLAY)
+
+def on_super_release(bar_window :gtk.Window, timer :glib.Timer):
+	timer.stop()
+	
+	if timer.elapsed(0) < 2:
+		gio.Subprocess(argv=[
+			'dbus-send', '--dest=ushell.Ushell', '/ushell/Ushell', 'ushell.Ushell.Paneltoggle'
+		])
+	else:
+		gls.set_layer(bar_window, gls.Layer.BOTTOM)
+
 def setup_top_edge(ushell :gtk.Application, bar_window :gtk.Window):
 	edge_window = gtk.Window(application=ushell, opacity=0)
 	edge_window.set_default_size(width=-1, height=1)
@@ -241,6 +255,16 @@ def setup_bar(ushell :gtk.Application):
 	gls.set_keyboard_mode(bar_window, gls.KeyboardMode.NONE)
 	gls.set_respect_close(bar_window, True)
 	
+	super_timer = glib.Timer()
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "SuperPress", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_super_press(bar_window, super_timer)
+	)
+	ushell.get_dbus_connection().signal_subscribe(
+		None, "ushell.Ushell", "SuperRelease", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
+		lambda: on_super_release(bar_window, super_timer)
+	)
+	
 	# click on bar to toggle the main panel
 	click_evctl = gtk.GestureClick(button=1, exclusive=True)  # exclusive: only pointer events
 	click_evctl.connect(
@@ -250,14 +274,6 @@ def setup_bar(ushell :gtk.Application):
 		])
 	)
 	bar_window.add_controller(click_evctl)
-	
-	# longpress on bar to close windows of current workspace
-	lpress_eventctl = gtk.GestureLongPress(button=3, exclusive=True)
-	lpress_eventctl.connect(
-		'pressed',
-		lambda *_: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__] kill'])
-	)
-	bar_window.add_controller(lpress_eventctl)
 	
 	# right click on bar to go to previous app
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
@@ -273,26 +289,11 @@ def setup_bar(ushell :gtk.Application):
 	# so the bar must be revealed whenever the pointer touches the top edge
 	setup_top_edge(ushell, bar_window)
 	
-	def bar_overlay():
-		gls.set_layer(bar_window, gls.Layer.OVERLAY)
-		# automatically return bar to bottom layer after 3 sec
-		glib.timeout_add_seconds(3, lambda: gls.set_layer(bar_window, gls.Layer.BOTTOM) and False)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "BarOverlay", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		bar_overlay
-	)
-	ushell.get_dbus_connection().signal_subscribe(
-		None, "ushell.Ushell", "BarBottom", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
-		gls.set_layer(bar_window, gls.Layer.BOTTOM)
-	)
-	
 	# touchscreen gestures
 	gio.Subprocess(argv=['sh', '-c',
-		"[ -e /dev/input/touchscreen ] && doas lisgd " +
-		"-g '1,UD,T,S,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarOverlay' " +
-		"-g '1,DU,T,S,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.BarBottom' " +
-		"-g '1,UD,T,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.PanelToggle' " +
-		"-g '1,UD,T,L,P,swaymsg \"[workspace=__focused__]\" kill'" +
+		"[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
+		"-g '1,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperPress' " +
+		"-g '1,UD,T,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperRelease' " +
 		"-g '2,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SwappPrevious'"
 	])
 	
