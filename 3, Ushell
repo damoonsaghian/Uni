@@ -1,13 +1,12 @@
 Ushell provides a graphical shell consisting of a main panel and a status bar
 the main panel can be toggled by pressing "alt space" or "super" ("mod2 mod1"), showing all available applications
-to go to previous application, press "alt tab" ("mod1 mod2 space")
+to go to previous application, press "alt tab" ("mod1 mod2")
 applications can be selected by typing their name, or using the arrow keys
 	some characters in an application's name, are slightly highlighted
 	entering them is enough to select that application
 	to reset the selection, press "backspace"
 press "space" or "enter" to open the selected application in its own workspace
 any extra windows opened by the application, will be shown in a modal floating window
-to close a window, press "alt escape" or "alt f4" ("mod1 mod2 backspace")
 
 right after opening the main panel, or after reseting selection using "backspace",
 	press "space" to open the command prompt

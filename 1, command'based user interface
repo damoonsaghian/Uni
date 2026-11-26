@@ -16,12 +16,9 @@ for those who neither can use all their fingers, nor can talk, gesture based (2d
 ".data/keyboard.png"
 
 navigation keys (arrows, page up, page down, home, end, tab, esc), and common ctrl/shift/alt based keybindings,
-	are available using "mod1", "mod2" and "mod1 mod2"
-note that "mod1 mod2" will be released only when both of the keys are release
-	so in key combinations, it's enough to keep only one of them pressed
+	are available using "mod1" and "mod2"
 pressing "mod2 mod1", is equivalent to pressing "super"
-pressing "mod1 mod2 space", is equivalent to pressing "alt tab"
-pressing "mod1 mod2 backspace", is equivalent to pressing "alt f4"
+pressing "mod1 mod2", is equivalent to pressing "alt tab"
 
 to insert punctuations, press "pun"
 	after entering a punctuation charactor, it automatically returns to normal mode
@@ -32,7 +29,7 @@ to insert capital letters, press "cap"
 		it will return to normal mode after pressing "cap", "space" or "enter"
 to insert numbers, press and hold "num"
 
-pressing and releasing "fn", sends "super l" key press (usually bound to session locking)
+pressing and releasing "fn", sends "XF86ScreenSaver" key press (usually bound to session locking)
 holding "fn" and pressing a number eg 1, sends "f1" key
 
 "https://jasoncarloscox.com/writing/my-strange-keyboards/"
