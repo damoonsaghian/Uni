@@ -7,13 +7,13 @@ from gi.repository import Gtk4LayerShell as gls
 
 from .prompt import prompt_view
 from .system import system_view
-from .swapp import swapp, swapp_view, setup_swapp
+from .swapp import swapp_view, setup_swapp
 from ..uni.menu import Menu
 
 def close_panel(ushell :gtk.Application):
 	for window in ushell.get_windows():
 		if gls.is_layer_window(window):
-				gls.set_layer(window, gls.Layer.BOTTOM)
+			gls.set_layer(window, gls.Layer.BOTTOM)
 
 def open_panel(ushell :gtk.Application):
 	for window in ushell.get_windows():
@@ -31,7 +31,7 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 		gio.Subprocess(argv=["swaymsg",	"output - power on"])
 	
 	# passwd_page has a 20 sec idle timeout that will turn off the screen
-	# upon a key/button press, or if passwd_page does not have focus, turn on the screen
+	# upon a key/button press, or if passwd_page loses focus, turn on the screen
 	timeout_id = 0
 	def set_timeout(_ = None, event :gdk.Event|None = None):
 		nonlocal timeout_id
@@ -85,7 +85,9 @@ def setup_lock(ushell :gtk.Application, panel_window :gtk.Window, naview :gtk.Na
 	
 	def lock():
 		naview.set_visible_child_name('lock')
-		swapp('uni.UniLock')
+		gio.Subprocess(argv=[
+			'sh', '-c', 'swaymsg workspace uni.UniLock; swaymsg [con_id=__focused__] focus || gtk4-launch uni.UniLock'
+		])
 		open_panel(ushell)
 		passwd_entry.delete_text(0,-1)
 	
@@ -157,11 +159,12 @@ def setup_panel(ushell :gtk.Application):
 	)
 	
 	# naview keybinding: escape -> close panel
-	
-	# for apps in ~/.config/autostart/
-	# swapp(app_id)
-	
-	swapp('uni.Uni')
+	def on_key_pressed(_, keyval :int, _keycode, _state):
+		if keyval == :
+			close_panel(ushell)
+	key_evctl = gtk.EventControllerKey()
+	key_evctl.connect('key_pressed', on_key_pressed)
+	naview.add_controller(key_evctl)
 	
 	setup_lock(ushell, panel_window, naview)
 	

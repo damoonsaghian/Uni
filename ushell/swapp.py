@@ -15,9 +15,8 @@ def swapp(app_id :str):
 	# if app_filename basename is not "/usr/share/applications" or "/usr/local/share/applications", run it in sandbox
 	
 	gio.Subprocess(argv=['sh', '-c', swaywrap_script])
-	if app_id != 'uni.UniLock':
-		previous_app = current_app
-		current_app = app_id
+	previous_app = current_app
+	current_app = app_id
 
 def swapp_view():
 	...
@@ -34,3 +33,8 @@ def setup_swapp(ushell :gtk.Application):
 		None, "ushell.Ushell", "SwappPrevious", "/ushell/Ushell", None, gio.DBusSignalFlags.NONE,
 		lambda: gio.Subprocess(argv=['swaymsg', f'workspace {previous_app}'])
 	)
+	
+	# for apps in ~/.config/autostart/
+	# swapp(app_id)
+	
+	swapp('uni.Uni')

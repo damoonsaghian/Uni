@@ -275,6 +275,14 @@ def setup_bar(ushell :gtk.Application):
 	)
 	bar_window.add_controller(click_evctl)
 	
+	# click and hold on bar to close all windows in the current workspace
+	long_click_evctl = gtk.GestureLongPress(button=1, exclusive=True)
+	long_click_evctl.connect(
+		'pressed',
+		lambda *_: gio.Subprocess(argv=['swaymsg', '[workspace=__focused__] kill'])
+	)
+	bar_window.add_controller(long_click_evctl)
+	
 	# right click on bar to go to previous app
 	right_click_eventctl = gtk.GestureClick(button=3, exclusive=True)
 	right_click_eventctl.connect(
@@ -292,8 +300,9 @@ def setup_bar(ushell :gtk.Application):
 	# touchscreen gestures
 	gio.Subprocess(argv=['sh', '-c',
 		"[ -e /dev/input/touchscreen ] && doas lisgd -t 60 -T 60 " +
-		"-g '1,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperPress' " +
-		"-g '1,UD,T,*,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperRelease' " +
+		"-g '1,UD,T,S,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperPress' " +
+		"-g '1,UD,T,S,R,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SuperRelease' " +
+		"-g '1,UD,T,L,P,swaymsg \"[workspace=__focused__] kill\"' " +
 		"-g '2,UD,T,*,P,dbus-send --dest=ushell.Ushell /ushell/Ushell ushell.Ushell.SwappPrevious'"
 	])
 	
