@@ -123,6 +123,14 @@ EOF
 
 echo 'permit nopass nu cmd /usr/bin/lisgd' > "$new_root"/etc/doas.d/lisgd.conf
 
+cat <<-'EOF' > "$new_root"/usr/local/bin/ushell-autostart
+#!/usr/bin/env sh
+mkdir -p /var/local/lib/ushell/autostart
+applications_id="$(basename "$1")"
+ln -s /usr/share/applications/"$application_id" /var/local/lib/ushell/autostart
+EOF
+echo 'permit nopass nu cmd /usr/local/bin/ushell-autostart' > "$new_root"/etc/doas.d/ushell-autostart.conf
+
 script_dir="$(dirname "$(readlink -f "$0")")"
 
 cp -r "$script_dir"/ushell "$new_root"/usr/local/share/
