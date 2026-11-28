@@ -141,30 +141,27 @@ def setup_panel(ushell :gtk.Application):
 	gls.set_respect_close(panel_window, True)
 	panel_window.present()
 	
+	# close panel when escape key is pressed
+	def on_key_pressed(_, keyval :int, _keycode, _state):
+		if keyval == gdk.KEY_Escape:
+			close_panel(ushell)
+	key_evctl = gtk.EventControllerKey()
+	key_evctl.connect('key_pressed', on_key_pressed)
+	panel_window.add_controller(key_evctl)
+	
 	naview = adw.NavigationView()
 	panel_window.set_child(naview)
-	
-	setup_swapp(ushell)
-	
 	naview.add(
 		gtk.NavigationPage(child=swapp_view(), tag='swapp', can_pop=False)
 	)
-	
 	naview.add(
 		gtk.NavigationPage(child=prompt_view(), tag='prompt')
 	)
-	
 	naview.add(
 		gtk.NavigationPage(child=system_view(), tag='system')
 	)
 	
-	# naview keybinding: escape -> close panel
-	def on_key_pressed(_, keyval :int, _keycode, _state):
-		if keyval == :
-			close_panel(ushell)
-	key_evctl = gtk.EventControllerKey()
-	key_evctl.connect('key_pressed', on_key_pressed)
-	naview.add_controller(key_evctl)
+	setup_swapp(ushell)
 	
 	setup_lock(ushell, panel_window, naview)
 	
